@@ -27,7 +27,7 @@ module.exports.loop = function () {
       global.heap.rooms[roomName]={}
     }
 
-    //Getting current userName - dump first iteration over spawns 
+    //Getting current userName - dump first iteration over spawns//
     for(spawnName in Game.spawns)
     {
         global.heap.userName=Game.spawns[spawnName].owner.username
