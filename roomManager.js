@@ -17,8 +17,12 @@ Room.prototype.roomManager = new function roomManager() {
         Game.rooms[this.name].memory.myExtractor = undefined
         Game.rooms[this.name].memory.myObserver = undefined
 
-        //TODO implement planing base and building from that "plan"
+        //TODO 
+        // Implement planing base and building from that "plan"
         //this.planBase()
+        //
+        // Add running creeps roles
+        
     }
 
     Game.rooms[this.name].memory.roads = []
