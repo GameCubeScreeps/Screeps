@@ -6,8 +6,9 @@ const localHeap = {}
 
 
 class harvestingSourceRequestFarmer {
-    constructor(sourceId) {
+    constructor(sourceId,sourceRoom) {
         this.sourceId = sourceId;
+        this.sourceRoom=sourceRoom
         this.type = ROLE_HARVESTER;
     }
 }
@@ -21,10 +22,10 @@ class harvestingSourceRequestCarrier {
     }
 }
 
-class roomRequestSoldier {
-    constructor(roomName) {
+class generalRoomRequest {
+    constructor(roomName, role) {
         this.roomName = roomName
-        this.type = C.ROLE_SOLDIER;
+        this.type = role;
     }
 }
 
@@ -34,63 +35,71 @@ class roomRequestSoldier {
 Room.prototype.createRoomQueues = new function createRoomQueues() {
     global.heap.rooms[this.name].defensiveQueue = []
     global.heap.rooms[this.name].harvestingQueue = []
+    global.heap.rooms[this.name].civilianQueue = []
     global.heap.rooms[this.name].offensiveQueue = []
 
-    //Find hostile and friendly creeps
-    Game.rooms[this.name].roomManager()
 
-    //  CARRIERS 
+
+    if (global.heap.rooms[this.name].roomsToScan == undefined) {
+        global.heap.rooms[this.name].civilianQueue.push(generalRoomRequest(this.name, C.ROLE_SCUOT))
+    }
+
+    // Scout
+    if (Game.rooms[this.name].memory.roomsToScan == undefined) {
+        if (global.heap.rooms[this.name].civilianQueue.some(obj => obj.type === C.ROLE_SCUOT)) {
+            global.heap.rooms[this.name].civilianQueue.push(generalRoomRequest(this.name, C.ROLE_SCUOT))
+        }
+
+    }
+
+    //  Carriers / Harvesters
+    var areCarriersSatisfied = true
     for (harvestingSource of this.memory.harvestingSources) {
-        if (harvestingSource.carryingPower < harvestingSource.sourcesNum * (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME)
-            && harvestingSource.carryingPower < harvestingSource.harvestingPower) {
 
-            //Skipping reserved by not "me"
-            if (Game.rooms[harvestingSource.roomName] != undefined && Game.rooms[harvestingSource.roomName].controller.reservation != undefined
-                && Game.rooms[harvestingSource.roomName].controller.reservation.username != global.heap.userName) {
-                continue;
-            }
-            //Skippig rooms containint hostileCreeps
-            if (global.heap.rooms[harvestingSource.roomName] != undefined && global.heap.rooms[harvestingSource.roomName].hostiles.length > 1 && harvestingSource.roomName != spawn.room.name) {
-                continue;
-            }
+
+        //Skipping reserved by not "me"
+        if (Game.rooms[harvestingSource.roomName] != undefined && Game.rooms[harvestingSource.roomName].controller.reservation != undefined
+            && Game.rooms[harvestingSource.roomName].controller.reservation.username != global.heap.userName) {
+            continue;
+        }
+        //Skippig rooms containing hostileCreeps
+        if (global.heap.rooms[harvestingSource.roomName] != undefined && global.heap.rooms[harvestingSource.roomName].hostiles.length > 1 && harvestingSource.roomName != spawn.room.name) {
+            continue;
+        }
+
+        //Carriers
+        if (harvestingSource.carryingPower < (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) && harvestingSource.carryingPower < harvestingSource.harvestingPower) {
             global.heap.rooms[this.room].harvestingQueue.push(new harvestingSourceRequestCarrier(harvestingSource.roomName, harvestingSource.id, harvestingSource.distance))
+            areHarvestersSatisfied = false
             break;
+        }
+        else if (harvestingSource.carryingPower < harvestingSource.harvestingPower) {
+            //Harvesters
+            global.heap.rooms[this.room].harvestingQueue.push(new harvestingSourceRequestFarmer(harvestingSource.id,harvestingSource.roomName))
+            areCarriersSatisfied = false
+            break;
+
         }
     }
 
 
 
-    // Harvesters
-    for (harvestingSource of this.memory.harvestingSources) {
-        if (harvestingSource.harvestingPower < SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME &&
-            harvestingSource.farmers < harvestingSource.maxFarmers) {
 
-            //Skipping farming rooms reserved by not "my" bot
-            if (Game.rooms[harvestingSource.roomName] != undefined
-                && Game.rooms[harvestingSource.roomName].controller.reservation != undefined
-                && Game.rooms[harvestingSource.roomName].controller.reservation.username == global.heap.userName) {
-                continue;
-            }
-
-            //We assume that sources are sorted by distance (path to spawn length)
-            global.heap.rooms[this.room].harvestingQueue.push(new harvestingSourceRequestFarmer(harvestingSource.id, ROLE_HARVESTER))
-            break;
-        }
-    }
+    global.heap.rooms[this.room.name].areHarvestingNeedsSatisfied = areHarvestersSatisfied && areCarriersSatisfied
 
 
     // Soldiers - against raids (in both homeRoom below rcl3 and remote)
+    // Soldiers should add themselves (their targetRoom) to global.heap.rooms[roomName].soldier
     for (room of this.memory.harvestingRooms) {
         if (global.heap.rooms[room].hostiles.length > 0) {
-            if (Game.rooms[room].memory.isHarvestingRoom && global.heap.rooms[room].soldier==undefined) {
-                if (!global.heap.rooms[room].defensiveQueue.some(obj => obj.roomName ===room)) {
-                    global.heap.rooms[room].defensiveQueue.push(new roomRequestSoldier(room))
+            if (Game.rooms[room].memory.isHarvestingRoom && global.heap.rooms[room].soldier == undefined) {
+                if (!global.heap.rooms[room].defensiveQueue.some(obj => obj.roomName === room)) {
+                    global.heap.rooms[room].defensiveQueue.push(new generalRoomRequest(room, C.ROLE_SOLDIER))
                 }
             }
         }
     }
 
-    // Soldiers should add themselves (their targetRoom) to global.heap.rooms[roomName].soldier
 
 
 }

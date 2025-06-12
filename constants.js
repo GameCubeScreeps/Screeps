@@ -9,6 +9,7 @@ const ROLE_HARVESTER='harvester'
 const ROLE_CARRIER='carrier'
 const ROLE_FILLER='filler'
 const ROLE_SOLDIER='soldier'
+const ROLE_SCOUT='scout'
 
 
 
