@@ -1,8 +1,8 @@
 
 
-Room.prototype.roomManager = new function roomManager() {
+Room.prototype.roomManager = function roomManager() {
 
-
+    global.heap.rooms[this.name]={}
     global.heap.rooms[this.name].hostiles = []
     global.heap.rooms[this.name].allies = []
     if (Memory.mainRooms.includes(this.name)) {
@@ -17,6 +17,30 @@ Room.prototype.roomManager = new function roomManager() {
         Game.rooms[this.name].memory.myExtractor = undefined
         Game.rooms[this.name].memory.myObserver = undefined
 
+        if(Game.rooms[this.name].memory.farmingSources==undefined)
+        {
+            Game.rooms[this.name].memory.farmingSources=[]
+        }
+
+        if(Game.rooms[this.name].memory.farmingRooms==undefined)
+        {
+            Game.rooms[this.name].memory.farmingRooms=[]
+        }
+
+        if(Game.rooms[this.name].memory.keepersSources==undefined)
+        {
+            Game.rooms[this.name].memory.keepersSources=[]
+        }
+
+        if(Game.rooms[this.name].memory.keepersRooms==undefined)
+        {
+            Game.rooms[this.name].memory.keepersRooms=[]
+        }
+
+        if(Game.rooms[this.name].memory.forcedUpgrades==undefined)
+        {
+            Game.rooms[this.name].memory.forcedUpgrades=[0,0,0,0,0,0,0,0]
+        }
         //TODO 
         // Implement planing base and building from that "plan"
         //this.planBase()
@@ -30,7 +54,7 @@ Room.prototype.roomManager = new function roomManager() {
 
 
     //Finding hostile Creeps
-    var hostiles = r.find(FIND_HOSTILE_CREEPS, {
+    var hostiles = Game.rooms[this.name].find(FIND_HOSTILE_CREEPS, {
         filter:
             function (enemy) {
                 return !Memory.allies.includes(enemy.owner.username)
@@ -44,7 +68,7 @@ Room.prototype.roomManager = new function roomManager() {
     }
 
     //Finding allied Creeps
-    var allies = r.find(FIND_HOSTILE_CREEPS, {
+    var allies = Game.rooms[this.name].find(FIND_HOSTILE_CREEPS, {
         filter:
             function (ally) {
                 return Memory.allies.includes(ally.owner.username)

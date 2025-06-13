@@ -5,10 +5,9 @@ const TEST_CONST="testttttt"
 
 for (spawnName in Game.spawns) {
       global.heap.userName = Game.spawns[spawnName].owner.username
-      const USERNAME=Game.spawns[spawnName].owner.username;
       break;
     }
-
+const USERNAME=global.heap.userName
 //Creep Roles
 const ROLE_HARVESTER='harvester'
 const ROLE_CARRIER='carrier'

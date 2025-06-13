@@ -1,10 +1,10 @@
 // Every constant definied in separate file
-const C = require('contants');
+const C = require('constants');
 const { result } = require('lodash');
 //defining local heap
 const localHeap = {}
 
-Room.prototype.spawnFromQueues = new function spawnFromQueues() {
+Room.prototype.spawnFromQueues = function spawnFromQueues() {
 
 
 
@@ -35,7 +35,7 @@ Room.prototype.spawnFromQueues = new function spawnFromQueues() {
         type=request.type
         switch (type){
             case C.ROLE_SCOUT:
-                var  result=spawn.spawnCreep([MOVE],'scout_'+this.name+Game.time,{ memory: { role: 'scout', homeRoom: this.name } })
+                var  result=spawn.spawnCreep([MOVE],'scout_'+this.name+Game.time,{ memory: { role: 'scout', homeRoom: this.name, homeSpawnID: spawn.id } })
                 if(result==OK)
                 {
                     global.heap.rooms[this.name].civilianQueue.shift()
