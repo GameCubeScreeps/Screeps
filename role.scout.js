@@ -5,42 +5,58 @@ const findRouteTest = require('./findRouteTest');
 class FarmingRoom {
     constructor(name, harvesting_power, carry_power, sourcesNum, distance) {
         this.name = name;
-        this.harvesting_power = harvesting_power;
-        this.carry_power = carry_power;
+        this.harvestingPower = harvesting_power;
+        this.carryPower = carry_power;
         this.sourcesNum = sourcesNum;
         this.distance = distance;
         this.farmers = 0;
 
-        var body_parts_cost = (sourcesNum * 12);//parts for farmers (max farmer is made off 12 bodyparts);
-        body_parts_cost += 14;//maxRepairer
-        body_parts_cost += Math.ceil((sourcesNum * 10 * distance * 2 * 3) / 100);//distanceCarriers
-        this.body_parts_cost = body_parts_cost;
+        var bodyPartsCost = (sourcesNum * 12);//parts for farmers (max farmer is made off 12 bodyparts);
+        bodyPartsCost += 14;//maxRepairer
+        bodyPartsCost += Math.ceil((sourcesNum * 10 * distance * 2 * 3) / 100);//distanceCarriers
+        this.bodyPartsCost = bodyPartsCost;
     }
 }
 
-class farmingSource {
+class FarmingSource {
     constructor(id, name, harvesting_power, carry_power, distance, maxFarmers) {
         this.id = id;
         this.name = name;
-        this.harvesting_power = harvesting_power;
-        this.carry_power = carry_power;
+        this.harvestingPower = harvesting_power;
+        this.carryPower = carry_power;
         this.distance = distance;
         this.maxFarmers = maxFarmers;
         this.farmers = 0;
-        this.sourcesNum = 1;
         var sourcesNum = 1;
-        var body_parts_cost = sourcesNum * 27;//parts for farmers (max farmer is made off 12 bodyparts);
-        body_parts_cost += 14;//maxRepairer
-        body_parts_cost += Math.ceil((sourcesNum * 10 * distance * 2 * 3) / 100);//distanceCarriers
-        this.body_parts_cost = body_parts_cost;
+        var bodyPartsCost = sourcesNum * 27;//parts for farmers (max farmer is made off 12 bodyparts);
+        bodyPartsCost += 14;//maxRepairer
+        bodyPartsCost += Math.ceil((10 * distance * 2 * 3) / 100);//distanceCarriers
+        this.bodyPartsCost = bodyPartsCost;
+
+
+        var rawSourceIncome = ((CREEP_LIFE_TIME / ENERGY_REGEN_TIME) * SOURCE_ENERGY_CAPACITY);
+        var farmersCost = 950;
+        var repairerCost = 750;
+        var distanceCarrierParts = ((SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) * distance * 2 * 3) / 100;
+        var distanceCarriersCost = distanceCarrierParts * 50;
+        var cost = farmersCost + repairerCost + distanceCarriersCost;
+        var finalIncome = rawSourceIncome - cost;
+        this.calculatedIncome = finalIncome;
+        this.calculatedIncomePerTick = finalIncome / CREEP_LIFE_TIME
+        //total_calculated_income_per_tick += finalIncome / CREEP_LIFE_TIME;
+        this.incomePerBodyPart = finalIncome / bodyPartsCost;
+
+
+
+
     }
 }
 
 class KeeperRoom {
-    constructor(name, harvesting_power, carry_power, sourcesNum, distance, maxFarmers) {
+    constructor(name, harvestingPower, carryPower, sourcesNum, distance, maxFarmers) {
         this.name = name;
-        this.harvesting_power = harvesting_power;
-        this.carry_power = carry_power;
+        this.harvestingPower = harvestingPower;
+        this.carryPower = carryPower;
         this.sourcesNum = sourcesNum;
         this.distance = distance;
         this.maxFarmers = 5;
@@ -50,30 +66,30 @@ class KeeperRoom {
     }
 }
 
-class keeperSource {
-    constructor(id, name, harvesting_power, carry_power, distance, maxFarmers) {
+class KeepersSource {
+    constructor(id, name, harvestingPower, carryPower, distance, maxFarmers) {
         this.id = id;
         this.name = name;
-        this.harvesting_power = harvesting_power;
-        this.carry_power = carry_power;
+        this.harvestingPower = harvestingPower;
+        this.carryPower = carryPower;
         this.distance = distance;
         this.maxFarmers = maxFarmers;
         this.farmers = 0;
         this.sourcesNum = 1;
         var sourcesNum = 1;
-        var body_parts_cost = sourcesNum * 27;//parts for farmers (max farmer is made off 12 bodyparts);
-        body_parts_cost += 14;//maxRepairer
-        body_parts_cost += Math.ceil((sourcesNum * 10 * distance * 2 * 3) / 100);//distanceCarriers
-        this.body_parts_cost = body_parts_cost;
+        var bodyPartsCost = sourcesNum * 27;//parts for farmers (max farmer is made off 12 bodyparts);
+        bodyPartsCost += 14;//maxRepairer
+        bodyPartsCost += Math.ceil((sourcesNum * 10 * distance * 2 * 3) / 100);//distanceCarriers
+        this.bodyPartsCost = bodyPartsCost;
     }
 }
 
 class keeperMineral {
-    constructor(id, name, harvesting_power, carry_power, distance) {
+    constructor(id, name, harvestingPower, carry_power, distance) {
         this.id = id;
         this.name = name
-        this.harvesting_power = harvesting_power
-        this.carry_power = carry_power
+        this.harvestingPower = harvestingPower
+        this.carryPower = carryPower
         this.distance = distance;
     }
 }
@@ -196,7 +212,7 @@ Creep.prototype.roleScout = function roleScout(homeSpawn) {
 
                     avgDistance += ret.path.length;
 
-                    var newKeeperSource = new keeperSource(sources[i].id, this.room.name, 0, 0, ret.path.length, src.pos.getOpenPositions().length)
+                    var newKeeperSource = new KeepersSource(sources[i].id, this.room.name, 0, 0, ret.path.length, src.pos.getOpenPositions().length)
 
                     // check if this source is already scanned or in other use
                     var alreadyUsed = false;
@@ -220,15 +236,15 @@ Creep.prototype.roleScout = function roleScout(homeSpawn) {
 
                 var new_keeper_room = new KeeperRoom(this.room.name, 0, 0, sourcesNum, avgDistance, maxFarmers);
 
-                var alreadyUsed=false
+                var alreadyUsed = false
 
-                 for (otherRoom in Memory.mainRooms) {
-                        if (Game.rooms[otherRoom].memory.keepersRooms.some(obj => obj.id === src.id)) {
-                            alreadyUsed = true
-                        }
+                for (otherRoom in Memory.mainRooms) {
+                    if (Game.rooms[otherRoom].memory.keepersRooms.some(obj => obj.id === src.id)) {
+                        alreadyUsed = true
                     }
+                }
 
-                if (alreadyUsed==false && ret.path.length < 100) {
+                if (alreadyUsed == false && ret.path.length < 100) {
                     Game.rooms[this.memory.homeRoom].memory.keepersRooms.push(new_keeper_room);
 
                 }
@@ -249,7 +265,7 @@ Creep.prototype.roleScout = function roleScout(homeSpawn) {
 
                     avgDistance += ret.path.length;
 
-                    var new_farming_source = new farmingSource(src.id, this.room.name, 0, 0, ret.path.length, Math.max(1, src.pos.getOpenPositions().length))
+                    var new_farming_source = new FarmingSource(src.id, this.room.name, 0, 0, ret.path.length, Math.max(1, src.pos.getOpenPositions().length))
 
                     var alreadyUsed = false
                     //If other player is reserving room (if player is enemy - we will try to harvest there)
@@ -297,7 +313,7 @@ Creep.prototype.roleScout = function roleScout(homeSpawn) {
 
                 var alreadyUsed = false;
                 for (otherRoom of Memory.mainRooms) {
-                    if (Game.rooms[otherRoom].memory.farmingSources.some(obj => obj.name === this.room.name)) {
+                    if (Game.rooms[otherRoom].memory.farmingRooms.some(obj => obj.name === this.room.name)) {
                         alreadyUsed = true
                     }
                 }

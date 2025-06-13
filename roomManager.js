@@ -21,7 +21,11 @@ Room.prototype.roomManager = function roomManager() {
         {
             Game.rooms[this.name].memory.farmingSources=[]
         }
-
+        else if(Game.rooms[this.name].memory.farmingSources.length>0)
+        {
+            
+            Game.rooms[this.name].memory.farmingSources.sort((a, b) => b.income_per_body_part - a.income_per_body_part)
+        }
         if(Game.rooms[this.name].memory.farmingRooms==undefined)
         {
             Game.rooms[this.name].memory.farmingRooms=[]
