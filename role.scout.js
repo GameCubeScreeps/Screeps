@@ -27,8 +27,7 @@ class FarmingSource {
         this.distance = distance;
         this.maxFarmers = maxFarmers;
         this.farmers = 0;
-        var sourcesNum = 1;
-        var bodyPartsCost = sourcesNum * 27;//parts for farmers (max farmer is made off 12 bodyparts);
+        var bodyPartsCost = 27;//parts for farmers (max farmer is made off 12 bodyparts);
         bodyPartsCost += 14;//maxRepairer
         bodyPartsCost += Math.ceil((10 * distance * 2 * 3) / 100);//distanceCarriers
         this.bodyPartsCost = bodyPartsCost;

@@ -1,3 +1,5 @@
+// Every constant definied in separate file
+const C = require('constants');
 
 
 Room.prototype.roomManager = function roomManager() {
@@ -24,7 +26,32 @@ Room.prototype.roomManager = function roomManager() {
         else if(Game.rooms[this.name].memory.farmingSources.length>0)
         {
             
-            Game.rooms[this.name].memory.farmingSources.sort((a, b) => b.income_per_body_part - a.income_per_body_part)
+            Game.rooms[this.name].memory.farmingSources.sort((a, b) => a.bodyPartsCost - b.bodyPartsCost)
+
+            var sourcesAmount=0;
+            var bodyPartsSum=0
+            var counter=0;
+            for(s of Game.rooms[this.name].memory.farmingSources)
+            {
+                bodyPartsSum+=s.bodyPartsCost
+                counter++;
+                if(bodyPartsSum>=(CREEP_LIFE_TIME/CREEP_SPAWN_TIME)*C.HARVESTING_BODYPARTS_FRACTION)
+                {
+                    break;
+                }
+            }
+            while(Game.rooms[this.name].memory.farmingSources.length>counter)
+            {
+                Game.rooms[this.name].memory.farmingSources.pop()
+            }
+
+            for(s of Game.rooms[this.name].memory.farmingSources)
+            {
+                s.harvestingPower=0;
+                s.carryPower=0;
+                s.farmers=0;
+            }
+
         }
         if(Game.rooms[this.name].memory.farmingRooms==undefined)
         {
