@@ -45,6 +45,16 @@ module.exports.loop = function () {
 
     for (mainRoom of Memory.mainRooms) {
 
+      // Metric for balancing energy usage upgrade/harvest on RCL<4
+      if (Game.rooms[mainRoom].controller != undefined && Game.rooms[mainRoom].controller.level < 4) {
+        if (Game.rooms[mainRoom].memory.energyUsageBalance == undefined) {
+          Game.rooms[mainRoom].memory.energyUsageBalance = 0
+        }
+        else if (Game.rooms[mainRoom].memory.energyUsageBalance != undefined) {
+          delete Game.rooms[mainRoom].memory.energyUsageBalance == undefined
+        }
+      }
+
       Game.rooms[mainRoom].createRoomQueues()
 
       Game.rooms[mainRoom].spawnFromQueues()

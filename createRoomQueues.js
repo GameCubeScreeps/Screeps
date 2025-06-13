@@ -6,9 +6,9 @@ const localHeap = {}
 
 
 class harvestingSourceRequestFarmer {
-    constructor(sourceId,sourceRoom) {
+    constructor(sourceId, sourceRoom) {
         this.sourceId = sourceId;
-        this.sourceRoom=sourceRoom
+        this.sourceRoom = sourceRoom
         this.type = ROLE_HARVESTER;
     }
 }
@@ -40,10 +40,6 @@ Room.prototype.createRoomQueues = new function createRoomQueues() {
 
 
 
-    if (global.heap.rooms[this.name].roomsToScan == undefined) {
-        global.heap.rooms[this.name].civilianQueue.push(generalRoomRequest(this.name, C.ROLE_SCUOT))
-    }
-
     // Scout
     if (Game.rooms[this.name].memory.roomsToScan == undefined) {
         if (global.heap.rooms[this.name].civilianQueue.some(obj => obj.type === C.ROLE_SCUOT)) {
@@ -67,6 +63,7 @@ Room.prototype.createRoomQueues = new function createRoomQueues() {
             continue;
         }
 
+        //Carriers and Harvesters for sure won't be mixed on queue
         //Carriers
         if (harvestingSource.carryingPower < (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) && harvestingSource.carryingPower < harvestingSource.harvestingPower) {
             global.heap.rooms[this.room].harvestingQueue.push(new harvestingSourceRequestCarrier(harvestingSource.roomName, harvestingSource.id, harvestingSource.distance))
@@ -75,12 +72,36 @@ Room.prototype.createRoomQueues = new function createRoomQueues() {
         }
         else if (harvestingSource.carryingPower < harvestingSource.harvestingPower) {
             //Harvesters
-            global.heap.rooms[this.room].harvestingQueue.push(new harvestingSourceRequestFarmer(harvestingSource.id,harvestingSource.roomName))
+            global.heap.rooms[this.room].harvestingQueue.push(new harvestingSourceRequestFarmer(harvestingSource.id, harvestingSource.roomName))
             areCarriersSatisfied = false
             break;
 
         }
     }
+
+
+    // Upgraders below RCL4 - wthout storage
+    if (Game.rooms[this.name].storage == undefined) {
+        if (Game.rooms[this.name].memory.energyUsageBalance > 0.5 && global.heap.rooms[room].civilianQueue.some(obj => obj.type === C.ROLE_UPGRADER)) {
+            global.heap.rooms[this.room].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_UPGRADER))
+        }
+    }
+    else {//Upgraders above and on RCL4
+        if (Game.rooms[this.name].storage.store[RESOURCE_ENERGY] < STORAGE_BALANCER_START) {
+            if (global.heap.rooms[this.name].upgradersParts < 1) {
+                global.heap.rooms[this.room].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_UPGRADER))
+            }
+        }
+        else if (global.heap.rooms[this.name].upgradersParts < Game.rooms[this.name].storage.store[RESOURCE_ENERGY] / C.UPGRADE_FACTOR) {
+            global.heap.rooms[this.room].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_UPGRADER))
+        }
+
+
+    }
+
+
+
+
 
 
 
