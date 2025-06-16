@@ -40,26 +40,26 @@ Room.prototype.roomManager = function roomManager() {
             }
         }
 
-        if (Game.rooms[this.name].memory.energyBalance == undefined && Game.rooms[this.name].storage == undefined) {
-            Game.rooms[this.name].memory.energyBalance = -2.0;
+        if (global.heap.rooms[this.name].energyBalance == undefined && Game.rooms[this.name].storage == undefined) {
+            global.heap.rooms[this.name].energyBalance = -2.0;
         }
-        else if (Game.rooms[this.name].memory.energyBalance != undefined) {
+        else if (global.heap.rooms[this.name].energyBalance != undefined) {
             if (Game.rooms[this.name].storage != undefined) {
-                delete Game.rooms[this.name].memory.energyBalance
+                delete global.heap.rooms[this.name].energyBalance
             }
             else {
                 console.log("asd")
-                if (Game.rooms[this.name].memory.energyBalance > C.BALANCER_HARVEST_LIMIT) {
-                    Game.rooms[this.name].memory.energyBalance = C.BALANCER_HARVEST_LIMIT;
+                if (global.heap.rooms[this.name].energyBalance > C.BALANCER_HARVEST_LIMIT) {
+                    global.heap.rooms[this.name].energyBalance = C.BALANCER_HARVEST_LIMIT;
                 }
-                else if (Game.rooms[this.name].memory.energyBalance < C.BALANCER_USE_LIMIT) {
-                    Game.rooms[this.name].memory.energyBalance = C.BALANCER_USE_LIMIT
+                else if (global.heap.rooms[this.name].energyBalance < -C.BALANCER_USE_LIMIT) {
+                    global.heap.rooms[this.name].energyBalance = -C.BALANCER_USE_LIMIT
                 }
-                if (Game.rooms[this.name].memory.energyBalance > 0) {
-                    Game.rooms[this.name].memory.energyBalance -= C.BALANCER_DECAY
+                if (global.heap.rooms[this.name].energyBalance > 0) {
+                    global.heap.rooms[this.name].energyBalance -= C.BALANCER_DECAY
                 }
-                else if (Game.rooms[this.name].memory.energyBalance < 0) {
-                    Game.rooms[this.name].memory.energyBalance += C.BALANCER_DECAY
+                else if (global.heap.rooms[this.name].energyBalance < 0) {
+                    global.heap.rooms[this.name].energyBalance += C.BALANCER_DECAY
                 }
             }
 

@@ -26,7 +26,7 @@ const TASK_COLLECT='collect'
 
 //Economy const
 const BALANCER_STEP=0.01 // value by which workers and carriers change value of balancer
-const BALANCER_DECAY=0.003 // natural decay towards 0 of balancer
+const BALANCER_DECAY=0.001 // natural decay towards 0 of balancer
 const BALANCER_HARVEST_LIMIT=2.0 // harvesting limit of balancer - if that would go too high then it would take a lot of time to switch to using energy
 const BALANCER_USE_LIMIT=-2.0 // carrying balancer of balancer
 const UPGRADE_FACTOR=10000

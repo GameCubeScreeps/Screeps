@@ -31,6 +31,7 @@ Room.prototype.spawnFromQueues = function spawnFromQueues() {
     }
     else if (global.heap.rooms[this.name].harvestingQueue.length > 0) {
 
+        console.log("Spawning from harvesting queue")
         var request = global.heap.rooms[this.name].harvestingQueue[0]
         console.log("trying to spawn: ", request.type)
         var type = request.type
@@ -65,7 +66,6 @@ Room.prototype.spawnFromQueues = function spawnFromQueues() {
     else if (global.heap.rooms[this.name].civilianQueue.length > 0) {
         var request = global.heap.rooms[this.name].civilianQueue[0]
         var type = request.type
-        console.log("Type: ", type)
         var energyCap = Game.rooms[this.name].energyAvailable
         switch (type) {
             case C.ROLE_SCOUT:

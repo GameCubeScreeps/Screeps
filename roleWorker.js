@@ -122,8 +122,8 @@ Creep.prototype.roleWorker = function roleWorker() {
                 || (Game.getObjectById(Game.rooms[this.memory.homeRoom].memory.controllerLinkId) != null && Game.rooms[this.memory.homeRoom].memory.controllerLinkId != this.memory.deposit && Game.getObjectById(Game.rooms[this.memory.homeRoom].memory.controllerLinkId).store[RESOURCE_ENERGY] > 0)
                 || (Game.rooms[this.memory.homeRoom].memory.controller_container_id != undefined && Game.getObjectById(Game.rooms[this.memory.homeRoom].memory.controller_container_id) != null && Game.rooms[this.memory.homeRoom].memory.controller_container_id != this.memory.deposit && Game.getObjectById(Game.rooms[this.memory.homeRoom].memory.controller_container_id).store[RESOURCE_ENERGY] > 0)) {
                 
-                if (Game.getObjectById(this.memory.deposit) != null && Game.getObjectById(this.memory.deposit).store[RESOURCE_ENERGY] == 0 && Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
-                    Game.rooms[this.memory.homeRoom].memory.energyBalance -= C.BALANCER_STEP
+                if (Game.getObjectById(this.memory.deposit) != null && Game.getObjectById(this.memory.deposit).store[RESOURCE_ENERGY] == 0 && global.heap.rooms[this.memory.homeRoom].energyBalance != undefined) {
+                    global.heap.rooms[this.memory.homeRoom].energyBalance -= C.BALANCER_STEP*2
                 }
 
                 this.memory.deposit = undefined;
@@ -168,15 +168,15 @@ Creep.prototype.roleWorker = function roleWorker() {
                         this.memory.deposit = deposit.id;
                     }
                     else {
-                        if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
-                            Game.rooms[this.memory.homeRoom].memory.energyBalance -= C.BALANCER_STEP
+                        if (global.heap.rooms[this.memory.homeRoom].energyBalance != undefined) {
+                            global.heap.rooms[this.memory.homeRoom].energyBalance -= C.BALANCER_STEP
                         }
                     }
                 }
             }
 
             if (Game.getObjectById(this.memory.deposit) != null) {
-                if (this.memory.deposit != undefined) {
+                if (this.memory.deposit != undefined && global.heap.rooms[this.memory.homeRoom].energyBalance>-C.BALANCER_USE_LIMIT) {
                     if (this.withdraw(Game.getObjectById(this.memory.deposit), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                         this.moveTo(Game.getObjectById(this.memory.deposit), { reusePath: 17, maxRooms: 1 });
                         //move_avoid_hostile(creep,Game.getObjectById(this.memory.deposit).pos,1);
