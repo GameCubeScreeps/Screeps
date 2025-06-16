@@ -1,12 +1,13 @@
 // Every constant definied in separate file
 const C = require('constants');
 
-const roleScout = require('role.scout')
-
+const roleScout = require('roleScout')
+const roleHarvester = require('roleHarvester')
+const roleCarrier = require('roleCarrier')
 
 Room.prototype.creepsManager = function creepsManager() {
-    
-    global.heap.rooms[this.name].haveScout=false
+
+    global.heap.rooms[this.name].haveScout = false
 
 
     for (cr in Game.creeps) {
@@ -17,19 +18,26 @@ Room.prototype.creepsManager = function creepsManager() {
 
         var creep = Game.creeps[cr];
 
-        role=creep.memory.role
+        if (creep.ticksToLive > creep.memory.TimeToSleep) {
+            //creep.say('💤')
+            continue;
+        }
 
-        switch (role)
-        {
+        role = creep.memory.role
+        switch (role) {
             case C.ROLE_SCOUT:
                 creep.roleScout()
-                console.log("scout pos: ",creep.pos)
-                global.heap.rooms[this.name].haveScout=true
+                console.log("scout pos: ", creep.pos)
+                global.heap.rooms[this.name].haveScout = true
                 continue;
             case C.ROLE_HARVESTER:
+                creep.roleHarvester()
                 continue;
+            case C.ROLE_CARRIER:
+                creep.roleCarrier()
+                continue
         }
     }
 
-    console.log(this.name," have scout: ",global.heap.rooms[this.name].haveScout)
+    console.log(this.name, " have scout: ", global.heap.rooms[this.name].haveScout)
 }

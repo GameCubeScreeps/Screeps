@@ -19,19 +19,19 @@ Room.prototype.roomManager = function roomManager() {
         Game.rooms[this.name].memory.myExtractor = undefined
         Game.rooms[this.name].memory.myObserver = undefined
 
-        if(Game.rooms[this.name].memory.farmingSources==undefined)
+        if(Game.rooms[this.name].memory.harvestingSources==undefined)
         {
-            Game.rooms[this.name].memory.farmingSources=[]
+            Game.rooms[this.name].memory.harvestingSources=[]
         }
-        else if(Game.rooms[this.name].memory.farmingSources.length>0)
+        else if(Game.rooms[this.name].memory.harvestingSources.length>0)
         {
             
-            Game.rooms[this.name].memory.farmingSources.sort((a, b) => a.bodyPartsCost - b.bodyPartsCost)
+            Game.rooms[this.name].memory.harvestingSources.sort((a, b) => a.bodyPartsCost - b.bodyPartsCost)
 
             var sourcesAmount=0;
             var bodyPartsSum=0
             var counter=0;
-            for(s of Game.rooms[this.name].memory.farmingSources)
+            for(s of Game.rooms[this.name].memory.harvestingSources)
             {
                 bodyPartsSum+=s.bodyPartsCost
                 counter++;
@@ -40,22 +40,22 @@ Room.prototype.roomManager = function roomManager() {
                     break;
                 }
             }
-            while(Game.rooms[this.name].memory.farmingSources.length>counter)
+            while(Game.rooms[this.name].memory.harvestingSources.length>counter)
             {
-                Game.rooms[this.name].memory.farmingSources.pop()
+                Game.rooms[this.name].memory.harvestingSources.pop()
             }
 
-            for(s of Game.rooms[this.name].memory.farmingSources)
+            for(s of Game.rooms[this.name].memory.harvestingSources)
             {
                 s.harvestingPower=0;
                 s.carryPower=0;
-                s.farmers=0;
+                s.harvesters=0;
             }
 
         }
-        if(Game.rooms[this.name].memory.farmingRooms==undefined)
+        if(Game.rooms[this.name].memory.harvestingRooms==undefined)
         {
-            Game.rooms[this.name].memory.farmingRooms=[]
+            Game.rooms[this.name].memory.harvestingRooms=[]
         }
 
         if(Game.rooms[this.name].memory.keepersSources==undefined)

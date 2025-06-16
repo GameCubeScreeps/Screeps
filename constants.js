@@ -16,12 +16,16 @@ const ROLE_SOLDIER='soldier'
 const ROLE_SCOUT='scout'
 const ROLE_UPGRADER='upgrader'
 
+//Creep constants
+const CREEP_MAX_BODYPARTS=50;
+
 //Economy const
 const BALANCER_STEP=0.01
 const UPGRADE_FACTOR=10000
 const STORAGE_BALANCER_START=50000
 const ENERGY_BALANCER_UPGRADER_START=0.5
 const HARVESTING_BODYPARTS_FRACTION=0.8
+
 
 
 // Room Visualization
@@ -37,6 +41,7 @@ module.exports={
     ROLE_SOLDIER,
     ROLE_SCOUT,
     ROLE_UPGRADER,
+    CREEP_MAX_BODYPARTS,
     BALANCER_STEP,
     UPGRADE_FACTOR,
     STORAGE_BALANCER_START,

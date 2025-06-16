@@ -9,9 +9,9 @@ class FarmingRoom {
         this.carryPower = carry_power;
         this.sourcesNum = sourcesNum;
         this.distance = distance;
-        this.farmers = 0;
+        this.harvesters = 0;
 
-        var bodyPartsCost = (sourcesNum * 12);//parts for farmers (max farmer is made off 12 bodyparts);
+        var bodyPartsCost = (sourcesNum * 12);//parts for harvesters (max farmer is made off 12 bodyparts);
         bodyPartsCost += 14;//maxRepairer
         bodyPartsCost += Math.ceil((sourcesNum * 10 * distance * 2 * 3) / 100);//distanceCarriers
         this.bodyPartsCost = bodyPartsCost;
@@ -19,15 +19,15 @@ class FarmingRoom {
 }
 
 class FarmingSource {
-    constructor(id, name, harvesting_power, carry_power, distance, maxFarmers) {
+    constructor(id, name, harvesting_power, carry_power, distance, maxHarvesters) {
         this.id = id;
-        this.name = name;
+        this.roomName = name;
         this.harvestingPower = harvesting_power;
         this.carryPower = carry_power;
         this.distance = distance;
-        this.maxFarmers = maxFarmers;
-        this.farmers = 0;
-        var bodyPartsCost = 27;//parts for farmers (max farmer is made off 12 bodyparts);
+        this.maxHarvesters = maxHarvesters;
+        this.harvesters = 0;
+        var bodyPartsCost = 27;//parts for harvesters (max farmer is made off 12 bodyparts);
         bodyPartsCost += 14;//maxRepairer
         bodyPartsCost += Math.ceil((10 * distance * 2 * 3) / 100);//distanceCarriers
         this.bodyPartsCost = bodyPartsCost;
@@ -52,31 +52,31 @@ class FarmingSource {
 }
 
 class KeeperRoom {
-    constructor(name, harvestingPower, carryPower, sourcesNum, distance, maxFarmers) {
+    constructor(name, harvestingPower, carryPower, sourcesNum, distance, maxHarvesters) {
         this.name = name;
         this.harvestingPower = harvestingPower;
         this.carryPower = carryPower;
         this.sourcesNum = sourcesNum;
         this.distance = distance;
-        this.maxFarmers = 5;
-        this.farmers = 0;
+        this.maxHarvesters = 5;
+        this.harvesters = 0;
         this.killer = undefined;
         this.healer = undefined;
     }
 }
 
 class KeepersSource {
-    constructor(id, name, harvestingPower, carryPower, distance, maxFarmers) {
+    constructor(id, name, harvestingPower, carryPower, distance, maxHarvesters) {
         this.id = id;
         this.name = name;
         this.harvestingPower = harvestingPower;
         this.carryPower = carryPower;
         this.distance = distance;
-        this.maxFarmers = maxFarmers;
-        this.farmers = 0;
+        this.maxHarvesters = maxHarvesters;
+        this.harvesters = 0;
         this.sourcesNum = 1;
         var sourcesNum = 1;
-        var bodyPartsCost = sourcesNum * 27;//parts for farmers (max farmer is made off 12 bodyparts);
+        var bodyPartsCost = sourcesNum * 27;//parts for harvesters (max farmer is made off 12 bodyparts);
         bodyPartsCost += 14;//maxRepairer
         bodyPartsCost += Math.ceil((sourcesNum * 10 * distance * 2 * 3) / 100);//distanceCarriers
         this.bodyPartsCost = bodyPartsCost;
@@ -150,7 +150,6 @@ Creep.prototype.roleScout = function roleScout(homeSpawn) {
     homeSpawn = Game.getObjectById(this.memory.homeSpawnID)
     if (homeSpawn == null) {
         this.suicide()
-        console.log("scout homeSpawn is null")
     }
     //homeSpawn.pos
     //homeSpawn object
@@ -166,7 +165,7 @@ Creep.prototype.roleScout = function roleScout(homeSpawn) {
     }
     else if (Game.rooms[this.memory.homeRoom].memory.roomsToScan.length == 0) {
         Game.rooms[this.memory.homeRoom].memory.if_success_planning_base = false
-        console.log("Setting: ", Game.rooms[this.memory.homeRoom].controller.level - 1)
+        //console.log("Setting: ", Game.rooms[this.memory.homeRoom].controller.level - 1)
         Game.rooms[this.memory.homeRoom].memory.forcedUpgrades[Game.rooms[this.memory.homeRoom].controller.level - 1] = 0
         this.suicide();
     }
@@ -198,9 +197,9 @@ Creep.prototype.roleScout = function roleScout(homeSpawn) {
                 sources.push(mineral[0]);
                 //Game.rooms[this.memory.homeRoom].memory.src2=sources;
                 var sourcesNum = sources.length;
-                var maxFarmers = 0;
+                var maxHarvesters = 0;
                 for (src in sources) {
-                    maxFarmers += src.pos.getOpenPositions().length;
+                    maxHarvesters += src.pos.getOpenPositions().length;
                 }
                 var avgDistance = 0;
 
@@ -233,7 +232,7 @@ Creep.prototype.roleScout = function roleScout(homeSpawn) {
 
                 //Keepers rooms
 
-                var new_keeper_room = new KeeperRoom(this.room.name, 0, 0, sourcesNum, avgDistance, maxFarmers);
+                var new_keeper_room = new KeeperRoom(this.room.name, 0, 0, sourcesNum, avgDistance, maxHarvesters);
 
                 var alreadyUsed = false
 
@@ -254,9 +253,9 @@ Creep.prototype.roleScout = function roleScout(homeSpawn) {
                 this.say("farming");
                 var sources = this.room.find(FIND_SOURCES);
                 var sourcesNum = sources.length;
-                var maxFarmers = 0;
+                var maxHarvesters = 0;
                 for (src of sources) {
-                    maxFarmers += src.pos.getOpenPositions().length;
+                    maxHarvesters += src.pos.getOpenPositions().length;
                 }
                 var avgDistance = 0;
                 for (src of sources) {
@@ -277,7 +276,7 @@ Creep.prototype.roleScout = function roleScout(homeSpawn) {
 
                     // If source is used in other room or on creep homeRoom
                     for (otherRoom of Memory.mainRooms) {
-                        if (Game.rooms[otherRoom].memory.farmingSources.some(obj => obj.id === src.id)) {
+                        if (Game.rooms[otherRoom].memory.harvestingSources.some(obj => obj.id === src.id)) {
                             alreadyUsed = true
                         }
                     }
@@ -295,8 +294,8 @@ Creep.prototype.roleScout = function roleScout(homeSpawn) {
                     if (ret.path.length < 100 && alreadyUsed != true
                         && isRoadSafe == true
                     ) {
-                        Game.rooms[this.memory.homeRoom].memory.farmingSources.push(new_farming_source);
-                        console.log("adding source")
+                        Game.rooms[this.memory.homeRoom].memory.harvestingSources.push(new_farming_source);
+                        //console.log("adding source")
                     }
 
 
@@ -312,13 +311,13 @@ Creep.prototype.roleScout = function roleScout(homeSpawn) {
 
                 var alreadyUsed = false;
                 for (otherRoom of Memory.mainRooms) {
-                    if (Game.rooms[otherRoom].memory.farmingRooms.some(obj => obj.name === this.room.name)) {
+                    if (Game.rooms[otherRoom].memory.harvestingRooms.some(obj => obj.name === this.room.name)) {
                         alreadyUsed = true
                     }
                 }
 
                 if (!alreadyUsed) {
-                    Game.rooms[this.memory.homeRoom].memory.farmingRooms.push(newFarming);
+                    Game.rooms[this.memory.homeRoom].memory.harvestingRooms.push(newFarming);
                 }
             }
 

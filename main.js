@@ -37,7 +37,7 @@ module.exports.loop = function () {
 
     for (roomName in Game.rooms) {
 
-      
+      console.log("--------------- ",roomName,"---------------")
 
       global.heap.rooms[roomName] = {}
       if (Game.rooms[roomName].controller != undefined && Game.rooms[roomName].controller.my) {
