@@ -8,6 +8,9 @@ Room.prototype.roomManager = function roomManager() {
     global.heap.rooms[this.name].hostiles = []
     global.heap.rooms[this.name].allies = []
     if (Memory.mainRooms.includes(this.name)) {
+        
+        global.heap.rooms[this.name].construction=[]
+        Game.rooms[this.name].memory.state=[]
         Game.rooms[this.name].memory.myStructures = []
         Game.rooms[this.name].memory.myExtensions = []
         Game.rooms[this.name].memory.myLabs = []
@@ -19,8 +22,26 @@ Room.prototype.roomManager = function roomManager() {
         Game.rooms[this.name].memory.myExtractor = undefined
         Game.rooms[this.name].memory.myObserver = undefined
 
+        var constr=Game.rooms[this.name].find(FIND_CONSTRUCTION_SITES)
+        if(constr.length>0)
+        {
+            global.heap.rooms[this.name].building=true
+            for(c of constr)
+            {
+                global.heap.rooms[this.name].construction.push(c.id)
+            }
+            console.log("construction sites in: ",this.name," ",constr.length)
+        }
+        else 
+        {
+            if(global.heap.rooms[this.name].building!=undefined)
+            {
+                delete global.heap.rooms[this.name].building
+            }
+        }
+
         if (Game.rooms[this.name].memory.energyBalance == undefined && Game.rooms[this.name].storage == undefined) {
-            Game.rooms[this.name].memory.energyBalance = 0;
+            Game.rooms[this.name].memory.energyBalance = -2.0;
         }
         else if (Game.rooms[this.name].memory.energyBalance != undefined) {
             if (Game.rooms[this.name].storage != undefined) {

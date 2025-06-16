@@ -4,6 +4,7 @@ const C = require('constants');
 const roleScout = require('roleScout')
 const roleHarvester = require('roleHarvester')
 const roleCarrier = require('roleCarrier')
+const roleWorker=require('roleWorker')
 
 Room.prototype.creepsManager = function creepsManager() {
 
@@ -36,6 +37,9 @@ Room.prototype.creepsManager = function creepsManager() {
                 continue;
             case C.ROLE_CARRIER:
                 creep.roleCarrier()
+                continue
+            case C.ROLE_WORKER:
+                creep.roleWorker()
                 continue
         }
     }

@@ -3,6 +3,7 @@ const C = require('constants');
 
 const harvesterBody = require('harvesterBody')
 const carrierBody = require('carrierBody')
+const workerBody=require('workerBody')
 const { result } = require('lodash');
 
 
@@ -72,9 +73,18 @@ Room.prototype.spawnFromQueues = function spawnFromQueues() {
                     var result = spawn.spawnCreep([MOVE], 'scout_' + this.name + Game.time, { memory: { role: 'scout', homeRoom: this.name, homeSpawnID: spawn.id } })
                     if (result == OK) {
                         global.heap.rooms[this.name].civilianQueue.shift()
-                        break;
+                        
                     }
-
+                    break;
+                }
+            case C.ROLE_WORKER:
+                {
+                    var result=spawn.spawnCreep(workerBody(energyCap),'worker_'+this.name+Game.time,{ memory:{ role: 'worker', homeRoom: this.name}})
+                    if (result == OK) {
+                        global.heap.rooms[this.name].civilianQueue.shift()
+                        
+                    }
+                    break;
                 }
 
         }

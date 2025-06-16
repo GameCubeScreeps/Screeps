@@ -122,8 +122,8 @@ Creep.prototype.roleCarrier = function roleCarrier() {
 
 
             if ((Game.rooms[this.memory.targetRoom] == undefined || this.pos.inRangeTo(spawn, 4))
-                && global.heap.rooms[this.memory.targetRoom].defensiveQueue != undefined &&
-                !global.heap.rooms[this.memory.targetRoom].defensiveQueue.some(obj => obj.type === C.ROLE_SOLDIER)
+                && global.heap.rooms[this.memory.homeRoom].defensiveQueue != undefined &&
+                !global.heap.rooms[this.memory.homeRoom].defensiveQueue.some(obj => obj.type === C.ROLE_SOLDIER)
                 //spawn.memory.need_soldier != this.memory.targetRoom
             ) {
                 const destination = new RoomPosition(25, 25, this.memory.targetRoom);

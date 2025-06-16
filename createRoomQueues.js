@@ -33,7 +33,7 @@ class generalRoomRequest {
 //define: global.heap.rooms[].hostiles
 
 Room.prototype.createRoomQueues = function createRoomQueues() {
-    
+
     global.heap.rooms[this.name].defensiveQueue = []
     global.heap.rooms[this.name].harvestingQueue = []
     global.heap.rooms[this.name].civilianQueue = []
@@ -75,41 +75,59 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
         }
 
         //Carriers and Harvesters for sure won't be mixed on queue
+        if (Game.rooms[this.name].storage != undefined) {
+            if (harvestingSource.carryPower < harvestingSource.harvestingPower) {
+                //Carriers
+                global.heap.rooms[this.name].harvestingQueue.push(new harvestingSourceRequestCarrier(harvestingSource.id, harvestingSource.roomName, harvestingSource.distance))
+                console.log("Adding Carrier to queue")
+                areCarriersSatisfied = false
+                break;
 
-        if (harvestingSource.carryPower < harvestingSource.harvestingPower) {
-            //Carriers
-            global.heap.rooms[this.name].harvestingQueue.push(new harvestingSourceRequestCarrier(harvestingSource.id, harvestingSource.roomName, harvestingSource.distance))
-            console.log("Adding Carrier to queue")
-            areCarriersSatisfied = false
-            break;
-
-        }//Farmers
-        else if (harvestingSource.harvestingPower < (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) && harvestingSource.harvesters<harvestingSource.maxHarvesters) {
-            global.heap.rooms[this.name].harvestingQueue.push(new harvestingSourceRequestFarmer(harvestingSource.id, harvestingSource.roomName, harvestingSource.distance))
-            console.log("Adding harvester to queue")
-            areHarvestersSatisfied = false
-            break;
+            }//Farmers
+            else if (harvestingSource.harvestingPower < (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) && harvestingSource.harvesters < harvestingSource.maxHarvesters) {
+                global.heap.rooms[this.name].harvestingQueue.push(new harvestingSourceRequestFarmer(harvestingSource.id, harvestingSource.roomName, harvestingSource.distance))
+                console.log("Adding harvester to queue")
+                areHarvestersSatisfied = false
+                break;
+            }
         }
+        else if(Game.rooms[this.name].memory.energyBalance<0.5){
+            if (harvestingSource.carryPower < harvestingSource.harvestingPower) {
+                //Carriers
+                global.heap.rooms[this.name].harvestingQueue.push(new harvestingSourceRequestCarrier(harvestingSource.id, harvestingSource.roomName, harvestingSource.distance))
+                console.log("Adding Carrier to queue")
+                areCarriersSatisfied = false
+                break;
+
+            }//Farmers
+            else if (harvestingSource.harvestingPower < (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) && harvestingSource.harvesters < harvestingSource.maxHarvesters) {
+                global.heap.rooms[this.name].harvestingQueue.push(new harvestingSourceRequestFarmer(harvestingSource.id, harvestingSource.roomName, harvestingSource.distance))
+                console.log("Adding harvester to queue")
+                areHarvestersSatisfied = false
+                break;
+            }
+        }
+
 
     }
 
 
-    console.log("Balancer in queues driver: ",Game.rooms[this.name].memory.energyBalance)
+    console.log("Balancer in queues driver: ", Game.rooms[this.name].memory.energyBalance)
     // Upgraders below RCL4 - wthout storage
     if (Game.rooms[this.name].storage == undefined) {
         if (Game.rooms[this.name].memory.energyBalance > 1.0) {
-            global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_UPGRADER))
-            console.log("Adding upgrader to queue")
+            global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_WORKER))
+            console.log("Adding worker to queue")
         }
     }
     else {//Upgraders above and on RCL4
         if (Game.rooms[this.name].storage.store[RESOURCE_ENERGY] < C.STORAGE_BALANCER_START) {
             if (global.heap.rooms[this.name].upgradersParts < 1) {
-                global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_UPGRADER))
+                global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_WORKER))
             }
         }
         else if (global.heap.rooms[this.name].upgradersParts < Game.rooms[this.name].storage.store[RESOURCE_ENERGY] / C.UPGRADE_FACTOR) {
-            global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_UPGRADER))
+            global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_WORKER))
         }
 
 
