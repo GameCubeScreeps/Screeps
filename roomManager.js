@@ -40,26 +40,30 @@ Room.prototype.roomManager = function roomManager() {
             }
         }
 
-        if (global.heap.rooms[this.name].energyBalance == undefined && Game.rooms[this.name].storage == undefined) {
-            global.heap.rooms[this.name].energyBalance = -2.0;
+        if (Game.rooms[this.name].memory.energyBalance == undefined && Game.rooms[this.name].storage == undefined) {
+            Game.rooms[this.name].memory.energyBalance = 0.0;
+            console.log("Setting balancer")
         }
-        else if (global.heap.rooms[this.name].energyBalance != undefined) {
+        if (Game.rooms[this.name].memory.energyBalance != undefined) {
             if (Game.rooms[this.name].storage != undefined) {
-                delete global.heap.rooms[this.name].energyBalance
+                delete Game.rooms[this.name].memory.energyBalance
+                console.log("removing balancer")
             }
             else {
                 console.log("asd")
-                if (global.heap.rooms[this.name].energyBalance > C.BALANCER_HARVEST_LIMIT) {
-                    global.heap.rooms[this.name].energyBalance = C.BALANCER_HARVEST_LIMIT;
+                if (Game.rooms[this.name].memory.energyBalance < C.BALANCER_HARVEST_LIMIT) {
+                    Game.rooms[this.name].memory.energyBalance = C.BALANCER_HARVEST_LIMIT;
+                    console.log("below bottom edge")
                 }
-                else if (global.heap.rooms[this.name].energyBalance < -C.BALANCER_USE_LIMIT) {
-                    global.heap.rooms[this.name].energyBalance = -C.BALANCER_USE_LIMIT
+                else if (Game.rooms[this.name].memory.energyBalance > C.BALANCER_USE_LIMIT) {
+                    Game.rooms[this.name].memory.energyBalance = C.BALANCER_USE_LIMIT
+                    console.log("Above top edge")
                 }
-                if (global.heap.rooms[this.name].energyBalance > 0) {
-                    global.heap.rooms[this.name].energyBalance -= C.BALANCER_DECAY
+                else if (Game.rooms[this.name].memory.energyBalance > -1 && Game.rooms[this.name].memory.energyBalance<C.BALANCER_HARVEST_LIMIT) {
+                    Game.rooms[this.name].memory.energyBalance -= C.BALANCER_DECAY
                 }
-                else if (global.heap.rooms[this.name].energyBalance < 0) {
-                    global.heap.rooms[this.name].energyBalance += C.BALANCER_DECAY
+                else if (Game.rooms[this.name].memory.energyBalance < -2 && Game.rooms[this.name].memory.energyBalance>C.BALANCER_USE_LIMIT) {
+                    Game.rooms[this.name].memory.energyBalance += C.BALANCER_DECAY
                 }
             }
 

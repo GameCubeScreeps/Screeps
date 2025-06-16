@@ -5,7 +5,9 @@ const C = require('constants')
    Mandatory:
    Creep.memory.homeRoom - roomName in which creep will operate
     
-   
+   Creep base its decisions on Game.rooms[this.memory.homeRoom].memory.energyBalance
+   lower values means we are using more energy than harvesting
+   higher value means we are harvesting more than using
 
     Will Calculate in its own:
     this.memory.workPartsNum - 
@@ -116,20 +118,27 @@ Creep.prototype.roleWorker = function roleWorker() {
         }
         else if (this.memory.task == C.TASK_COLLECT) {// go to deposits
 
+            if (Game.getObjectById(this.memory.deposit) != null && Game.getObjectById(this.memory.deposit).store[RESOURCE_ENERGY] == 0 && Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
+                Game.rooms[this.memory.homeRoom].memory.energyBalance -= C.BALANCER_STEP
+                this.say('b-')
+                this.memory.deposit=undefined
+            }
 
             if ((this.memory.deposit != undefined && Game.getObjectById(this.memory.deposit) != null && Game.getObjectById(this.memory.deposit).store[RESOURCE_ENERGY] == 0
             /* && Game.getObjectById(this.memory.deposit).structureType != STRUCTURE_LINK*/)
                 || (Game.getObjectById(Game.rooms[this.memory.homeRoom].memory.controllerLinkId) != null && Game.rooms[this.memory.homeRoom].memory.controllerLinkId != this.memory.deposit && Game.getObjectById(Game.rooms[this.memory.homeRoom].memory.controllerLinkId).store[RESOURCE_ENERGY] > 0)
                 || (Game.rooms[this.memory.homeRoom].memory.controller_container_id != undefined && Game.getObjectById(Game.rooms[this.memory.homeRoom].memory.controller_container_id) != null && Game.rooms[this.memory.homeRoom].memory.controller_container_id != this.memory.deposit && Game.getObjectById(Game.rooms[this.memory.homeRoom].memory.controller_container_id).store[RESOURCE_ENERGY] > 0)) {
                 
-                if (Game.getObjectById(this.memory.deposit) != null && Game.getObjectById(this.memory.deposit).store[RESOURCE_ENERGY] == 0 && global.heap.rooms[this.memory.homeRoom].energyBalance != undefined) {
-                    global.heap.rooms[this.memory.homeRoom].energyBalance -= C.BALANCER_STEP*2
-                }
+                
 
                 this.memory.deposit = undefined;
 
             }
 
+            if (Game.getObjectById(this.memory.deposit) == null)
+            {
+                this.memory.deposit=undefined
+            }
 
             if (this.memory.deposit == undefined /*&& Game.time % 4 == 0*/) {
 
@@ -152,14 +161,21 @@ Creep.prototype.roleWorker = function roleWorker() {
                         }
                     }));
 
-                    if(deposits.length==0)
+                    if(deposits.length==0 && false)
                     {
                         deposits = this.room.find(FIND_STRUCTURES, {
                             filter: (structure) => {
                                 return structure.structureType === STRUCTURE_SPAWN &&
-                                    structure.store[RESOURCE_ENERGY] > 0;
+                                    structure.store[RESOURCE_ENERGY] > CARRY_CAPACITY;
                             }
                         });
+                    }
+                    else{
+                        if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
+                            Game.rooms[this.memory.homeRoom].memory.energyBalance -= C.BALANCER_STEP
+                            this.say("3b-")
+                        
+                        }
                     }
                     if (this.room.controller == undefined) { this.suicide() }
 
@@ -168,15 +184,17 @@ Creep.prototype.roleWorker = function roleWorker() {
                         this.memory.deposit = deposit.id;
                     }
                     else {
-                        if (global.heap.rooms[this.memory.homeRoom].energyBalance != undefined) {
-                            global.heap.rooms[this.memory.homeRoom].energyBalance -= C.BALANCER_STEP
+                        if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
+                            Game.rooms[this.memory.homeRoom].memory.energyBalance -= C.BALANCER_STEP
+                            this.say("2b-")
+                        
                         }
                     }
                 }
             }
 
             if (Game.getObjectById(this.memory.deposit) != null) {
-                if (this.memory.deposit != undefined && global.heap.rooms[this.memory.homeRoom].energyBalance>-C.BALANCER_USE_LIMIT) {
+                if (this.memory.deposit != undefined && Game.rooms[this.memory.homeRoom].memory.energyBalance> C.BALANCER_HARVEST_LIMIT) {
                     if (this.withdraw(Game.getObjectById(this.memory.deposit), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                         this.moveTo(Game.getObjectById(this.memory.deposit), { reusePath: 17, maxRooms: 1 });
                         //move_avoid_hostile(creep,Game.getObjectById(this.memory.deposit).pos,1);

@@ -13,8 +13,8 @@ const profiler = require('screeps-profiler');
 const createRoomQueues = require('createRoomQueues')
 const spawnFromQueues = require('spawnFromQueues')
 const roomManager = require('roomManager')
-const creepsManager=require('creepsManager')
-const visualize=require('visualize')
+const creepsManager = require('creepsManager')
+const visualize = require('visualize');
 
 
 // This line monkey patches the global prototypes.
@@ -22,24 +22,30 @@ profiler.enable();
 module.exports.loop = function () {
   profiler.wrap(function () {
 
+
     //Setting allies
-    Memory.allies=["JeallyRabbi","Alphonzo","insainmonkey","Trepidimous"]
-    
+    Memory.allies = ["JeallyRabbi", "Alphonzo", "insainmonkey", "Trepidimous"]
+
     //Setting enemies
-    Memory.allies=["IronVengeance"]
+    Memory.allies = ["IronVengeance"]
     //Defining global.heap.rooms which is supposed to have identical structure as Memory.rooms but is available always on the same tick and is not using Memory limit
     //Heap size limit is much higher than Memory size limit - as mentioned somewhere on discord it is notable achivement to reach Heap size limit
     if (global.heap.rooms == undefined) {
       global.heap.rooms = []
+      console.log("setting global heap")
     }
 
     Memory.mainRooms = []
 
     for (roomName in Game.rooms) {
 
-      console.log("--------------- ",roomName,"---------------")
+      console.log("--------------- ", roomName, "---------------")
 
-      global.heap.rooms[roomName] = {}
+      if (global.heap.rooms[roomName] == undefined) {
+        global.heap.rooms[roomName] = {}
+        console.log("Setting heap for ",roomName)
+      }
+
       if (Game.rooms[roomName].controller != undefined && Game.rooms[roomName].controller.my) {
         Memory.mainRooms.push(roomName)
       }
@@ -59,15 +65,7 @@ module.exports.loop = function () {
 
     for (mainRoom of Memory.mainRooms) {
 
-      // Metric for balancing energy usage upgrade/harvest on RCL<4
-      if (Game.rooms[mainRoom].controller != undefined && Game.rooms[mainRoom].controller.level < 4) {
-        if (Game.rooms[mainRoom].memory.energyUsageBalance == undefined) {
-          Game.rooms[mainRoom].memory.energyUsageBalance = 0
-        }
-        else if (Game.rooms[mainRoom].memory.energyUsageBalance != undefined) {
-          delete Game.rooms[mainRoom].memory.energyUsageBalance == undefined
-        }
-      }
+
 
       Game.rooms[mainRoom].creepsManager()
 

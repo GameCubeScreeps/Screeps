@@ -330,8 +330,11 @@ Creep.prototype.roleCarrier = function roleCarrier() {
                         var transferResut = this.transfer(Game.getObjectById(this.memory.homeContainer), res);
                         if (Game.getObjectById(this.memory.homeContainer) != null && Game.getObjectById(this.memory.homeContainer).store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
 
-                            if (global.heap.rooms[this.memory.homeRoom].energyBalance != undefined) {
-                                global.heap.rooms[this.memory.homeRoom].energyBalance += C.BALANCER_STEP
+                            if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
+                                //console.log("before: ",Game.rooms[this.memory.homeRoom].memory.energyBalance)
+                                Game.rooms[this.memory.homeRoom].memory.energyBalance += C.BALANCER_STEP
+                                //console.log("after: ",Game.rooms[this.memory.homeRoom].memory.energyBalance)
+                                //this.say("no place")
                             }
 
                             this.fleeFrom([Game.getObjectById(this.memory.homeContainer)], 3)
