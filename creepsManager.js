@@ -9,16 +9,18 @@ Room.prototype.creepsManager = function creepsManager() {
 
     global.heap.rooms[this.name].haveScout = false
 
+    for (var cr in Memory.creeps) {  //clearing data about dead creeps
+        if (!Game.creeps[cr]) {
+            delete Memory.creeps[cr];
+        }
+    }
 
     for (cr in Game.creeps) {
-        for (var cr in Memory.creeps) {  //clearing data about dead creeps
-            if (!Game.creeps[cr]) {
-                delete Memory.creeps[cr];
-            }
-        }
+
+
 
         var creep = Game.creeps[cr];
-       
+
         if (creep.ticksToLive > creep.memory.TimeToSleep) {
             //creep.say('💤')
             continue;
