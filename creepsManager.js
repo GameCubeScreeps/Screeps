@@ -11,13 +11,14 @@ Room.prototype.creepsManager = function creepsManager() {
 
 
     for (cr in Game.creeps) {
-        if (!Game.creeps[cr]) {
-            delete Memory.creeps[cr];
-            continue
+        for (var cr in Memory.creeps) {  //clearing data about dead creeps
+            if (!Game.creeps[cr]) {
+                delete Memory.creeps[cr];
+            }
         }
 
         var creep = Game.creeps[cr];
-
+       
         if (creep.ticksToLive > creep.memory.TimeToSleep) {
             //creep.say('💤')
             continue;

@@ -24,7 +24,7 @@ module.exports.loop = function () {
 
     //Setting allies
     Memory.allies=["JeallyRabbi","Alphonzo","insainmonkey","Trepidimous"]
-
+    
     //Setting enemies
     Memory.allies=["IronVengeance"]
     //Defining global.heap.rooms which is supposed to have identical structure as Memory.rooms but is available always on the same tick and is not using Memory limit
