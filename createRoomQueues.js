@@ -94,14 +94,16 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     }
 
 
+    console.log("Balancer in queues driver: ",Game.rooms[this.name].memory.energyBalance)
     // Upgraders below RCL4 - wthout storage
     if (Game.rooms[this.name].storage == undefined) {
-        if (Game.rooms[this.name].memory.energyUsageBalance > 0.5 && global.heap.rooms[room].civilianQueue.some(obj => obj.type === C.ROLE_UPGRADER)) {
+        if (Game.rooms[this.name].memory.energyBalance > 1.0) {
             global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_UPGRADER))
+            console.log("Adding upgrader to queue")
         }
     }
     else {//Upgraders above and on RCL4
-        if (Game.rooms[this.name].storage.store[RESOURCE_ENERGY] < STORAGE_BALANCER_START) {
+        if (Game.rooms[this.name].storage.store[RESOURCE_ENERGY] < C.STORAGE_BALANCER_START) {
             if (global.heap.rooms[this.name].upgradersParts < 1) {
                 global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_UPGRADER))
             }

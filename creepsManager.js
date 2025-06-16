@@ -17,8 +17,6 @@ Room.prototype.creepsManager = function creepsManager() {
 
     for (cr in Game.creeps) {
 
-
-
         var creep = Game.creeps[cr];
 
         if (creep.ticksToLive > creep.memory.TimeToSleep) {

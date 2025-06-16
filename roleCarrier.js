@@ -31,13 +31,13 @@ Creep.prototype.roleCarrier = function roleCarrier() {
 
 
         for (src of Game.rooms[this.memory.homeRoom].memory.harvestingSources) {
-        //console.log(src.id)
-        if (src.id == this.memory.sourceId) {
+            //console.log(src.id)
+            if (src.id == this.memory.sourceId) {
 
-            src.carryPower += this.store.getCapacity() / (src.distance * 2);
-            break;
+                src.carryPower += this.store.getCapacity() / (src.distance * 2);
+                break;
+            }
         }
-    }
 
         if (this.memory.spawnId != undefined && Game.getObjectById(this.memory.spawnId) == null) {
             this.memory.spawnId = undefined
@@ -191,8 +191,8 @@ Creep.prototype.roleCarrier = function roleCarrier() {
 
                 if (this.memory.resourceToCollect == undefined && this.memory.targetRoom != undefined && Game.rooms[this.memory.targetRoom] != undefined) {
 
-                    var carrierCapacity=this.store.getCapacity()
-                    var carrierUsedCapacity=this.store.getUsedCapacity()
+                    var carrierCapacity = this.store.getCapacity()
+                    var carrierUsedCapacity = this.store.getUsedCapacity()
                     const dropped_resource = Game.rooms[this.memory.targetRoom].find(FIND_DROPPED_RESOURCES, {
                         filter: function (resource) {
                             return resource.amount >= carrierCapacity - carrierUsedCapacity
@@ -306,12 +306,12 @@ Creep.prototype.roleCarrier = function roleCarrier() {
                 if (Game.getObjectById(this.memory.homeContainer).structureType == STRUCTURE_STORAGE) {
                     for (let res in this.store) {
                         var amount = this.store[RESOURCE_ENERGY]
-                        var transfer_result = this.transfer(Game.getObjectById(this.memory.homeContainer), res);
-                        if (transfer_result == ERR_NOT_IN_RANGE) {
+                        var transferResut = this.transfer(Game.getObjectById(this.memory.homeContainer), res);
+                        if (transferResut == ERR_NOT_IN_RANGE) {
                             this.moveTo(Game.getObjectById(this.memory.homeContainer), { reusePath: 21, avoidSk: true, avoidCreeps: true });
                             break;
                         }
-                        else if (transfer_result == OK) {
+                        else if (transferResut == OK) {
 
                             if (Game.rooms[this.memory.homeRoom].memory.delivered_energy == undefined) {
                                 Game.rooms[this.memory.homeRoom].memory.delivered_energy = this.store[RESOURCE_ENERGY]
@@ -325,24 +325,31 @@ Creep.prototype.roleCarrier = function roleCarrier() {
                 }
                 else {
                     for (let res in this.store) {
+
                         var amount = this.store[RESOURCE_ENERGY]
-                        var transfer_result = this.transfer(Game.getObjectById(this.memory.homeContainer), res);
+                        var transferResut = this.transfer(Game.getObjectById(this.memory.homeContainer), res);
                         if (Game.getObjectById(this.memory.homeContainer) != null && Game.getObjectById(this.memory.homeContainer).store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
+
+                            if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
+                                Game.rooms[this.memory.homeRoom].memory.energyBalance += C.BALANCER_STEP
+                            }
+
                             this.fleeFrom([Game.getObjectById(this.memory.homeContainer)], 3)
                             this.memory.homeContainer = undefined
                             break;
                         }
-                        if (transfer_result == ERR_NOT_IN_RANGE) {
+                        if (transferResut == ERR_NOT_IN_RANGE) {
 
                             this.moveTo(Game.getObjectById(this.memory.homeContainer), { reusePath: 21, avoidSk: true, avoidCreeps: true });
 
                             break;
                         }
-                        else if (transfer_result == ERR_FULL) {
+                        else if (transferResut == ERR_FULL) {
 
                             this.memory.maxContainer = undefined;
+                            
                         }
-                        else if (transfer_result == OK) {
+                        else if (transferResut == OK) {
 
                             this.memory.maxContainer = undefined;
                         }

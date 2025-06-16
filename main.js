@@ -14,7 +14,7 @@ const createRoomQueues = require('createRoomQueues')
 const spawnFromQueues = require('spawnFromQueues')
 const roomManager = require('roomManager')
 const creepsManager=require('creepsManager')
-
+const visualize=require('visualize')
 
 
 // This line monkey patches the global prototypes.
@@ -75,6 +75,7 @@ module.exports.loop = function () {
 
       Game.rooms[mainRoom].spawnFromQueues()
 
+      Game.rooms[mainRoom].visualize()
     }
 
   });

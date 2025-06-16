@@ -4,7 +4,7 @@ const C = require('constants');
 
 Room.prototype.roomManager = function roomManager() {
 
-    global.heap.rooms[this.name]={}
+    global.heap.rooms[this.name] = {}
     global.heap.rooms[this.name].hostiles = []
     global.heap.rooms[this.name].allies = []
     if (Memory.mainRooms.includes(this.name)) {
@@ -19,65 +19,80 @@ Room.prototype.roomManager = function roomManager() {
         Game.rooms[this.name].memory.myExtractor = undefined
         Game.rooms[this.name].memory.myObserver = undefined
 
-        if(Game.rooms[this.name].memory.harvestingSources==undefined)
-        {
-            Game.rooms[this.name].memory.harvestingSources=[]
+        if (Game.rooms[this.name].memory.energyBalance == undefined && Game.rooms[this.name].storage == undefined) {
+            Game.rooms[this.name].memory.energyBalance = 0;
         }
-        else if(Game.rooms[this.name].memory.harvestingSources.length>0)
-        {
-            
+        else if (Game.rooms[this.name].memory.energyBalance != undefined) {
+            if (Game.rooms[this.name].storage != undefined) {
+                delete Game.rooms[this.name].memory.energyBalance
+            }
+            else {
+                console.log("asd")
+                if (Game.rooms[this.name].memory.energyBalance > C.BALANCER_HARVEST_LIMIT) {
+                    Game.rooms[this.name].memory.energyBalance = C.BALANCER_HARVEST_LIMIT;
+                }
+                else if (Game.rooms[this.name].memory.energyBalance < C.BALANCER_USE_LIMIT) {
+                    Game.rooms[this.name].memory.energyBalance = C.BALANCER_USE_LIMIT
+                }
+                if (Game.rooms[this.name].memory.energyBalance > 0) {
+                    Game.rooms[this.name].memory.energyBalance -= C.BALANCER_DECAY
+                }
+                else if (Game.rooms[this.name].memory.energyBalance < 0) {
+                    Game.rooms[this.name].memory.energyBalance += C.BALANCER_DECAY
+                }
+            }
+
+        }
+
+        if (Game.rooms[this.name].memory.harvestingSources == undefined) {
+            Game.rooms[this.name].memory.harvestingSources = []
+        }
+        else if (Game.rooms[this.name].memory.harvestingSources.length > 0) {
+
             Game.rooms[this.name].memory.harvestingSources.sort((a, b) => a.bodyPartsCost - b.bodyPartsCost)
 
-            var sourcesAmount=0;
-            var bodyPartsSum=0
-            var counter=0;
-            for(s of Game.rooms[this.name].memory.harvestingSources)
-            {
-                bodyPartsSum+=s.bodyPartsCost
+            var sourcesAmount = 0;
+            var bodyPartsSum = 0
+            var counter = 0;
+            for (s of Game.rooms[this.name].memory.harvestingSources) {
+                bodyPartsSum += s.bodyPartsCost
                 counter++;
-                if(bodyPartsSum>=(CREEP_LIFE_TIME/CREEP_SPAWN_TIME)*C.HARVESTING_BODYPARTS_FRACTION)
-                {
+                if (bodyPartsSum >= (CREEP_LIFE_TIME / CREEP_SPAWN_TIME) * C.HARVESTING_BODYPARTS_FRACTION) {
                     break;
                 }
             }
-            while(Game.rooms[this.name].memory.harvestingSources.length>counter)
-            {
+            while (Game.rooms[this.name].memory.harvestingSources.length > counter) {
                 Game.rooms[this.name].memory.harvestingSources.pop()
             }
 
-            for(s of Game.rooms[this.name].memory.harvestingSources)
-            {
-                s.harvestingPower=0;
-                s.carryPower=0;
-                s.harvesters=0;
+            for (s of Game.rooms[this.name].memory.harvestingSources) {
+                s.harvestingPower = 0;
+                s.carryPower = 0;
+                s.harvesters = 0;
             }
 
         }
-        if(Game.rooms[this.name].memory.harvestingRooms==undefined)
-        {
-            Game.rooms[this.name].memory.harvestingRooms=[]
+        if (Game.rooms[this.name].memory.harvestingRooms == undefined) {
+            Game.rooms[this.name].memory.harvestingRooms = []
         }
 
-        if(Game.rooms[this.name].memory.keepersSources==undefined)
-        {
-            Game.rooms[this.name].memory.keepersSources=[]
+        if (Game.rooms[this.name].memory.keepersSources == undefined) {
+            Game.rooms[this.name].memory.keepersSources = []
         }
 
-        if(Game.rooms[this.name].memory.keepersRooms==undefined)
-        {
-            Game.rooms[this.name].memory.keepersRooms=[]
+        if (Game.rooms[this.name].memory.keepersRooms == undefined) {
+            Game.rooms[this.name].memory.keepersRooms = []
         }
 
-        if(Game.rooms[this.name].memory.forcedUpgrades==undefined)
-        {
-            Game.rooms[this.name].memory.forcedUpgrades=[0,0,0,0,0,0,0,0]
+        if (Game.rooms[this.name].memory.forcedUpgrades == undefined) {
+            Game.rooms[this.name].memory.forcedUpgrades = [0, 0, 0, 0, 0, 0, 0, 0]
         }
         //TODO 
         // Implement planing base and building from that "plan"
         //this.planBase()
         //
         // Add running creeps roles
-        
+
     }
 
     Game.rooms[this.name].memory.roads = []
