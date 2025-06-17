@@ -1,0 +1,45 @@
+Here we describe what function requires what data and what data it is saving/setting (if that data is used somewhere else)
+
+Room.prototype.roomManager = new function roomManager() {
+
+    Require as parameter:
+    
+
+    Require in Memory/Heap:
+
+    Sets with id:
+    global.heap.rooms[this.name].hostiles 
+    global.heap.rooms[this.name].allies 
+    Game.rooms[this.name].memory.myStructures 
+    Game.rooms[this.name].memory.myExtensions 
+    Game.rooms[this.name].memory.myLabs 
+    Game.rooms[this.name].memory.myTowers 
+    Game.rooms[this.name].memory.myRamparts 
+    Game.rooms[this.name].memory.myNuker 
+    Game.rooms[this.name].memory.myLinks
+    Game.rooms[this.name].memory.myFactory
+    Game.rooms[this.name].memory.myExtractor
+    Game.rooms[this.name].memory.roads
+    Game.rooms[this.name].memory.containers
+
+}
+
+Room.prototype.createRoomQueues = new function createRoomQueues() {
+
+Require as parameter:
+
+
+    Require in Memory/Heap:
+    Room.memory.harvestingSources
+    Room.memory.harvestingRooms
+
+    Sets with requests:
+    global.heap.rooms[this.name].defensiveQueue 
+    global.heap.rooms[this.name].harvestingQueue 
+    global.heap.rooms[this.name].civilianQueue 
+    global.heap.rooms[this.name].offensiveQueue 
+    global.heap.rooms[this.name].areHarvestingNeedsSatisfied
+
+    
+
+}

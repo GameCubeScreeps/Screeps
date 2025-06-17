@@ -18,3 +18,5 @@ Rules/Decisions/Mechanism descriptions:
 **3.1** Except player names - no hardcoded values, everything should be calculated if possible (e.g when calculating profit per tick from source do not call it **10**, use **SOURCE_ENERGY_CAPACITY/ENERGY_REGEN_TIME**)
 **3.2** All new constants should be added/stored in separate file **constants.js**
 **3.3** Code notation - I would like to propose **camelCase**
+
+
