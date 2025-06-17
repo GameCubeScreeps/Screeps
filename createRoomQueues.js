@@ -69,7 +69,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
             continue;
         }
         //Skippig rooms containing hostileCreeps
-        if (global.heap.rooms[harvestingSource.roomName] != undefined && global.heap.rooms[harvestingSource.roomName].hostiles.length > 1 && harvestingSource.roomName != spawn.room.name) {
+        if (global.heap.rooms[harvestingSource.roomName] != undefined && global.heap.rooms[harvestingSource.roomName].hostiles.length > 1 && harvestingSource.roomName != this.name) {
             console.log("Skipping room with hostiles")
             continue;
         }

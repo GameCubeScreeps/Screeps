@@ -74,6 +74,8 @@ module.exports.loop = function () {
       Game.rooms[mainRoom].spawnFromQueues()
 
       Game.rooms[mainRoom].visualize()
+
+      
     }
 
   });

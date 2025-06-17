@@ -8,9 +8,9 @@ Room.prototype.roomManager = function roomManager() {
     global.heap.rooms[this.name].hostiles = []
     global.heap.rooms[this.name].allies = []
     if (Memory.mainRooms.includes(this.name)) {
-        
-        global.heap.rooms[this.name].construction=[]
-        Game.rooms[this.name].memory.state=[]
+
+        global.heap.rooms[this.name].construction = []
+        Game.rooms[this.name].memory.state = []
         Game.rooms[this.name].memory.myStructures = []
         Game.rooms[this.name].memory.myExtensions = []
         Game.rooms[this.name].memory.myLabs = []
@@ -22,20 +22,16 @@ Room.prototype.roomManager = function roomManager() {
         Game.rooms[this.name].memory.myExtractor = undefined
         Game.rooms[this.name].memory.myObserver = undefined
 
-        var constr=Game.rooms[this.name].find(FIND_CONSTRUCTION_SITES)
-        if(constr.length>0)
-        {
-            global.heap.rooms[this.name].building=true
-            for(c of constr)
-            {
+        var constr = Game.rooms[this.name].find(FIND_CONSTRUCTION_SITES)
+        if (constr.length > 0) {
+            global.heap.rooms[this.name].building = true
+            for (c of constr) {
                 global.heap.rooms[this.name].construction.push(c.id)
             }
-            console.log("construction sites in: ",this.name," ",constr.length)
+            console.log("construction sites in: ", this.name, " ", constr.length)
         }
-        else 
-        {
-            if(global.heap.rooms[this.name].building!=undefined)
-            {
+        else {
+            if (global.heap.rooms[this.name].building != undefined) {
                 delete global.heap.rooms[this.name].building
             }
         }
@@ -59,10 +55,10 @@ Room.prototype.roomManager = function roomManager() {
                     Game.rooms[this.name].memory.energyBalance = C.BALANCER_USE_LIMIT
                     console.log("Above top edge")
                 }
-                else if (Game.rooms[this.name].memory.energyBalance > -1 && Game.rooms[this.name].memory.energyBalance<C.BALANCER_HARVEST_LIMIT) {
+                else if (Game.rooms[this.name].memory.energyBalance > -1 && Game.rooms[this.name].memory.energyBalance < C.BALANCER_HARVEST_LIMIT) {
                     Game.rooms[this.name].memory.energyBalance -= C.BALANCER_DECAY
                 }
-                else if (Game.rooms[this.name].memory.energyBalance < -2 && Game.rooms[this.name].memory.energyBalance>C.BALANCER_USE_LIMIT) {
+                else if (Game.rooms[this.name].memory.energyBalance < -2 && Game.rooms[this.name].memory.energyBalance > C.BALANCER_USE_LIMIT) {
                     Game.rooms[this.name].memory.energyBalance += C.BALANCER_DECAY
                 }
             }
@@ -112,11 +108,21 @@ Room.prototype.roomManager = function roomManager() {
         if (Game.rooms[this.name].memory.forcedUpgrades == undefined) {
             Game.rooms[this.name].memory.forcedUpgrades = [0, 0, 0, 0, 0, 0, 0, 0]
         }
+
+
+        Game.rooms[this.name].memory.progressOld = Game.rooms[this.name].memory.progress;
+        Game.rooms[this.name].memory.progress = Game.rooms[this.name].controller.progress;
+        if (Game.rooms[this.name].memory.progressOld != 0) {
+            Game.rooms[this.name].memory.progressSum += (Game.rooms[this.name].memory.progress - Game.rooms[this.name].memory.progressOld);
+        }
+        Game.rooms[this.name].memory.progressCounter += 1;
+
+
+
         //TODO 
         // Implement planing base and building from that "plan"
-        //this.planBase()
-        //
-        // Add running creeps roles
+        //this.buildRoom()
+
 
     }
 
