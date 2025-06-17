@@ -40,6 +40,7 @@ Room.prototype.creepsManager = function creepsManager() {
                 continue
             case C.ROLE_WORKER:
                 creep.roleWorker()
+                global.heap.rooms[this.name].workersParts+=_.filter(this.body, { type: WORK }).length
                 continue
         }
     }
