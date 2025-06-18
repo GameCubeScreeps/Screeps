@@ -170,8 +170,10 @@ Room.prototype.roomManager = function roomManager() {
 
 
     }
-    //////testest
-    console.log("base variations: ",global.heap.rooms[this.name])
+    //////I messed git branch: basePlanning
+
+    console.log("TEST")
+    //console.log("base variations: ",global.heap.rooms[this.name])
 
     global.heap.rooms[this.name].finishedPlanning=true
     for (key in global.heap.rooms[this.name].baseVariations) {
