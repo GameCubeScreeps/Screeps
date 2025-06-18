@@ -1,6 +1,6 @@
 // Every constant definied in separate file
 const C = require('constants');
-const { SRC_1, SRC_1_2 } = require('./constants');
+const buildRoom = require('buildRoom')
 
 
 Room.prototype.roomManager = function roomManager() {
@@ -130,40 +130,58 @@ Room.prototype.roomManager = function roomManager() {
         // this array will store ramparts amount for different room variations - we will chose to build the one with the least ramparts
         // we do not have to have built spawn - it will be able to move spawn to calculated position
 
-        if (global.heap.rooms[this.name].baseVariations == undefined || true) {
+        if (global.heap.rooms[this.name].baseVariations == undefined) {
             console.log("setting base variations")
+
             global.heap.rooms[this.name].baseVariations = []
             //Game.rooms[this.name].memory.global.heap.rooms[this.name].baseVariations=[C.LAYOUT[C.SRC_1],C.LAYOUT[C.SRC_2],C.LAYOUT[C.SRC_1_2],C.LAYOUT[C.CONTROLER],C.LAYOUT[C.SRC_1_CONTROLLER],C.LAYOUT[C.SRC_1_2_CONTROLLER]]
             global.heap.rooms[this.name].baseVariations[C.SRC_1] = {}
-            global.heap.rooms[this.name].baseVariations[C.SRC_1].variationFinished=false;
+            global.heap.rooms[this.name].baseVariations[C.SRC_1].variationFinished = false;
+            global.heap.rooms[this.name].baseVariations[C.SRC_1].rampartsAmount = 0;
             global.heap.rooms[this.name].baseVariations[C.SRC_2] = {}
-            global.heap.rooms[this.name].baseVariations[C.SRC_2].variationFinished=false;
+            global.heap.rooms[this.name].baseVariations[C.SRC_2].variationFinished = false;
+            global.heap.rooms[this.name].baseVariations[C.SRC_2].rampartsAmount = 0;
             global.heap.rooms[this.name].baseVariations[C.SRC_1_2] = {}
-            global.heap.rooms[this.name].baseVariations[C.SRC_1_2].variationFinished=false;
+            global.heap.rooms[this.name].baseVariations[C.SRC_1_2].variationFinished = false;
+            global.heap.rooms[this.name].baseVariations[C.SRC_1_2].rampartsAmount = 0;
             global.heap.rooms[this.name].baseVariations[C.CONTROLLER] = {}
-            global.heap.rooms[this.name].baseVariations[C.CONTROLLER].variationFinished=false;
+            global.heap.rooms[this.name].baseVariations[C.CONTROLLER].variationFinished = false;
+            global.heap.rooms[this.name].baseVariations[C.CONTROLLER].rampartsAmount = 0;
             global.heap.rooms[this.name].baseVariations[C.SRC_1_CONTROLLER] = {}
-            global.heap.rooms[this.name].baseVariations[C.SRC_1_CONTROLLER].variationFinished=false;
+            global.heap.rooms[this.name].baseVariations[C.SRC_1_CONTROLLER].variationFinished = false;
+            global.heap.rooms[this.name].baseVariations[C.SRC_1_CONTROLLER].rampartsAmount = 0;
             global.heap.rooms[this.name].baseVariations[C.SRC_2_CONTROLLER] = {}
-            global.heap.rooms[this.name].baseVariations[C.SRC_2_CONTROLLER].variationFinished=false;
+            global.heap.rooms[this.name].baseVariations[C.SRC_2_CONTROLLER].variationFinished = false;
+            global.heap.rooms[this.name].baseVariations[C.SRC_2_CONTROLLER].rampartsAmount = 0;
             global.heap.rooms[this.name].baseVariations[C.SRC_1_2_CONTROLLER] = {}
-            global.heap.rooms[this.name].baseVariations[C.SRC_1_2_CONTROLLER].variationFinished=false;
+            global.heap.rooms[this.name].baseVariations[C.SRC_1_2_CONTROLLER].variationFinished = false;
+            global.heap.rooms[this.name].baseVariations[C.SRC_1_2_CONTROLLER].rampartsAmount = 0;
 
-            
+
+
+
             console.log("test base variations: ", global.heap.rooms[this.name].baseVariations[C.SRC_2])
 
         }
-        if (Game.rooms[this.name].memory.rampartsAmount == undefined) {
-            Game.rooms[this.name].memory.rampartsAmount = []
-        }
 
-        for(a in global.heap.rooms[this.name].baseVariations)
-        {
-            console.log(a)
-        }
+
 
 
     }
+
+    console.log("base variations: ",global.heap.rooms[this.name])
+
+    for (variation in global.heap.rooms[this.name].baseVariations) {
+        console.log("ASDASDASADS")
+        Game.rooms[this.name].buildRoom(variation)
+        console.log("building ", variation, " in ", this.name)
+        if (variation.finished == false) {
+            console.log("building in ", this.name)
+            Game.rooms[this.name].buildRoom(variation)
+            break;
+        }
+    }
+
 
     Game.rooms[this.name].memory.roads = []
     Game.rooms[this.name].memory.containers = []

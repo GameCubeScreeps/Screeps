@@ -4,10 +4,11 @@ var RoomPositionFunctions = require('roomPositionFunctions');
 const { distanceTransform } = require("./distanceTransform");
 const { floodFill } = require("./floodFill");
 const mincut = require("./mincut")
+const C = require('constants');
 
 
 // Mandatory:
-// Game.rooms[this.name].memory.spawnPos - roomPosition of spawn (spawn does not have to be there)
+// global.heap.rooms[this.name].baseVariations[type].startPos - roomPosition of spawn (spawn does not have to be there)
 
 
 class buildingListElement {
@@ -33,9 +34,9 @@ function isPosFree(x, y, roomName) {
 }
 
 
-function planRoadToTarget(roomCM, target, rcl, myRange, start) {
+Room.prototype.planRoadToTarget = function planRoadToTarget(roomCM, target, rcl, myRange, start,type) {
 
-    var spawn = Game.rooms[this.name].find(FIND_MY_STRUCTURES, {
+    var spawn = this.find(FIND_MY_STRUCTURES, {
         filter:
             function (str) {
                 return str.structureType === STRUCTURE_SPAWN && str.name.endsWith('1')
@@ -49,10 +50,10 @@ function planRoadToTarget(roomCM, target, rcl, myRange, start) {
     }
     for (let i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
-            if (Game.rooms[this.name].memory.roomPlan[i][j] != 0 && Game.rooms[this.name].memory.roomPlan[i][j] != STRUCTURE_ROAD && Game.rooms[this.name].memory.roomPlan[i][j] != STRUCTURE_RAMPART) {
+            if (this.memory.roomPlan[i][j] != 0 && this.memory.roomPlan[i][j] != STRUCTURE_ROAD && this.memory.roomPlan[i][j] != STRUCTURE_RAMPART) {
                 roomCM.set(i, j, 255);
             }
-            else if (Game.rooms[this.name].memory.roomPlan[i][j] != 0 && Game.rooms[this.name].memory.roomPlan[i][j] == STRUCTURE_ROAD
+            else if (this.memory.roomPlan[i][j] != 0 && this.memory.roomPlan[i][j] == STRUCTURE_ROAD
                 && roomCM.get(i, j) != 255) {
                 //roomCM.set(i, j, 1);
             }
@@ -64,6 +65,14 @@ function planRoadToTarget(roomCM, target, rcl, myRange, start) {
 
     //console.log("target: ", target);
     destination = target;
+    var spawnPos = null;
+    if (global.heap.rooms[this.name].baseVariations[type].startPos != undefined) {
+        spawnPos = new RoomPosition(global.heap.rooms[this.name].baseVariations[type].startPos.x, global.heap.rooms[this.name].baseVariations[type].startPos.y, this.name)
+    }
+    else {
+        return -1
+    }
+
     var startingPos = new RoomPosition(spawnPos.x, spawnPos.y, this.name)
     if (start != undefined) { startingPos = start }
     //var ret = PathFinder.search(spawnPos, destination, {
@@ -157,30 +166,30 @@ function planRoadToTarget(roomCM, target, rcl, myRange, start) {
 
         for (let i = 0; i < ret.path.length; i++) {
 
-            if (i == ret.path.length - 1 && Game.rooms[this.name].controller.pos.inRangeTo(ret.path[i].x, ret.path[i].y, 3)) {
-                Game.rooms[this.name].memory.distanceToController = ret.path.length
+            if (i == ret.path.length - 1 && this.controller.pos.inRangeTo(ret.path[i].x, ret.path[i].y, 3)) {
+                this.memory.distanceToController = ret.path.length
             }
 
-            Game.rooms[this.name].memory.roadBuildingList.push(new buildingListElement(ret.path[i].x, ret.path[i].y, ret.path[i].roomName, STRUCTURE_ROAD, rcl));
+            this.memory.roadBuildingList.push(new buildingListElement(ret.path[i].x, ret.path[i].y, ret.path[i].roomName, STRUCTURE_ROAD, rcl));
             if (ret.path[i].roomName == this.name && roomCM.get(ret.path[i].x, ret.path[i].y) < 255) {
-                Game.rooms[this.name].memory.roomPlan[ret.path[i].x][ret.path[i].y] = STRUCTURE_ROAD;
+                this.memory.roomPlan[ret.path[i].x][ret.path[i].y] = STRUCTURE_ROAD;
 
-                //const terrain = Game.rooms[this.name].getTerrain();
+                //const terrain = this.getTerrain();
 
                 //Game.rooms[ret.path[i].roomName].visual.circle(ret.path[i].x, ret.path[i].y, { fill: '#666666', radius: 0.5, stroke: 'pink' });
 
                 //console.log(ret.path[i].x, " ", ret.path[i].y);
-                if ((Game.rooms[this.name].memory.roomPlan[ret.path[i].x][ret.path[i].y] == 0 || Game.rooms[this.name].memory.roomPlan[ret.path[i].x][ret.path[i].y] == STRUCTURE_ROAD)
+                if ((this.memory.roomPlan[ret.path[i].x][ret.path[i].y] == 0 || this.memory.roomPlan[ret.path[i].x][ret.path[i].y] == STRUCTURE_ROAD)
                     && isPosFree(ret.path[i].x, ret.path[i].y, ret.path[i].roomName) == true && roomCM.get(ret.path[i].x, ret.path[i].y) < 255
 
                 ) { // tile is empty on plan and in room
-                    Game.rooms[this.name].memory.roomPlan[ret.path[i].x][ret.path[i].y] = STRUCTURE_ROAD;
+                    this.memory.roomPlan[ret.path[i].x][ret.path[i].y] = STRUCTURE_ROAD;
                     //roomCM.set(ret.path[i].x, ret.path[i].y, 1);
                 }
             }
 
 
-            //Game.rooms[this.name].createConstructionSite(ret.path[i], STRUCTURE_ROAD);
+            //this.createConstructionSite(ret.path[i], STRUCTURE_ROAD);
             // }
 
         }
@@ -188,7 +197,7 @@ function planRoadToTarget(roomCM, target, rcl, myRange, start) {
 
     for (let i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
-            if (Game.rooms[this.name].memory.roomPlan[i][j] == STRUCTURE_ROAD) {
+            if (this.memory.roomPlan[i][j] == STRUCTURE_ROAD) {
                 roomCM.set(i, j, 0);
             }
 
@@ -202,53 +211,53 @@ function planRoadToTarget(roomCM, target, rcl, myRange, start) {
 
 
 
-function createExtensionStamp(x, y, rcl) { // need min 3's from distanceTransform
-    const terrain = Game.rooms[this.name].getTerrain();
+Room.prototype.createExtensionStamp = function createExtensionStamp(x, y, rcl) { // need min 3's from distanceTransform
+    const terrain = this.getTerrain();
 
 
-    Game.rooms[this.name].memory.roomPlan[x][y] = STRUCTURE_EXTENSION;//middle
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x, y, this.name, STRUCTURE_EXTENSION, rcl));
-    Game.rooms[this.name].memory.roomPlan[x - 1][y] = STRUCTURE_EXTENSION;//left
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x - 1, y, this.name, STRUCTURE_EXTENSION, rcl));
-    Game.rooms[this.name].memory.roomPlan[x + 1][y] = STRUCTURE_EXTENSION;//right
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x + 1, y, this.name, STRUCTURE_EXTENSION, rcl));
-    Game.rooms[this.name].memory.roomPlan[x][y - 1] = STRUCTURE_EXTENSION;//up
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x, y - 1, this.name, STRUCTURE_EXTENSION, rcl));
-    Game.rooms[this.name].memory.roomPlan[x][y + 1] = STRUCTURE_EXTENSION;//down
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x, y + 1, this.name, STRUCTURE_EXTENSION, rcl));
+    this.memory.roomPlan[x][y] = STRUCTURE_EXTENSION;//middle
+    this.memory.buildingList.push(new buildingListElement(x, y, this.name, STRUCTURE_EXTENSION, rcl));
+    this.memory.roomPlan[x - 1][y] = STRUCTURE_EXTENSION;//left
+    this.memory.buildingList.push(new buildingListElement(x - 1, y, this.name, STRUCTURE_EXTENSION, rcl));
+    this.memory.roomPlan[x + 1][y] = STRUCTURE_EXTENSION;//right
+    this.memory.buildingList.push(new buildingListElement(x + 1, y, this.name, STRUCTURE_EXTENSION, rcl));
+    this.memory.roomPlan[x][y - 1] = STRUCTURE_EXTENSION;//up
+    this.memory.buildingList.push(new buildingListElement(x, y - 1, this.name, STRUCTURE_EXTENSION, rcl));
+    this.memory.roomPlan[x][y + 1] = STRUCTURE_EXTENSION;//down
+    this.memory.buildingList.push(new buildingListElement(x, y + 1, this.name, STRUCTURE_EXTENSION, rcl));
 
     //roads around it
     if (terrain.get(x, y + 2) != TERRAIN_MASK_WALL) {
-        Game.rooms[this.name].memory.roomPlan[x][y + 2] = STRUCTURE_ROAD;
-        Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x, y + 2, this.name, STRUCTURE_ROAD, rcl));
+        this.memory.roomPlan[x][y + 2] = STRUCTURE_ROAD;
+        this.memory.buildingList.push(new buildingListElement(x, y + 2, this.name, STRUCTURE_ROAD, rcl));
     }
     if (terrain.get(x, y - 2) != TERRAIN_MASK_WALL) {
-        Game.rooms[this.name].memory.roomPlan[x][y - 2] = STRUCTURE_ROAD;
-        Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x, y - 2, this.name, STRUCTURE_ROAD, rcl));
+        this.memory.roomPlan[x][y - 2] = STRUCTURE_ROAD;
+        this.memory.buildingList.push(new buildingListElement(x, y - 2, this.name, STRUCTURE_ROAD, rcl));
     }
     if (terrain.get(x + 2, y) != TERRAIN_MASK_WALL) {
-        Game.rooms[this.name].memory.roomPlan[x + 2][y] = STRUCTURE_ROAD;
-        Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x + 2, y, this.name, STRUCTURE_ROAD, rcl));
+        this.memory.roomPlan[x + 2][y] = STRUCTURE_ROAD;
+        this.memory.buildingList.push(new buildingListElement(x + 2, y, this.name, STRUCTURE_ROAD, rcl));
     }
     if (terrain.get(x - 2, y) != TERRAIN_MASK_WALL) {
-        Game.rooms[this.name].memory.roomPlan[x - 2][y] = STRUCTURE_ROAD;
-        Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x - 2, y, this.name, STRUCTURE_ROAD, rcl));
+        this.memory.roomPlan[x - 2][y] = STRUCTURE_ROAD;
+        this.memory.buildingList.push(new buildingListElement(x - 2, y, this.name, STRUCTURE_ROAD, rcl));
     }
     if (terrain.get(x + 1, y + 1) != TERRAIN_MASK_WALL) {
-        Game.rooms[this.name].memory.roomPlan[x + 1][y + 1] = STRUCTURE_ROAD;
-        Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x + 1, y + 1, this.name, STRUCTURE_ROAD, rcl));
+        this.memory.roomPlan[x + 1][y + 1] = STRUCTURE_ROAD;
+        this.memory.buildingList.push(new buildingListElement(x + 1, y + 1, this.name, STRUCTURE_ROAD, rcl));
     }
     if (terrain.get(x + 1, y - 1) != TERRAIN_MASK_WALL) {
-        Game.rooms[this.name].memory.roomPlan[x + 1][y - 1] = STRUCTURE_ROAD;
-        Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x + 1, y - 1, this.name, STRUCTURE_ROAD, rcl));
+        this.memory.roomPlan[x + 1][y - 1] = STRUCTURE_ROAD;
+        this.memory.buildingList.push(new buildingListElement(x + 1, y - 1, this.name, STRUCTURE_ROAD, rcl));
     }
     if (terrain.get(x - 1, y + 1) != TERRAIN_MASK_WALL) {
-        Game.rooms[this.name].memory.roomPlan[x - 1][y + 1] = STRUCTURE_ROAD;
-        Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x - 1, y + 1, this.name, STRUCTURE_ROAD, rcl));
+        this.memory.roomPlan[x - 1][y + 1] = STRUCTURE_ROAD;
+        this.memory.buildingList.push(new buildingListElement(x - 1, y + 1, this.name, STRUCTURE_ROAD, rcl));
     }
     if (terrain.get(x - 1, y - 1) != TERRAIN_MASK_WALL) {
-        Game.rooms[this.name].memory.roomPlan[x - 1][y - 1] = STRUCTURE_ROAD;
-        Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x - 1, y - 1, this.name, STRUCTURE_ROAD, rcl));
+        this.memory.roomPlan[x - 1][y - 1] = STRUCTURE_ROAD;
+        this.memory.buildingList.push(new buildingListElement(x - 1, y - 1, this.name, STRUCTURE_ROAD, rcl));
     }
 
 
@@ -257,81 +266,81 @@ function createExtensionStamp(x, y, rcl) { // need min 3's from distanceTransfor
     return 0;
 }
 
-function createManagerStamp(x, y) {
+Room.prototype.createManagerStamp = function createManagerStamp(x, y) {
 
-    Game.rooms[this.name].memory.roomPlan[x - 1][y - 1] = STRUCTURE_LINK;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x - 1, y - 1, this.name, STRUCTURE_LINK, 5));
-    Game.rooms[this.name].memorymanager_link_pos = new RoomPosition(x - 1, y - 1, this.name);
-    Game.rooms[this.name].memory.roomPlan[x - 1][y] = STRUCTURE_NUKER;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x - 1, y, this.name, STRUCTURE_NUKER, 8));
-    Game.rooms[this.name].memory.roomPlan[x - 1][y + 1] = STRUCTURE_TERMINAL;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x - 1, y + 1, this.name, STRUCTURE_TERMINAL, 5));
-    Game.rooms[this.name].memory.roomPlan[x][y - 1] = STRUCTURE_FACTORY;
-    //Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x, y - 1, this.name, STRUCTURE_FACTORY, 7));
-    Game.rooms[this.name].memory.roomPlan[x][y + 1] = STRUCTURE_SPAWN;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x, y + 1, this.name, STRUCTURE_SPAWN, 7));
-    Game.rooms[this.name].memory.roomPlan[x + 1][y - 1] = STRUCTURE_STORAGE;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x + 1, y - 1, this.name, STRUCTURE_STORAGE, 4));
-    Game.rooms[this.name].memory.storagePos = new RoomPosition(x + 1, y - 1, this.name);
-    //Game.rooms[this.name].memory.roomPlan[x + 1][y] = STRUCTURE_POWER_SPAWN;
-    //Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x + 1, y, this.name, STRUCTURE_POWER_SPAWN, 8));
+    this.memory.roomPlan[x - 1][y - 1] = STRUCTURE_LINK;
+    this.memory.buildingList.push(new buildingListElement(x - 1, y - 1, this.name, STRUCTURE_LINK, 5));
+    this.memorymanager_link_pos = new RoomPosition(x - 1, y - 1, this.name);
+    this.memory.roomPlan[x - 1][y] = STRUCTURE_NUKER;
+    this.memory.buildingList.push(new buildingListElement(x - 1, y, this.name, STRUCTURE_NUKER, 8));
+    this.memory.roomPlan[x - 1][y + 1] = STRUCTURE_TERMINAL;
+    this.memory.buildingList.push(new buildingListElement(x - 1, y + 1, this.name, STRUCTURE_TERMINAL, 5));
+    this.memory.roomPlan[x][y - 1] = STRUCTURE_FACTORY;
+    //this.memory.buildingList.push(new buildingListElement(x, y - 1, this.name, STRUCTURE_FACTORY, 7));
+    this.memory.roomPlan[x][y + 1] = STRUCTURE_SPAWN;
+    this.memory.buildingList.push(new buildingListElement(x, y + 1, this.name, STRUCTURE_SPAWN, 7));
+    this.memory.roomPlan[x + 1][y - 1] = STRUCTURE_STORAGE;
+    this.memory.buildingList.push(new buildingListElement(x + 1, y - 1, this.name, STRUCTURE_STORAGE, 4));
+    this.memory.storagePos = new RoomPosition(x + 1, y - 1, this.name);
+    //this.memory.roomPlan[x + 1][y] = STRUCTURE_POWER_SPAWN;
+    //this.memory.buildingList.push(new buildingListElement(x + 1, y, this.name, STRUCTURE_POWER_SPAWN, 8));
 
     //top horizontal edge
-    Game.rooms[this.name].memory.roomPlan[x - 1][y - 2] = STRUCTURE_ROAD;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x - 1, y - 2, this.name, STRUCTURE_ROAD, 4));
-    Game.rooms[this.name].memory.roomPlan[x][y - 2] = STRUCTURE_ROAD;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x, y - 2, this.name, STRUCTURE_ROAD, 4));
-    Game.rooms[this.name].memory.roomPlan[x + 1][y - 2] = STRUCTURE_ROAD;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x + 1, y - 2, this.name, STRUCTURE_ROAD, 4));
+    this.memory.roomPlan[x - 1][y - 2] = STRUCTURE_ROAD;
+    this.memory.buildingList.push(new buildingListElement(x - 1, y - 2, this.name, STRUCTURE_ROAD, 4));
+    this.memory.roomPlan[x][y - 2] = STRUCTURE_ROAD;
+    this.memory.buildingList.push(new buildingListElement(x, y - 2, this.name, STRUCTURE_ROAD, 4));
+    this.memory.roomPlan[x + 1][y - 2] = STRUCTURE_ROAD;
+    this.memory.buildingList.push(new buildingListElement(x + 1, y - 2, this.name, STRUCTURE_ROAD, 4));
 
     //left vertical edge
-    Game.rooms[this.name].memory.roomPlan[x - 2][y - 1] = STRUCTURE_ROAD;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x - 2, y - 1, this.name, STRUCTURE_ROAD, 4));
-    Game.rooms[this.name].memory.roomPlan[x - 2][y] = STRUCTURE_ROAD;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x - 2, y, this.name, STRUCTURE_ROAD, 4));
-    Game.rooms[this.name].memory.roomPlan[x - 2][y + 1] = STRUCTURE_ROAD;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x - 2, y + 1, this.name, STRUCTURE_ROAD, 4));
+    this.memory.roomPlan[x - 2][y - 1] = STRUCTURE_ROAD;
+    this.memory.buildingList.push(new buildingListElement(x - 2, y - 1, this.name, STRUCTURE_ROAD, 4));
+    this.memory.roomPlan[x - 2][y] = STRUCTURE_ROAD;
+    this.memory.buildingList.push(new buildingListElement(x - 2, y, this.name, STRUCTURE_ROAD, 4));
+    this.memory.roomPlan[x - 2][y + 1] = STRUCTURE_ROAD;
+    this.memory.buildingList.push(new buildingListElement(x - 2, y + 1, this.name, STRUCTURE_ROAD, 4));
 
     //bottom horizontal
-    Game.rooms[this.name].memory.roomPlan[x - 1][y + 2] = STRUCTURE_ROAD;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x - 1, y + 2, this.name, STRUCTURE_ROAD, 4));
-    Game.rooms[this.name].memory.roomPlan[x][y + 2] = STRUCTURE_ROAD;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x, y + 2, this.name, STRUCTURE_ROAD, 4));
+    this.memory.roomPlan[x - 1][y + 2] = STRUCTURE_ROAD;
+    this.memory.buildingList.push(new buildingListElement(x - 1, y + 2, this.name, STRUCTURE_ROAD, 4));
+    this.memory.roomPlan[x][y + 2] = STRUCTURE_ROAD;
+    this.memory.buildingList.push(new buildingListElement(x, y + 2, this.name, STRUCTURE_ROAD, 4));
 
     //diagonals
-    Game.rooms[this.name].memory.roomPlan[x + 1][y + 1] = STRUCTURE_ROAD;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x + 1, y + 1, this.name, STRUCTURE_ROAD, 4));
-    Game.rooms[this.name].memory.roomPlan[x + 2][y] = STRUCTURE_ROAD;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x + 2, y, this.name, STRUCTURE_ROAD, 4));
-    Game.rooms[this.name].memory.roomPlan[x + 2][y - 1] = STRUCTURE_ROAD;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x + 2, y - 1, this.name, STRUCTURE_ROAD, 4));
+    this.memory.roomPlan[x + 1][y + 1] = STRUCTURE_ROAD;
+    this.memory.buildingList.push(new buildingListElement(x + 1, y + 1, this.name, STRUCTURE_ROAD, 4));
+    this.memory.roomPlan[x + 2][y] = STRUCTURE_ROAD;
+    this.memory.buildingList.push(new buildingListElement(x + 2, y, this.name, STRUCTURE_ROAD, 4));
+    this.memory.roomPlan[x + 2][y - 1] = STRUCTURE_ROAD;
+    this.memory.buildingList.push(new buildingListElement(x + 2, y - 1, this.name, STRUCTURE_ROAD, 4));
 }
 
 
-function planExtensionStamp(roomCM, rcl) {
+Room.prototype.planExtensionStamp = function planExtensionStamp(roomCM, rcl, type) {
     var isSuccess = false;
     for (let i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
-            if (Game.rooms[this.name].memory.roomPlan[i][j] != 0) {
+            if (this.memory.roomPlan[i][j] != 0) {
                 roomCM.set(i, j, 255);
             }
 
         }
     }
-    let distanceCM = Game.rooms[this.name].diagonalDistanceTransform(roomCM, false);
+    let distanceCM = this.diagonalDistanceTransform(roomCM, false);
 
     //Seeds - starting positions for floodfill (it have to be an array - something iterable)
     // extensions are builded as close as possible to storage and spawnPos
     var seeds = [];
-    if (Game.rooms[this.name].storage != undefined || true) {
+    if (this.storage != undefined || true) {
 
 
-        seeds.push(Game.rooms[this.name].memory.storagePos);
+        seeds.push(this.memory.storagePos);
 
-        if (Game.rooms[this.name].memory.spawnPos != undefined) {
-            seeds.push(Game.rooms[this.name].memory.spawnPos)
+        if (global.heap.rooms[this.name].baseVariations[type].startPos != undefined) {
+            seeds.push(global.heap.rooms[this.name].baseVariations[type].startPos)
         }
-        var floodCM = Game.rooms[this.name].floodFill(seeds);
+        var floodCM = this.floodFill(seeds);
 
         var posForStamp = new RoomPosition(0, 0, this.name);
         var minDistanceFromSpawn = 100;
@@ -346,11 +355,11 @@ function planExtensionStamp(roomCM, rcl) {
             }
         }
 
-        createExtensionStamp(posForStamp.x, posForStamp.y, rcl);
+        this.createExtensionStamp(posForStamp.x, posForStamp.y, rcl);
 
         for (let i = 0; i < 50; i++) {
             for (let j = 0; j < 50; j++) {
-                if (Game.rooms[this.name].memory.roomPlan[i][j] != 0) {
+                if (this.memory.roomPlan[i][j] != 0) {
                     roomCM.set(i, j, 255);
                     isSuccess = true;
                 }
@@ -364,11 +373,11 @@ function planExtensionStamp(roomCM, rcl) {
 
 
 
-function planManagerStamp(roomCM) {
+Room.prototype.planManagerStamp = function planManagerStamp(roomCM, type) {
     var isSuccess = false;
     for (let i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
-            if (Game.rooms[this.name].memory.roomPlan[i][j] != 0) {
+            if (this.memory.roomPlan[i][j] != 0) {
                 roomCM.set(i, j, 255);
             }
         }
@@ -377,21 +386,21 @@ function planManagerStamp(roomCM) {
 
     var posForManager = new RoomPosition(0, 0, this.name);
     seeds = [];
-    if (Game.rooms[this.name].memory.spawnPos != undefined) {
-        seeds.push(Game.rooms[this.name].memory.spawnPos)
+    if (global.heap.rooms[this.name].baseVariations[type].startPos != undefined) {
+        seeds.push(global.heap.rooms[this.name].baseVariations[type].startPos)
     }
     else {
         return -2
     }
     //TESTING
-    //seeds.push(Game.rooms[this.name].controller.pos);
+    //seeds.push(this.controller.pos);
     //TESTING
 
-    distanceCM = Game.rooms[this.name].diagonalDistanceTransform(roomCM, false);
+    distanceCM = this.diagonalDistanceTransform(roomCM, false);
 
 
     Memory.roomVisuals = false;
-    floodCM = Game.rooms[this.name].floodFill(seeds);
+    floodCM = this.floodFill(seeds);
     Memory.roomVisuals = false
 
     minDistanceFromSpawn = 100;
@@ -406,10 +415,10 @@ function planManagerStamp(roomCM) {
         }
     }
 
-    createManagerStamp(posForManager.x, posForManager.y);
+    this.createManagerStamp(posForManager.x, posForManager.y);
     for (let i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
-            if (Game.rooms[this.name].memory.roomPlan[i][j] != 0) {
+            if (this.memory.roomPlan[i][j] != 0) {
                 roomCM.set(i, j, 255);
                 isSuccess = true;
             }
@@ -418,86 +427,85 @@ function planManagerStamp(roomCM) {
     return isSuccess;
 }
 
-function planMainSpawnStamp(roomCM) {
+Room.prototype.planMainSpawnStamp = function planMainSpawnStamp(roomCM, type) {
 
-    var spawnPos=null;
-    if(Game.rooms[this.name].memory.spawnPos!=undefined)
-    {
-        spawnPos=new RoomPosition(Game.rooms[this.name].memory.spawnPos.x,Game.rooms[this.name].memory.spawnPos.y,this.name)
+    var spawnPos = null;
+    if (global.heap.rooms[this.name].baseVariations[type].startPos != undefined) {
+        spawnPos = new RoomPosition(global.heap.rooms[this.name].baseVariations[type].startPos.x, global.heap.rooms[this.name].baseVariations[type].startPos.y, this.name)
     }
-    else{
+    else {
         return -1
     }
 
-    Game.rooms[this.name].memory.roomPlan[spawnPos.x][spawnPos.y] = STRUCTURE_SPAWN; // seting spawn pos at plan
+    this.memory.roomPlan[spawnPos.x][spawnPos.y] = STRUCTURE_SPAWN; // seting spawn pos at plan
 
-    //if (Game.rooms[this.name].controller.level >= 2) {
-    Game.rooms[this.name].memory.roomPlan[spawnPos.x + 1][spawnPos.y] = STRUCTURE_EXTENSION;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(spawnPos.x + 1, spawnPos.y, this.name, STRUCTURE_EXTENSION, 2));
+    //if (this.controller.level >= 2) {
+    this.memory.roomPlan[spawnPos.x + 1][spawnPos.y] = STRUCTURE_EXTENSION;
+    this.memory.buildingList.push(new buildingListElement(spawnPos.x + 1, spawnPos.y, this.name, STRUCTURE_EXTENSION, 2));
 
-    Game.rooms[this.name].memory.roomPlan[spawnPos.x + 2][spawnPos.y] = STRUCTURE_EXTENSION;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(spawnPos.x + 2, spawnPos.y, this.name, STRUCTURE_EXTENSION, 2));
+    this.memory.roomPlan[spawnPos.x + 2][spawnPos.y] = STRUCTURE_EXTENSION;
+    this.memory.buildingList.push(new buildingListElement(spawnPos.x + 2, spawnPos.y, this.name, STRUCTURE_EXTENSION, 2));
 
-    Game.rooms[this.name].memory.roomPlan[spawnPos.x + 2][spawnPos.y - 1] = STRUCTURE_EXTENSION;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(spawnPos.x + 2, spawnPos.y - 1, this.name, STRUCTURE_EXTENSION, 2));
+    this.memory.roomPlan[spawnPos.x + 2][spawnPos.y - 1] = STRUCTURE_EXTENSION;
+    this.memory.buildingList.push(new buildingListElement(spawnPos.x + 2, spawnPos.y - 1, this.name, STRUCTURE_EXTENSION, 2));
 
-    Game.rooms[this.name].memory.roomPlan[spawnPos.x + 1][spawnPos.y - 2] = STRUCTURE_EXTENSION;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(spawnPos.x + 1, spawnPos.y - 2, this.name, STRUCTURE_EXTENSION, 2));
+    this.memory.roomPlan[spawnPos.x + 1][spawnPos.y - 2] = STRUCTURE_EXTENSION;
+    this.memory.buildingList.push(new buildingListElement(spawnPos.x + 1, spawnPos.y - 2, this.name, STRUCTURE_EXTENSION, 2));
 
-    Game.rooms[this.name].memory.roomPlan[spawnPos.x][spawnPos.y - 1] = STRUCTURE_EXTENSION;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(spawnPos.x, spawnPos.y - 1, this.name, STRUCTURE_EXTENSION, 2));
+    this.memory.roomPlan[spawnPos.x][spawnPos.y - 1] = STRUCTURE_EXTENSION;
+    this.memory.buildingList.push(new buildingListElement(spawnPos.x, spawnPos.y - 1, this.name, STRUCTURE_EXTENSION, 2));
 
-    Game.rooms[this.name].memory.roomPlan[spawnPos.x + 2][spawnPos.y - 2] = STRUCTURE_CONTAINER;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(spawnPos.x + 2, spawnPos.y - 2, this.name, STRUCTURE_CONTAINER, 2));
+    this.memory.roomPlan[spawnPos.x + 2][spawnPos.y - 2] = STRUCTURE_CONTAINER;
+    this.memory.buildingList.push(new buildingListElement(spawnPos.x + 2, spawnPos.y - 2, this.name, STRUCTURE_CONTAINER, 2));
 
-    //if (Game.rooms[this.name].controller.level >= 3) {
-    Game.rooms[this.name].memory.roomPlan[spawnPos.x + 2][spawnPos.y - 2] = STRUCTURE_CONTAINER;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(spawnPos.x + 2, spawnPos.y - 2, this.name, STRUCTURE_CONTAINER, 2));
+    //if (this.controller.level >= 3) {
+    this.memory.roomPlan[spawnPos.x + 2][spawnPos.y - 2] = STRUCTURE_CONTAINER;
+    this.memory.buildingList.push(new buildingListElement(spawnPos.x + 2, spawnPos.y - 2, this.name, STRUCTURE_CONTAINER, 2));
 
-    Game.rooms[this.name].memory.roomPlan[spawnPos.x + 2][spawnPos.y - 3] = STRUCTURE_EXTENSION;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(spawnPos.x + 2, spawnPos.y - 3, this.name, STRUCTURE_EXTENSION, 3));
+    this.memory.roomPlan[spawnPos.x + 2][spawnPos.y - 3] = STRUCTURE_EXTENSION;
+    this.memory.buildingList.push(new buildingListElement(spawnPos.x + 2, spawnPos.y - 3, this.name, STRUCTURE_EXTENSION, 3));
 
-    Game.rooms[this.name].memory.roomPlan[spawnPos.x + 2][spawnPos.y - 4] = STRUCTURE_EXTENSION;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(spawnPos.x + 2, spawnPos.y - 4, this.name, STRUCTURE_EXTENSION, 3));
+    this.memory.roomPlan[spawnPos.x + 2][spawnPos.y - 4] = STRUCTURE_EXTENSION;
+    this.memory.buildingList.push(new buildingListElement(spawnPos.x + 2, spawnPos.y - 4, this.name, STRUCTURE_EXTENSION, 3));
 
-    Game.rooms[this.name].memory.roomPlan[spawnPos.x + 1][spawnPos.y - 4] = STRUCTURE_EXTENSION;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(spawnPos.x + 1, spawnPos.y - 4, this.name, STRUCTURE_EXTENSION, 3));
+    this.memory.roomPlan[spawnPos.x + 1][spawnPos.y - 4] = STRUCTURE_EXTENSION;
+    this.memory.buildingList.push(new buildingListElement(spawnPos.x + 1, spawnPos.y - 4, this.name, STRUCTURE_EXTENSION, 3));
 
     //third spawn
-    Game.rooms[this.name].memory.roomPlan[spawnPos.x][spawnPos.y - 4] = STRUCTURE_SPAWN;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(spawnPos.x, spawnPos.y - 4, this.name, STRUCTURE_SPAWN, 8));
+    this.memory.roomPlan[spawnPos.x][spawnPos.y - 4] = STRUCTURE_SPAWN;
+    this.memory.buildingList.push(new buildingListElement(spawnPos.x, spawnPos.y - 4, this.name, STRUCTURE_SPAWN, 8));
 
-    Game.rooms[this.name].memory.roomPlan[spawnPos.x][spawnPos.y - 3] = STRUCTURE_EXTENSION;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(spawnPos.x, spawnPos.y - 3, this.name, STRUCTURE_EXTENSION, 3));
+    this.memory.roomPlan[spawnPos.x][spawnPos.y - 3] = STRUCTURE_EXTENSION;
+    this.memory.buildingList.push(new buildingListElement(spawnPos.x, spawnPos.y - 3, this.name, STRUCTURE_EXTENSION, 3));
 
-    // if (Game.rooms[this.name].controller.level >= 3) {
-    Game.rooms[this.name].memory.roomPlan[spawnPos.x - 2][spawnPos.y - 2] = STRUCTURE_CONTAINER;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(spawnPos.x - 2, spawnPos.y - 2, this.name, STRUCTURE_CONTAINER, 3));
+    // if (this.controller.level >= 3) {
+    this.memory.roomPlan[spawnPos.x - 2][spawnPos.y - 2] = STRUCTURE_CONTAINER;
+    this.memory.buildingList.push(new buildingListElement(spawnPos.x - 2, spawnPos.y - 2, this.name, STRUCTURE_CONTAINER, 3));
 
-    Game.rooms[this.name].memory.roomPlan[spawnPos.x - 1][spawnPos.y] = STRUCTURE_EXTENSION;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(spawnPos.x - 1, spawnPos.y, this.name, STRUCTURE_EXTENSION, 3));
+    this.memory.roomPlan[spawnPos.x - 1][spawnPos.y] = STRUCTURE_EXTENSION;
+    this.memory.buildingList.push(new buildingListElement(spawnPos.x - 1, spawnPos.y, this.name, STRUCTURE_EXTENSION, 3));
 
-    Game.rooms[this.name].memory.roomPlan[spawnPos.x - 2][spawnPos.y] = STRUCTURE_EXTENSION;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(spawnPos.x - 2, spawnPos.y, this.name, STRUCTURE_EXTENSION, 3));
+    this.memory.roomPlan[spawnPos.x - 2][spawnPos.y] = STRUCTURE_EXTENSION;
+    this.memory.buildingList.push(new buildingListElement(spawnPos.x - 2, spawnPos.y, this.name, STRUCTURE_EXTENSION, 3));
 
-    Game.rooms[this.name].memory.roomPlan[spawnPos.x - 2][spawnPos.y - 1] = STRUCTURE_EXTENSION;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(spawnPos.x - 2, spawnPos.y - 1, this.name, STRUCTURE_EXTENSION, 3));
+    this.memory.roomPlan[spawnPos.x - 2][spawnPos.y - 1] = STRUCTURE_EXTENSION;
+    this.memory.buildingList.push(new buildingListElement(spawnPos.x - 2, spawnPos.y - 1, this.name, STRUCTURE_EXTENSION, 3));
 
-    Game.rooms[this.name].memory.roomPlan[spawnPos.x - 1][spawnPos.y - 2] = STRUCTURE_EXTENSION;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(spawnPos.x - 1, spawnPos.y - 2, this.name, STRUCTURE_EXTENSION, 3));
+    this.memory.roomPlan[spawnPos.x - 1][spawnPos.y - 2] = STRUCTURE_EXTENSION;
+    this.memory.buildingList.push(new buildingListElement(spawnPos.x - 1, spawnPos.y - 2, this.name, STRUCTURE_EXTENSION, 3));
 
-    Game.rooms[this.name].memory.roomPlan[spawnPos.x - 2][spawnPos.y - 3] = STRUCTURE_EXTENSION;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(spawnPos.x - 2, spawnPos.y - 3, this.name, STRUCTURE_EXTENSION, 3));
+    this.memory.roomPlan[spawnPos.x - 2][spawnPos.y - 3] = STRUCTURE_EXTENSION;
+    this.memory.buildingList.push(new buildingListElement(spawnPos.x - 2, spawnPos.y - 3, this.name, STRUCTURE_EXTENSION, 3));
 
-    // if (Game.rooms[this.name].controller.level >= 4) {
-    Game.rooms[this.name].memory.roomPlan[spawnPos.x - 2][spawnPos.y - 4] = STRUCTURE_EXTENSION;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(spawnPos.x - 2, spawnPos.y - 4, this.name, STRUCTURE_EXTENSION, 4));
-    Game.rooms[this.name].memory.roomPlan[spawnPos.x - 1][spawnPos.y - 4] = STRUCTURE_EXTENSION;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(spawnPos.x - 1, spawnPos.y - 4, this.name, STRUCTURE_EXTENSION, 4));
-    //if (Game.rooms[this.name].controller.level >= 5) {
-    Game.rooms[this.name].memory.roomPlan[spawnPos.x][spawnPos.y - 2] = STRUCTURE_LINK;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(spawnPos.x, spawnPos.y - 2, this.name, STRUCTURE_LINK, 3));
-    Game.rooms[this.name].memoryfiller_link_pos = new RoomPosition(spawnPos.x, spawnPos.y - 2, this.name)
+    // if (this.controller.level >= 4) {
+    this.memory.roomPlan[spawnPos.x - 2][spawnPos.y - 4] = STRUCTURE_EXTENSION;
+    this.memory.buildingList.push(new buildingListElement(spawnPos.x - 2, spawnPos.y - 4, this.name, STRUCTURE_EXTENSION, 4));
+    this.memory.roomPlan[spawnPos.x - 1][spawnPos.y - 4] = STRUCTURE_EXTENSION;
+    this.memory.buildingList.push(new buildingListElement(spawnPos.x - 1, spawnPos.y - 4, this.name, STRUCTURE_EXTENSION, 4));
+    //if (this.controller.level >= 5) {
+    this.memory.roomPlan[spawnPos.x][spawnPos.y - 2] = STRUCTURE_LINK;
+    this.memory.buildingList.push(new buildingListElement(spawnPos.x, spawnPos.y - 2, this.name, STRUCTURE_LINK, 3));
+    this.memory.fillerLinkPos = new RoomPosition(spawnPos.x, spawnPos.y - 2, this.name)
 
     //}
     // }
@@ -510,22 +518,22 @@ function planMainSpawnStamp(roomCM) {
 
     for (let i = 0; i < 5; i++) {
         //bottom edge
-        Game.rooms[this.name].memory.roomPlan[spawnPos.x - 2 + i][spawnPos.y + 1] = STRUCTURE_ROAD;
-        Game.rooms[this.name].memory.buildingList.push(new buildingListElement(spawnPos.x - 2 + i, spawnPos.y + 1, this.name, STRUCTURE_ROAD, 2));
+        this.memory.roomPlan[spawnPos.x - 2 + i][spawnPos.y + 1] = STRUCTURE_ROAD;
+        this.memory.buildingList.push(new buildingListElement(spawnPos.x - 2 + i, spawnPos.y + 1, this.name, STRUCTURE_ROAD, 2));
         //top edge
-        Game.rooms[this.name].memory.roomPlan[spawnPos.x - 2 + i][spawnPos.y - 5] = STRUCTURE_ROAD;
-        Game.rooms[this.name].memory.buildingList.push(new buildingListElement(spawnPos.x - 2 + i, spawnPos.y - 5, this.name, STRUCTURE_ROAD, 2));
+        this.memory.roomPlan[spawnPos.x - 2 + i][spawnPos.y - 5] = STRUCTURE_ROAD;
+        this.memory.buildingList.push(new buildingListElement(spawnPos.x - 2 + i, spawnPos.y - 5, this.name, STRUCTURE_ROAD, 2));
         //left edge
-        Game.rooms[this.name].memory.roomPlan[spawnPos.x - 3][spawnPos.y - i] = STRUCTURE_ROAD;
-        Game.rooms[this.name].memory.buildingList.push(new buildingListElement(spawnPos.x - 3, spawnPos.y - i, this.name, STRUCTURE_ROAD, 2));
+        this.memory.roomPlan[spawnPos.x - 3][spawnPos.y - i] = STRUCTURE_ROAD;
+        this.memory.buildingList.push(new buildingListElement(spawnPos.x - 3, spawnPos.y - i, this.name, STRUCTURE_ROAD, 2));
         //right edge
-        Game.rooms[this.name].memory.roomPlan[spawnPos.x + 3][spawnPos.y - i] = STRUCTURE_ROAD;
-        Game.rooms[this.name].memory.buildingList.push(new buildingListElement(spawnPos.x + 3, spawnPos.y - i, this.name, STRUCTURE_ROAD, 2));
+        this.memory.roomPlan[spawnPos.x + 3][spawnPos.y - i] = STRUCTURE_ROAD;
+        this.memory.buildingList.push(new buildingListElement(spawnPos.x + 3, spawnPos.y - i, this.name, STRUCTURE_ROAD, 2));
     }
 
     for (let i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
-            if (Game.rooms[this.name].memory.roomPlan[i][j] != 0) {
+            if (this.memory.roomPlan[i][j] != 0) {
                 roomCM.set(i, j, 255);
             }
         }
@@ -533,11 +541,11 @@ function planMainSpawnStamp(roomCM) {
 }
 
 
-function planLabsStamp(roomCM) {
+Room.prototype.planLabsStamp = function planLabsStamp(roomCM) {
     var isSuccess = false;
     for (let i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
-            if (Game.rooms[this.name].memory.roomPlan[i][j] != 0) {
+            if (this.memory.roomPlan[i][j] != 0) {
                 roomCM.set(i, j, 255);
             }
         }
@@ -545,10 +553,10 @@ function planLabsStamp(roomCM) {
 
     var posForLabs = new RoomPosition(-0, -0, this.name);
     seeds = [];
-    seeds.push(Game.rooms[this.name].memory.storagePos);
+    seeds.push(this.memory.storagePos);
 
-    distanceCM = Game.rooms[this.name].diagonalDistanceTransform(roomCM, false);
-    floodCM = Game.rooms[this.name].floodFill(seeds);
+    distanceCM = this.diagonalDistanceTransform(roomCM, false);
+    floodCM = this.floodFill(seeds);
 
     minDistanceFromStorage = Infinity;
     for (i = 0; i < 50; i++) {
@@ -563,89 +571,89 @@ function planLabsStamp(roomCM) {
     }
     console.log("x: ", posForLabs.x, " y: ", posForLabs.y)
     if (posForLabs.x != 0 && posForLabs.y != 0) {
-        createLabsStamp(posForLabs.x, posForLabs.y)
+        this.createLabsStamp(posForLabs.x, posForLabs.y)
     }
 
 
     for (let i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
-            if (Game.rooms[this.name].memory.roomPlan[i][j] != 0) {
+            if (this.memory.roomPlan[i][j] != 0) {
                 roomCM.set(i, j, 255);
                 isSuccess = true;
             }
         }
     }
-    Game.rooms[this.name].memory.outputLabsId = undefined
-    Game.rooms[this.name].memory.labsStampPos = new RoomPosition(posForLabs.x, posForLabs.y, this.name)
+    this.memory.outputLabsId = undefined
+    this.memory.labsStampPos = new RoomPosition(posForLabs.x, posForLabs.y, this.name)
     return isSuccess;
 
 
 
 }
 
-function createLabsStamp(x, y) {
+Room.prototype.createLabsStamp = function createLabsStamp(x, y) {
     console.log("pos for labs: ", x, " ", y)
-    Game.rooms[this.name].memory.roomPlan[x - 1][y] = STRUCTURE_LAB;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x - 1, y, this.name, STRUCTURE_LAB, 6));
-    Game.rooms[this.name].memory.inputLab1Pos = new RoomPosition(x - 1, y, this.name)
+    this.memory.roomPlan[x - 1][y] = STRUCTURE_LAB;
+    this.memory.buildingList.push(new buildingListElement(x - 1, y, this.name, STRUCTURE_LAB, 6));
+    this.memory.inputLab1Pos = new RoomPosition(x - 1, y, this.name)
 
-    Game.rooms[this.name].memory.roomPlan[x][y + 1] = STRUCTURE_LAB;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x, y + 1, this.name, STRUCTURE_LAB, 6));
-    Game.rooms[this.name].memory.inputLab2Pos = new RoomPosition(x, y + 1, this.name)
+    this.memory.roomPlan[x][y + 1] = STRUCTURE_LAB;
+    this.memory.buildingList.push(new buildingListElement(x, y + 1, this.name, STRUCTURE_LAB, 6));
+    this.memory.inputLab2Pos = new RoomPosition(x, y + 1, this.name)
 
-    Game.rooms[this.name].memory.roomPlan[x + 1][y + 1] = STRUCTURE_LAB;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x + 1, y + 1, this.name, STRUCTURE_LAB, 6));
-    Game.rooms[this.name].memoryboostingLabPos = new RoomPosition(x + 1, y + 1, this.name)
+    this.memory.roomPlan[x + 1][y + 1] = STRUCTURE_LAB;
+    this.memory.buildingList.push(new buildingListElement(x + 1, y + 1, this.name, STRUCTURE_LAB, 6));
+    this.memoryboostingLabPos = new RoomPosition(x + 1, y + 1, this.name)
 
-    Game.rooms[this.name].memory.roomPlan[x + 1][y] = STRUCTURE_LAB;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x + 1, y, this.name, STRUCTURE_LAB, 7));
+    this.memory.roomPlan[x + 1][y] = STRUCTURE_LAB;
+    this.memory.buildingList.push(new buildingListElement(x + 1, y, this.name, STRUCTURE_LAB, 7));
 
-    Game.rooms[this.name].memory.roomPlan[x][y - 1] = STRUCTURE_LAB;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x, y - 1, this.name, STRUCTURE_LAB, 7));
+    this.memory.roomPlan[x][y - 1] = STRUCTURE_LAB;
+    this.memory.buildingList.push(new buildingListElement(x, y - 1, this.name, STRUCTURE_LAB, 7));
 
-    Game.rooms[this.name].memory.roomPlan[x - 1][y - 1] = STRUCTURE_LAB;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x - 1, y - 1, this.name, STRUCTURE_LAB, 7));
+    this.memory.roomPlan[x - 1][y - 1] = STRUCTURE_LAB;
+    this.memory.buildingList.push(new buildingListElement(x - 1, y - 1, this.name, STRUCTURE_LAB, 7));
 
-    Game.rooms[this.name].memory.roomPlan[x - 2][y] = STRUCTURE_LAB;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x - 2, y, this.name, STRUCTURE_LAB, 8));
+    this.memory.roomPlan[x - 2][y] = STRUCTURE_LAB;
+    this.memory.buildingList.push(new buildingListElement(x - 2, y, this.name, STRUCTURE_LAB, 8));
 
-    Game.rooms[this.name].memory.roomPlan[x - 2][y + 1] = STRUCTURE_LAB;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x - 2, y + 1, this.name, STRUCTURE_LAB, 8));
+    this.memory.roomPlan[x - 2][y + 1] = STRUCTURE_LAB;
+    this.memory.buildingList.push(new buildingListElement(x - 2, y + 1, this.name, STRUCTURE_LAB, 8));
 
-    Game.rooms[this.name].memory.roomPlan[x - 1][y + 2] = STRUCTURE_LAB;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x - 1, y + 2, this.name, STRUCTURE_LAB, 8));
+    this.memory.roomPlan[x - 1][y + 2] = STRUCTURE_LAB;
+    this.memory.buildingList.push(new buildingListElement(x - 1, y + 2, this.name, STRUCTURE_LAB, 8));
 
-    Game.rooms[this.name].memory.roomPlan[x][y + 2] = STRUCTURE_LAB;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x, y + 2, this.name, STRUCTURE_LAB, 8));
+    this.memory.roomPlan[x][y + 2] = STRUCTURE_LAB;
+    this.memory.buildingList.push(new buildingListElement(x, y + 2, this.name, STRUCTURE_LAB, 8));
 
     for (let i = 0; i < 3; i++) {
         // TOP LEFT
-        Game.rooms[this.name].memory.roomPlan[x - 3 + i][y - i] = STRUCTURE_ROAD;
-        Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x - 3 + i, y - i, this.name, STRUCTURE_ROAD, 6));
+        this.memory.roomPlan[x - 3 + i][y - i] = STRUCTURE_ROAD;
+        this.memory.buildingList.push(new buildingListElement(x - 3 + i, y - i, this.name, STRUCTURE_ROAD, 6));
 
         // TOP RIGHT
-        Game.rooms[this.name].memory.roomPlan[x + i][y - 2 + i] = STRUCTURE_ROAD;
-        Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x + i, y - 2 + i, this.name, STRUCTURE_ROAD, 6));
+        this.memory.roomPlan[x + i][y - 2 + i] = STRUCTURE_ROAD;
+        this.memory.buildingList.push(new buildingListElement(x + i, y - 2 + i, this.name, STRUCTURE_ROAD, 6));
 
         // BOTTOM LEFT
-        Game.rooms[this.name].memory.roomPlan[x - 3 + i][y + 1 + i] = STRUCTURE_ROAD;
-        Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x - 3 + i, y + 1 + i, this.name, STRUCTURE_ROAD, 6));
+        this.memory.roomPlan[x - 3 + i][y + 1 + i] = STRUCTURE_ROAD;
+        this.memory.buildingList.push(new buildingListElement(x - 3 + i, y + 1 + i, this.name, STRUCTURE_ROAD, 6));
 
         // BOTTOM RIGHT
-        Game.rooms[this.name].memory.roomPlan[x + i][y + 3 - i] = STRUCTURE_ROAD;
-        Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x + i, y + 3 - i, this.name, STRUCTURE_ROAD, 6));
+        this.memory.roomPlan[x + i][y + 3 - i] = STRUCTURE_ROAD;
+        this.memory.buildingList.push(new buildingListElement(x + i, y + 3 - i, this.name, STRUCTURE_ROAD, 6));
 
         // MIDDLE
-        Game.rooms[this.name].memory.roomPlan[x - 2 + i][y + 2 - i] = STRUCTURE_ROAD;
-        Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x - 2 + i, y + 2 - i, this.name, STRUCTURE_ROAD, 6));
+        this.memory.roomPlan[x - 2 + i][y + 2 - i] = STRUCTURE_ROAD;
+        this.memory.buildingList.push(new buildingListElement(x - 2 + i, y + 2 - i, this.name, STRUCTURE_ROAD, 6));
     }
 }
 
-function planTowersStamp(roomCM) {
+Room.prototype.planTowersStamp = function planTowersStamp(roomCM, type) {
     var isSuccess = false;
     for (let i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
-            if (Game.rooms[this.name].memory.roomPlan[i][j] != 0) {
+            if (this.memory.roomPlan[i][j] != 0) {
                 roomCM.set(i, j, 255);
             }
         }
@@ -653,14 +661,14 @@ function planTowersStamp(roomCM) {
 
     var posForTower = new RoomPosition(0, 0, this.name);
     seeds = [];
-    seeds.push(Game.rooms[this.name].memory.storagePos);
-    if (Game.rooms[this.name].memory.spawnPos != undefined) {
-        seeds.push(Game.rooms[this.name].memory.spawnPos)
+    seeds.push(this.memory.storagePos);
+    if (global.heap.rooms[this.name].baseVariations[type].startPos != undefined) {
+        seeds.push(global.heap.rooms[this.name].baseVariations[type].startPos)
     }
 
-    distanceCM = Game.rooms[this.name].distanceTransform(roomCM, false);
+    distanceCM = this.distanceTransform(roomCM, false);
     //Memory.roomVisuals=false;
-    floodCM = Game.rooms[this.name].floodFill(seeds);
+    floodCM = this.floodFill(seeds);
 
     minDistanceFromSpawn = 100;
     for (i = 0; i < 50; i++) {
@@ -673,14 +681,14 @@ function planTowersStamp(roomCM) {
         }
     }
 
-    createTowerStamp(posForTower.x, posForTower.y)
-    Game.rooms[this.name].memory.posForTowerKeeper = posForTower;
-    //Game.rooms[this.name].memory.roomPlan[posForTower.x][posForTower.y] = STRUCTURE_TOWER;
-    //Game.rooms[this.name].memory.buildingList.push(new buildingListElement(posForTower.x, posForTower.y, this.name, STRUCTURE_TOWER, rcl));
+    this.createTowerStamp(posForTower.x, posForTower.y)
+    this.memory.posForTowerKeeper = posForTower;
+    //this.memory.roomPlan[posForTower.x][posForTower.y] = STRUCTURE_TOWER;
+    //this.memory.buildingList.push(new buildingListElement(posForTower.x, posForTower.y, this.name, STRUCTURE_TOWER, rcl));
 
     for (let i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
-            if (Game.rooms[this.name].memory.roomPlan[i][j] != 0) {
+            if (this.memory.roomPlan[i][j] != 0) {
                 roomCM.set(i, j, 255);
                 isSuccess = true;
             }
@@ -691,74 +699,74 @@ function planTowersStamp(roomCM) {
 
 }
 
-function createTowerStamp(x, y) {
-    //Game.rooms[this.name].memory.roomPlan[x][y - 1] = STRUCTURE_CONTAINER;
-    //Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x - 1, y - 1, this.name, STRUCTURE_CONTAINER, 3));
+Room.prototype.createTowerStamp = function createTowerStamp(x, y) {
+    //this.memory.roomPlan[x][y - 1] = STRUCTURE_CONTAINER;
+    //this.memory.buildingList.push(new buildingListElement(x - 1, y - 1, this.name, STRUCTURE_CONTAINER, 3));
 
-    Game.rooms[this.name].memory.roomPlan[x - 1][y - 1] = STRUCTURE_LINK;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x - 1, y - 1, this.name, STRUCTURE_LINK, 8));
+    this.memory.roomPlan[x - 1][y - 1] = STRUCTURE_LINK;
+    this.memory.buildingList.push(new buildingListElement(x - 1, y - 1, this.name, STRUCTURE_LINK, 8));
 
-    Game.rooms[this.name].memory.roomPlan[x - 1][y] = STRUCTURE_TOWER;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x - 1, y, this.name, STRUCTURE_TOWER, 3));
+    this.memory.roomPlan[x - 1][y] = STRUCTURE_TOWER;
+    this.memory.buildingList.push(new buildingListElement(x - 1, y, this.name, STRUCTURE_TOWER, 3));
 
-    Game.rooms[this.name].memory.roomPlan[x - 1][y + 1] = STRUCTURE_TOWER;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x - 1, y + 1, this.name, STRUCTURE_TOWER, 5));
+    this.memory.roomPlan[x - 1][y + 1] = STRUCTURE_TOWER;
+    this.memory.buildingList.push(new buildingListElement(x - 1, y + 1, this.name, STRUCTURE_TOWER, 5));
 
-    Game.rooms[this.name].memory.roomPlan[x][y + 1] = STRUCTURE_TOWER;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x, y + 1, this.name, STRUCTURE_TOWER, 7));
+    this.memory.roomPlan[x][y + 1] = STRUCTURE_TOWER;
+    this.memory.buildingList.push(new buildingListElement(x, y + 1, this.name, STRUCTURE_TOWER, 7));
 
-    Game.rooms[this.name].memory.roomPlan[x + 1][y + 1] = STRUCTURE_TOWER;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x + 1, y + 1, this.name, STRUCTURE_TOWER, 8));
+    this.memory.roomPlan[x + 1][y + 1] = STRUCTURE_TOWER;
+    this.memory.buildingList.push(new buildingListElement(x + 1, y + 1, this.name, STRUCTURE_TOWER, 8));
 
-    Game.rooms[this.name].memory.roomPlan[x + 1][y] = STRUCTURE_TOWER;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x + 1, y, this.name, STRUCTURE_TOWER, 8));
+    this.memory.roomPlan[x + 1][y] = STRUCTURE_TOWER;
+    this.memory.buildingList.push(new buildingListElement(x + 1, y, this.name, STRUCTURE_TOWER, 8));
 
-    Game.rooms[this.name].memory.roomPlan[x + 1][y - 1] = STRUCTURE_TOWER;
-    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(x + 1, y - 1, this.name, STRUCTURE_TOWER, 8));
+    this.memory.roomPlan[x + 1][y - 1] = STRUCTURE_TOWER;
+    this.memory.buildingList.push(new buildingListElement(x + 1, y - 1, this.name, STRUCTURE_TOWER, 8));
 
 }
 
 
-function buildFromLists() {
-    var rcl = Game.rooms[this.name].controller.level;
-    for (let i = 0; i < Game.rooms[this.name].memory.buildingList.length; i++) {
-        if (Game.rooms[Game.rooms[this.name].memory.buildingList[i].roomName] != undefined && (Game.rooms[this.name].memory.buildingList[i].minRCL <= rcl || Game.rooms[this.name].memory.buildingList[i] == undefined)) {
-            if (Game.rooms[this.name].memory.buildingList[i].structureType == STRUCTURE_SPAWN && Game.rooms[this.name].memory.buildingList[i].minRCL == 7) {
-                Game.rooms[Game.rooms[this.name].memory.buildingList[i].roomName].createConstructionSite(Game.rooms[this.name].memory.buildingList[i].x, Game.rooms[this.name].memory.buildingList[i].y,
-                    Game.rooms[this.name].memory.buildingList[i].structureType, this.name + "_2");
+Room.prototype.buildFromLists = function buildFromLists() {
+    var rcl = this.controller.level;
+    for (let i = 0; i < this.memory.buildingList.length; i++) {
+        if (Game.rooms[this.memory.buildingList[i].roomName] != undefined && (this.memory.buildingList[i].minRCL <= rcl || this.memory.buildingList[i] == undefined)) {
+            if (this.memory.buildingList[i].structureType == STRUCTURE_SPAWN && this.memory.buildingList[i].minRCL == 7) {
+                Game.rooms[this.memory.buildingList[i].roomName].createConstructionSite(this.memory.buildingList[i].x, this.memory.buildingList[i].y,
+                    this.memory.buildingList[i].structureType, this.name + "_2");
 
             }
-            else if (Game.rooms[this.name].memory.buildingList[i].structureType == STRUCTURE_SPAWN && Game.rooms[this.name].memory.buildingList[i].minRCL == 8) {
-                Game.rooms[Game.rooms[this.name].memory.buildingList[i].roomName].createConstructionSite(Game.rooms[this.name].memory.buildingList[i].x, Game.rooms[this.name].memory.buildingList[i].y,
-                    Game.rooms[this.name].memory.buildingList[i].structureType, this.name + "_3");
+            else if (this.memory.buildingList[i].structureType == STRUCTURE_SPAWN && this.memory.buildingList[i].minRCL == 8) {
+                Game.rooms[this.memory.buildingList[i].roomName].createConstructionSite(this.memory.buildingList[i].x, this.memory.buildingList[i].y,
+                    this.memory.buildingList[i].structureType, this.name + "_3");
 
             }
-            else if (Game.rooms[this.name].memory.buildingList[i].structureType == STRUCTURE_RAMPART && Game.rooms[this.name].memory.buildingList[i].minRCL <= rcl) {
-                Game.rooms[Game.rooms[this.name].memory.buildingList[i].roomName].createConstructionSite(Game.rooms[this.name].memory.buildingList[i].x, Game.rooms[this.name].memory.buildingList[i].y, Game.rooms[this.name].memory.buildingList[i].structureType);
+            else if (this.memory.buildingList[i].structureType == STRUCTURE_RAMPART && this.memory.buildingList[i].minRCL <= rcl) {
+                Game.rooms[this.memory.buildingList[i].roomName].createConstructionSite(this.memory.buildingList[i].x, this.memory.buildingList[i].y, this.memory.buildingList[i].structureType);
 
             }
-            else if (isPosFree(Game.rooms[this.name].memory.buildingList[i].x, Game.rooms[this.name].memory.buildingList[i].y, Game.rooms[this.name].memory.buildingList[i].roomName) == true
-                && Game.rooms[this.name].memory.buildingList[i].minRCL <= rcl) {
-                Game.rooms[Game.rooms[this.name].memory.buildingList[i].roomName].createConstructionSite(Game.rooms[this.name].memory.buildingList[i].x, Game.rooms[this.name].memory.buildingList[i].y, Game.rooms[this.name].memory.buildingList[i].structureType);
+            else if (isPosFree(this.memory.buildingList[i].x, this.memory.buildingList[i].y, this.memory.buildingList[i].roomName) == true
+                && this.memory.buildingList[i].minRCL <= rcl) {
+                Game.rooms[this.memory.buildingList[i].roomName].createConstructionSite(this.memory.buildingList[i].x, this.memory.buildingList[i].y, this.memory.buildingList[i].structureType);
             }
 
 
         }
     }
 
-    for (let i = 0; i < Game.rooms[this.name].memory.roadBuildingList.length; i++) {
+    for (let i = 0; i < this.memory.roadBuildingList.length; i++) {
 
-        if (Game.rooms[this.name].memory.roadBuildingList[i].minRCL <= rcl && Game.rooms[Game.rooms[this.name].memory.roadBuildingList[i].roomName] != undefined) {
-            Game.rooms[Game.rooms[this.name].memory.roadBuildingList[i].roomName].createConstructionSite(Game.rooms[this.name].memory.roadBuildingList[i].x, Game.rooms[this.name].memory.roadBuildingList[i].y, Game.rooms[this.name].memory.roadBuildingList[i].structureType);
+        if (this.memory.roadBuildingList[i].minRCL <= rcl && Game.rooms[this.memory.roadBuildingList[i].roomName] != undefined) {
+            Game.rooms[this.memory.roadBuildingList[i].roomName].createConstructionSite(this.memory.roadBuildingList[i].x, this.memory.roadBuildingList[i].y, this.memory.roadBuildingList[i].structureType);
         }
     }
 }
 
-function planBorders(rcl,type) {
-    const buildings = Game.rooms[this.name].memory.buildingList;
+Room.prototype.planBorders = function planBorders(rcl, type) {
+    const buildings = this.memory.buildingList;
     const sources2 = [];
     const costMap = new PathFinder.CostMatrix();
-    const terrain = Game.rooms[this.name].getTerrain()
+    const terrain = this.getTerrain()
 
     for (let y = 0; y < 50; y++) {
         for (let x = 0; x < 50; x++) {
@@ -823,17 +831,17 @@ function planBorders(rcl,type) {
     // Update roomPlan and buildingList with rampart positions
     rampartsAmount = 0;
     rampartPositions.forEach(pos => {
-        Game.rooms[this.name].memory.roomPlan[pos.x][pos.y] = STRUCTURE_RAMPART;
+        this.memory.roomPlan[pos.x][pos.y] = STRUCTURE_RAMPART;
 
         buildings.push({ x: pos.x, y: pos.y, structureType: STRUCTURE_RAMPART, rcl });
         rampartsAmount++
-        Game.rooms[this.name].memory.buildingList.push(new buildingListElement(pos.x, pos.y, this.name, STRUCTURE_RAMPART, rcl));
+        this.memory.buildingList.push(new buildingListElement(pos.x, pos.y, this.name, STRUCTURE_RAMPART, rcl));
 
 
     });
-    
-    global.heap.rooms[this.name].baseVariations[type].rampartsAmount=rampartsAmount
-    
+
+    global.heap.rooms[this.name].baseVariations[type].rampartsAmount = rampartsAmount
+
 
     //terrain = Room.Terrain(this.name)
     var seeds = []
@@ -857,22 +865,22 @@ function planBorders(rcl,type) {
 }
 
 
-function planControllerRamparts() {
-    var controller_ramparts = Game.rooms[this.name].controller.pos.getNearbyPositions();
+Room.prototype.planControllerRamparts = function planControllerRamparts() {
+    var controller_ramparts = this.controller.pos.getNearbyPositions();
     for (let position of controller_ramparts) {
-        Game.rooms[this.name].memory.roomPlan[position.x][position.y] = STRUCTURE_RAMPART;
-        Game.rooms[this.name].memory.buildingList.push(new buildingListElement(position.x, position.y, this.name, STRUCTURE_RAMPART, 4));
+        this.memory.roomPlan[position.x][position.y] = STRUCTURE_RAMPART;
+        this.memory.buildingList.push(new buildingListElement(position.x, position.y, this.name, STRUCTURE_RAMPART, 4));
     }
 }
 
-function planControllerContainer( roomCM) {
+Room.prototype.planControllerContainer = function planControllerContainer(roomCM) {
     seeds = [];
-    seeds.push(Game.rooms[this.name].controller.pos);
-    distanceCM = Game.rooms[this.name].distanceTransform(roomCM, false);
+    seeds.push(this.controller.pos);
+    distanceCM = this.distanceTransform(roomCM, false);
 
-    Game.rooms[this.name].memorycontrollerLinkPos = undefined;
+    this.memorycontrollerLinkPos = undefined;
 
-    floodCM = Game.rooms[this.name].floodFill(seeds);
+    floodCM = this.floodFill(seeds);
     var posForContainer = new RoomPosition(0, 0, this.name);
 
     minDistanceFromController = 100;
@@ -887,15 +895,15 @@ function planControllerContainer( roomCM) {
     }
 
     if (posForContainer.x != 0 && posForContainer.y != 0) {
-        Game.rooms[this.name].memory.roomPlan[posForContainer.x][posForContainer.y] = STRUCTURE_CONTAINER;
-        Game.rooms[this.name].memory.buildingList.push(new buildingListElement(posForContainer.x, posForContainer.y, this.name, STRUCTURE_CONTAINER, 2));
-        Game.rooms[this.name].memory.controllerContainerPos = posForContainer
+        this.memory.roomPlan[posForContainer.x][posForContainer.y] = STRUCTURE_CONTAINER;
+        this.memory.buildingList.push(new buildingListElement(posForContainer.x, posForContainer.y, this.name, STRUCTURE_CONTAINER, 2));
+        this.memory.controllerContainerPos = posForContainer
         console.log("pos for container: ", posForContainer.x, " ", posForContainer.y)
 
-        if (Game.rooms[this.name].memory.roomPlan[posForContainer.x + 1][posForContainer.y] == 0) {
-            Game.rooms[this.name].memory.roomPlan[posForContainer.x + 1][posForContainer.y] = STRUCTURE_LINK;
-            Game.rooms[this.name].memory.buildingList.push(new buildingListElement(posForContainer.x + 1, posForContainer.y, this.name, STRUCTURE_LINK, 6));
-            Game.rooms[this.name].memorycontrollerLinkPos = new RoomPosition(posForContainer.x + 1, posForContainer.y, this.name);
+        if (this.memory.roomPlan[posForContainer.x + 1][posForContainer.y] == 0) {
+            this.memory.roomPlan[posForContainer.x + 1][posForContainer.y] = STRUCTURE_LINK;
+            this.memory.buildingList.push(new buildingListElement(posForContainer.x + 1, posForContainer.y, this.name, STRUCTURE_LINK, 6));
+            this.memorycontrollerLinkPos = new RoomPosition(posForContainer.x + 1, posForContainer.y, this.name);
         }
     }
 
@@ -904,11 +912,11 @@ function planControllerContainer( roomCM) {
 
 
 
-function planSourcesContainers() {
+Room.prototype.planSourcesContainers = function planSourcesContainers() {
 
-    Game.rooms[this.name].memory.sourcesLinksPos = []
+    this.memory.sourcesLinksPos = []
 
-    for (sourceId of Game.rooms[this.name].memory.harvestingSources) {
+    for (sourceId of this.memory.harvestingSources) {
 
         var source = Game.getObjectById(sourceId.id)
         if (source != undefined) {
@@ -917,10 +925,10 @@ function planSourcesContainers() {
             for (let position of sourcePos) {
                 if (terrain.get(position.x, position.y) != TERRAIN_MASK_WALL) {
                     if (source.room.name == this.name) {
-                        Game.rooms[this.name].memory.roomPlan[position.x][position.y] = STRUCTURE_CONTAINER;
+                        this.memory.roomPlan[position.x][position.y] = STRUCTURE_CONTAINER;
                     }
 
-                    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(position.x, position.y, source.room.name, STRUCTURE_CONTAINER, 2));
+                    this.memory.buildingList.push(new buildingListElement(position.x, position.y, source.room.name, STRUCTURE_CONTAINER, 2));
                     break;
                 }
             }
@@ -932,16 +940,16 @@ function planSourcesContainers() {
                     var isFree = true;
                     for (let str of structuresOnPos) {
                         if (/*str.structureType == STRUCTURE_CONTAINER || */ str.structureType == STRUCTURE_WALL || terrain.get(position.x, position.y) == TERRAIN_MASK_WALL
-                            || Game.rooms[this.name].memory.roomPlan[position.x][position.y] == STRUCTURE_CONTAINER) {
+                            || this.memory.roomPlan[position.x][position.y] == STRUCTURE_CONTAINER) {
                             isFree = false;
                             break;
                         }
                     }
                     if (isFree) {
                         //console.log("pos: ",position," is free");
-                        Game.rooms[this.name].memory.roomPlan[position.x][position.y] = STRUCTURE_LINK;
-                        Game.rooms[this.name].memory.buildingList.push(new buildingListElement(position.x, position.y, this.name, STRUCTURE_LINK, 8));
-                        Game.rooms[this.name].memory.sourcesLinksPos.push(new RoomPosition(position.x, position.y, this.name))
+                        this.memory.roomPlan[position.x][position.y] = STRUCTURE_LINK;
+                        this.memory.buildingList.push(new buildingListElement(position.x, position.y, this.name, STRUCTURE_LINK, 8));
+                        this.memory.sourcesLinksPos.push(new RoomPosition(position.x, position.y, this.name))
                         break;
                     }/*
                     else
@@ -959,9 +967,9 @@ function planSourcesContainers() {
     }
 }
 
-function planKeeperSourcesContainers(rcl) {
+Room.prototype.planKeeperSourcesContainers = function planKeeperSourcesContainers(rcl) {
 
-    for (sourceId of Game.rooms[this.name].memory.keepersSources) {
+    for (sourceId of this.memory.keepersSources) {
 
         var source = Game.getObjectById(sourceId.id)
         if (source != undefined) {
@@ -970,10 +978,10 @@ function planKeeperSourcesContainers(rcl) {
             for (let position of sourcePos) {
                 if (terrain.get(position.x, position.y) != TERRAIN_MASK_WALL) {
                     if (source.room.name == this.name) {
-                        //Game.rooms[this.name].memory.roomPlan[position.x][position.y] = STRUCTURE_CONTAINER;
+                        //this.memory.roomPlan[position.x][position.y] = STRUCTURE_CONTAINER;
                     }
 
-                    Game.rooms[this.name].memory.buildingList.push(new buildingListElement(position.x, position.y, source.room.name, STRUCTURE_CONTAINER, rcl));
+                    this.memory.buildingList.push(new buildingListElement(position.x, position.y, source.room.name, STRUCTURE_CONTAINER, rcl));
                     break;
                 }
             }
@@ -982,17 +990,152 @@ function planKeeperSourcesContainers(rcl) {
 
     }
 }
-Spawn.prototype.buildRoom = function buildRoom(type) {
 
-    
+Room.prototype.visualizeBase = function visualizeBase() {
+    for (let i = 0; i < 50; i++) {
+        for (let j = 0; j < 50; j++) {
+            if (this.memory.roomPlan[i][j] == STRUCTURE_EXTENSION) {
+                this.visual.circle(i, j, { fill: '#ffff00', radius: 0.5, stroke: 'red' });
+                ////console.log("SHOWING EXTENSION");
+            }
+            else if (this.memory.roomPlan[i][j] == STRUCTURE_ROAD) {
+                this.visual.circle(i, j, { fill: '#666666', radius: 0.5, stroke: 'black' });
+            }
+            else if (this.memory.roomPlan[i][j] == STRUCTURE_CONTAINER) {
+                this.visual.rect(i - 0.25, j - 0.4, 0.5, 0.8, { fill: 'red', stroke: 'black' });
+            }
+            else if (this.memory.roomPlan[i][j] == STRUCTURE_SPAWN) {
+                this.visual.circle(i, j, { fill: '#666666', radius: 0.5, stroke: 'pink' });
+            }
+            else if (this.memory.roomPlan[i][j] == STRUCTURE_STORAGE) {
+                this.visual.rect(i - 0.25, j - 0.4, 0.5, 0.8, { fill: '#666666', stroke: 'white' });
+            }
+            else if (this.memory.roomPlan[i][j] == STRUCTURE_TOWER) {
+                this.visual.circle(i, j, { fill: 'red', radius: 0.5, stroke: 'red' });
+            }
+            else if (this.memory.roomPlan[i][j] == STRUCTURE_RAMPART) {
+                this.visual.circle(i, j, { fill: 'green', radius: 0.5, stroke: 'green' });
+            }
+            else if (this.memory.roomPlan[i][j] == STRUCTURE_WALL) {
+                this.visual.rect(i - 0.25, j - 0.4, 0.5, 0.8, { fill: '#000000', stroke: 'grey' });
+            }
+            else if (this.memory.roomPlan[i][j] == STRUCTURE_LINK) {
+                this.visual.rect(i - 0.25, j - 0.4, 0.5, 0.8, { fill: '#000000', stroke: 'blue' });
+            }
+            else if (this.memory.roomPlan[i][j] == STRUCTURE_LAB) {
+                this.visual.circle(i - 0.25, j - 0.4, 0.5, 0.8, { fill: 'pink', stroke: 'pink' });
+            }
+        }
+    }
+}
+
+Room.prototype.buildRoom = function buildRoom(type) {
+
+    if (global.heap.rooms[this.name].baseVariations[C.SRC_1].startPos == undefined) {
+        var sources = this.find(FIND_SOURCES)
+        var seeds = [];
+        switch (type) {
+            case C.SRC_1:
+                {
+                    seeds.push(sources[0].pos)
+
+                    break;
+                }
+            case C.SRC_2:
+                {
+                    if (source.length > 1) {
+                        seeds.push(sources[1].pos)
+                    }
+                    else {
+                        seeds.push(sources[0].pos)
+                    }
+                    break;
+                }
+            case C.SRC_1_2:
+                {
+                    if (source.length > 1) {
+                        seeds.push(sources[0].pos)
+                        seeds.push(sources[1].pos)
+                    }
+                    else {
+                        seeds.push(sources[0].pos)
+                    }
+                    break;
+                }
+            case C.CONTROLLER:
+                {
+                    seeds.push(this.controller.pos)
+                    break;
+                }
+            case C.SRC_1_CONTROLLER:
+                {
+                    seeds.push(sources[0].pos)
+                    seeds.push(this.controller.pos)
+                    break;
+                }
+            case C.SRC_2_CONTROLLER:
+                {
+                    if (source.length > 1) {
+                        seeds.push(sources[1].pos)
+                    }
+                    else {
+                        seeds.push(sources[0].pos)
+                    }
+                    seeds.push(this.controller.pos)
+                    break;
+                }
+            case C.SRC_1_2_CONTROLLER:
+                {
+                    if (source.length > 1) {
+                        seeds.push(sources[0].pos)
+                        seeds.push(sources[1].pos)
+                    }
+                    else {
+                        seeds.push(sources[0].pos)
+                    }
+                    seeds.push(this.controller.pos)
+                    break;
+                }
+        }
+
+
+
+        let roomCM = new PathFinder.CostMatrix;
+        const terrain = new Room.Terrain(this.name);
+        for (let i = 0; i < 50; i++) {
+            for (let j = 0; j < 50; j++) {
+                if (terrain.get(i, j) == 1) {
+                    roomCM.set(i, j, 255);
+                }
+            }
+        }
+        let distanceCM = this.diagonalDistanceTransform(roomCM, false);
+
+        var floodCM = this.floodFill(seeds);
+        var minPos = new RoomPosition(0, 0, this.name)
+        var minDistanceForSpawn = 999999
+        for (var i = 0; i < 50; i++) {
+            for (var j = 0; j < 50; j++) {
+                if (distanceCM.get(i, j) >= 4 && floodCM.get(i, j - 2) < minDistanceForSpawn && i > 7 && i < 43 && j > 7 && j < 43) {
+                    minDistanceForSpawn = floodCM.get(i, j - 2);
+                    minPos.x = i;
+                    minPos.y = j;
+                }
+            }
+        }
+
+        global.heap.rooms[this.name].baseVariations[C.SRC_1].startPos = new RoomPosition(minPos.x, minPos.y, this.name)
+
+    }
+
     var stage = undefined
     console.log("PLANING BASE AT: ", this.name)
 
-    if (Game.rooms[this.name].memory.controllerContainerPos != undefined) {
-        var cont = Game.rooms[this.name].lookForAt(LOOK_STRUCTURES, Game.rooms[this.name].memory.controllerContainerPos.x, Game.rooms[this.name].memory.controllerContainerPos.y)
+    if (this.memory.controllerContainerPos != undefined) {
+        var cont = this.lookForAt(LOOK_STRUCTURES, this.memory.controllerContainerPos.x, this.memory.controllerContainerPos.y)
         for (c of cont) {
             if (c.structureType == STRUCTURE_CONTAINER) {
-                Game.rooms[this.name].memory.controllerContainerId = c.id
+                this.memory.controllerContainerId = c.id
                 break
             }
         }
@@ -1000,44 +1143,44 @@ Spawn.prototype.buildRoom = function buildRoom(type) {
     }
 
 
-    if (Game.rooms[this.name].memory.roomsToScan != undefined && Game.rooms[this.name].memory.roomsToScan.length > 0) {
-        Game.rooms[this.name].memory.ifSuccessPlanningBase = false;
+    if (this.memory.roomsToScan != undefined && this.memory.roomsToScan.length > 0) {
+        this.memory.ifSuccessPlanningBase = false;
         return
     }
 
-    if (Game.rooms[this.name].memory.ifSuccessPlanningStage == false) {
-        Game.rooms[this.name].memory.buildingStage = undefined
+    if (this.memory.ifSuccessPlanningStage == false) {
+        this.memory.buildingStage = undefined
     }
-    Game.rooms[this.name].memory.ifSuccessPlanningStage = false;
+    this.memory.ifSuccessPlanningStage = false;
 
-    if (Game.rooms[this.name].memory.buildingStage == undefined || (Game.rooms[this.name].memory.buildingStage != undefined && Game.rooms[this.name].memory.buildingStage > 40)) { // if stage is out of bounds
-        Game.rooms[this.name].memory.buildingStage = 0;
-        stage = Game.rooms[this.name].memory.buildingStage;
+    if (this.memory.buildingStage == undefined || (this.memory.buildingStage != undefined && this.memory.buildingStage > 40)) { // if stage is out of bounds
+        this.memory.buildingStage = 0;
+        stage = this.memory.buildingStage;
     }
 
 
 
 
-    if (Game.rooms[this.name].memory.buildingStage != undefined && Game.rooms[this.name].memory.buildingStage < 0 || Game.rooms[this.name].memory.buildingStage > 5) {
+    if (this.memory.buildingStage != undefined && this.memory.buildingStage < 0 || this.memory.buildingStage > 5) {
         console.log("stage out of bounds")
-        if (Game.rooms[this.name].memory.buildingStage > 5) {
+        if (this.memory.buildingStage > 5) {
             //stage++
-            Game.rooms[this.name].memory.buildingStage++;
+            this.memory.buildingStage++;
         }
         return;
     }
-    //Game.rooms[this.name].memory.ifSuccessPlanningBase = false;
+    //this.memory.ifSuccessPlanningBase = false;
 
 
-    if (Game.rooms[this.name].memory.ifSuccessPlanningBase == true) {
+    if (this.memory.ifSuccessPlanningBase == true) {
 
 
         console.log("base planed, building from lists")
-        visualizeBase(spawn)
-        buildFromLists(spawn)
+        this.visualizeBase()
+        this.buildFromLists()
         return;
     }
-    stage = Game.rooms[this.name].memory.buildingStage;
+    stage = this.memory.buildingStage;
 
     //stage=0;
     var rows = 50;
@@ -1046,7 +1189,7 @@ Spawn.prototype.buildRoom = function buildRoom(type) {
 
 
     console.log(this.name, " is planing ", stage, " stage")
-    if (stage == 0 && Game.rooms[this.name].memory.ifSuccessPlanningBase != true) // planning stamps
+    if (stage == 0 && this.memory.ifSuccessPlanningBase != true) // planning stamps
     {
 
         var cpuBefore = Game.cpu.getUsed()
@@ -1060,72 +1203,72 @@ Spawn.prototype.buildRoom = function buildRoom(type) {
             }
         }
 
-        Game.rooms[this.name].memory.roomPlan = new Array(rows).fill(null).map(() => new Array(cols).fill(0));
-        Game.rooms[this.name].memory.buildingList = [];
-        Game.rooms[this.name].memory.roadBuildingList = [];
+        this.memory.roomPlan = new Array(rows).fill(null).map(() => new Array(cols).fill(0));
+        this.memory.buildingList = [];
+        this.memory.roadBuildingList = [];
 
-        planMainSpawnStamp(roomCM);
+        this.planMainSpawnStamp(roomCM, type);
 
-        planManagerStamp(roomCM);
-        planControllerContainer(roomCM)
+        this.planManagerStamp(roomCM, type);
+        this.planControllerContainer(roomCM)
 
 
         //plan_road_to_controller(spawn, roomCM);
-        planExtensionStamp(roomCM, 4);
-        planExtensionStamp(roomCM, 5);
-        planExtensionStamp(roomCM, 6);
-        planExtensionStamp(roomCM, 6);
-        planExtensionStamp(roomCM, 7);
-        planExtensionStamp(roomCM, 7);
-        planTowersStamp(roomCM);
-        planLabsStamp(roomCM);
-        planSourcesContainers(roomCM, 2);
-        planKeeperSourcesContainers( 7)
+        this.planExtensionStamp(roomCM, 4, type);
+        this.planExtensionStamp(roomCM, 5, type);
+        this.planExtensionStamp(roomCM, 6, type);
+        this.planExtensionStamp(roomCM, 6, type);
+        this.planExtensionStamp(roomCM, 7, type);
+        this.planExtensionStamp(roomCM, 7, type);
+        this.planTowersStamp(roomCM, type);
+        this.planLabsStamp(roomCM);
+        this.planSourcesContainers(roomCM, 2);
+        this.planKeeperSourcesContainers(7)
 
 
-        Game.rooms[this.name].memory.roomCM = roomCM.serialize();
-        Game.rooms[this.name].memory.buildingStage++;
+        this.memory.roomCM = roomCM.serialize();
+        this.memory.buildingStage++;
         var cpuAfter = Game.cpu.getUsed();
-        Game.rooms[this.name].memory.cpuSpentForStamps = cpuAfter - cpuBefore;
+        this.memory.cpuSpentForStamps = cpuAfter - cpuBefore;
     }
-    else if (stage == 1 && Game.rooms[this.name].memory.ifSuccessPlanningBase != true) // planning borders
+    else if (stage == 1 && this.memory.ifSuccessPlanningBase != true) // planning borders
     {
         var cpuBefore = Game.cpu.getUsed()
-        let roomCM_1 = PathFinder.CostMatrix.deserialize(Game.rooms[this.name].memory.roomCM);
+        let roomCM_1 = PathFinder.CostMatrix.deserialize(this.memory.roomCM);
         if (Game.shard.name != 'shard3') {
-            planBorders(4,type);
+            this.planBorders(4, type);
         }
-        Game.rooms[this.name].memory.roomCM = roomCM_1.serialize();
-        Game.rooms[this.name].memory.buildingStage++;
+        this.memory.roomCM = roomCM_1.serialize();
+        this.memory.buildingStage++;
         var cpuAfter = Game.cpu.getUsed()
-        Game.rooms[this.name].memory.cpuForBorders = cpuAfter - cpuBefore
+        this.memory.cpuForBorders = cpuAfter - cpuBefore
     }
-    else if (stage == 2 && Game.rooms[this.name].memory.ifSuccessPlanningBase != true) // planing roads
+    else if (stage == 2 && this.memory.ifSuccessPlanningBase != true) // planing roads
     {
         var cpuBefore = Game.cpu.getUsed()
-        let roomCM_2 = PathFinder.CostMatrix.deserialize(Game.rooms[this.name].memory.roomCM);
-        planRoadToTarget(roomCM_2, Game.rooms[this.name].controller.pos.getNearbyPositions(), 2);
-        var mineral = Game.rooms[this.name].find(FIND_MINERALS);
-        planRoadToTarget(roomCM_2, mineral[0].pos.getNearbyPositions(), 6);
-        var labs_pos = new RoomPosition(Game.rooms[this.name].memory.labsStampPos.x, Game.rooms[this.name].memory.labsStampPos.y, this.name)
-        planRoadToTarget(roomCM_2, labs_pos.getNearbyPositions(), 6)
+        let roomCM_2 = PathFinder.CostMatrix.deserialize(this.memory.roomCM);
+        this.planRoadToTarget(roomCM_2, this.controller.pos.getNearbyPositions(), 2,type);
+        var mineral = this.find(FIND_MINERALS);
+        this.planRoadToTarget(roomCM_2, mineral[0].pos.getNearbyPositions(), 6,type);
+        var labs_pos = new RoomPosition(this.memory.labsStampPos.x, this.memory.labsStampPos.y, this.name)
+        this.planRoadToTarget(roomCM_2, labs_pos.getNearbyPositions(), 6,type)
         if (Game.shard.name != 'shard3') {
-            planControllerRamparts();
+            this.planControllerRamparts();
         }
 
 
 
         //planning roads to sources (in all farming rooms including main room)
-        if ((Game.rooms[this.name].memory.roomsToScan != undefined && Game.rooms[this.name].memory.roomsToScan.length == 0) || Game.rooms[this.name].controller.level >= 4) {
+        if ((this.memory.roomsToScan != undefined && this.memory.roomsToScan.length == 0) || this.controller.level >= 4) {
 
-            if (Game.rooms[this.name].memory.harvestingRooms != undefined && Game.rooms[this.name].memory.harvestingRooms.length > 0) {
+            if (this.memory.harvestingRooms != undefined && this.memory.harvestingRooms.length > 0) {
 
 
-                for (let src of Game.rooms[this.name].memory.harvestingSources) {
+                for (let src of this.memory.harvestingSources) {
                     //console.log("src: ",src)
                     if (Game.getObjectById(src.id) != null) {
                         //console.log("planning to: ", Game.getObjectById(src.id).pos);
-                        planRoadToTarget(spawn, roomCM_2, Game.getObjectById(src.id).pos.getNearbyPositions(), 2)
+                        this.planRoadToTarget(roomCM_2, Game.getObjectById(src.id).pos.getNearbyPositions(), 2)
                         //console.log(" ");
                     }
 
@@ -1136,33 +1279,33 @@ Spawn.prototype.buildRoom = function buildRoom(type) {
         }
 
 
-        Game.rooms[this.name].memory.roomCM = roomCM_2.serialize();
-        Game.rooms[this.name].memory.buildingStage++;
+        this.memory.roomCM = roomCM_2.serialize();
+        this.memory.buildingStage++;
         var cpuAfter = Game.cpu.getUsed()
-        Game.rooms[this.name].memory.cpuForRoads1 = cpuAfter - cpuBefore
+        this.memory.cpuForRoads1 = cpuAfter - cpuBefore
     }
-    else if (stage == 3 && Game.rooms[this.name].memory.ifSuccessPlanningBase != true) {
+    else if (stage == 3 && this.memory.ifSuccessPlanningBase != true) {
 
         var cpuBefore = Game.cpu.getUsed()
-        let roomCM_2 = PathFinder.CostMatrix.deserialize(Game.rooms[this.name].memory.roomCM);
-        if ((Game.rooms[this.name].memory.roomsToScan != undefined && Game.rooms[this.name].memory.roomsToScan.length == 0) || Game.rooms[this.name].controller.level >= 4) {
+        let roomCM_2 = PathFinder.CostMatrix.deserialize(this.memory.roomCM);
+        if ((this.memory.roomsToScan != undefined && this.memory.roomsToScan.length == 0) || this.controller.level >= 4) {
 
 
-            if (Game.rooms[this.name].memory.keepersSources != undefined && Game.rooms[this.name].memory.keepersSources.length > 0) {
-                for (let src of Game.rooms[this.name].memory.keepersSources) {
+            if (this.memory.keepersSources != undefined && this.memory.keepersSources.length > 0) {
+                for (let src of this.memory.keepersSources) {
                     //console.log("src: ",src)
                     if (Game.getObjectById(src.id) != null) {
                         //console.log("planning to: ", Game.getObjectById(src.id).pos);
-                        planRoadToTarget(spawn, roomCM_2, Game.getObjectById(src.id).pos.getNearbyPositions(), 2)
+                        this.planRoadToTarget(spawn, roomCM_2, Game.getObjectById(src.id).pos.getNearbyPositions(), 2)
 
 
                         // planning road between sources
-                        for (let otherSrc of Game.rooms[this.name].memory.keepersSources) {
+                        for (let otherSrc of this.memory.keepersSources) {
                             if (Game.getObjectById(otherSrc.id) != null && otherSrc.id != src.id
                                 && Game.getObjectById(otherSrc.id).pos != undefined) {
-                                planRoadToTarget(spawn, roomCM_2,
+                                this.planRoadToTarget(spawn, roomCM_2,
                                     Game.getObjectById(src.id).pos.getNearbyPositions(), 7, 2,
-                                    Game.getObjectById(otherSrc.id).pos)
+                                    Game.getObjectById(otherSrc.id).pos,type)
                             }
                         }
                         //console.log(" ");
@@ -1173,40 +1316,41 @@ Spawn.prototype.buildRoom = function buildRoom(type) {
 
         }
 
-        Game.rooms[this.name].memory.roomCM = roomCM_2.serialize();
-        Game.rooms[this.name].memory.buildingStage++;
+        this.memory.roomCM = roomCM_2.serialize();
+        this.memory.buildingStage++;
         var cpuAfter = Game.cpu.getUsed()
-        Game.rooms[this.name].memory.cpuForRoads2 = cpuAfter - cpuBefore
+        this.memory.cpuForRoads2 = cpuAfter - cpuBefore
+        global.heap.rooms[this.name].baseVariations[type].finished = false;
 
     }
     else if (stage == 4) {
         var cpuBefore = Game.cpu.getUsed()
-        buildFromLists(spawn);
-        Game.rooms[this.name].memory.buildingStage++;
+        this.buildFromLists();
+        this.memory.buildingStage++;
         var cpuAfter = Game.cpu.getUsed()
-        Game.rooms[this.name].memory.cpuForBuilding = cpuAfter - cpuBefore
+        this.memory.cpuForBuilding = cpuAfter - cpuBefore
     }
     else if (stage == 5) {
-        var mineral = Game.rooms[this.name].find(FIND_MINERALS);
+        var mineral = this.find(FIND_MINERALS);
         ////console.log("mineral pos: ", mineral[0].pos);
-        Game.rooms[this.name].createConstructionSite(mineral[0].pos, STRUCTURE_EXTRACTOR);
-        Game.rooms[this.name].memory.buildingStage++;
-        Game.rooms[this.name].memory.ifSuccessPlanningBase = true
-        console.log("success plannig base: ", Game.rooms[this.name].memory.ifSuccessPlanningBase)
+        this.createConstructionSite(mineral[0].pos, STRUCTURE_EXTRACTOR);
+        this.memory.buildingStage++;
+        this.memory.ifSuccessPlanningBase = true
+        console.log("success plannig base: ", this.memory.ifSuccessPlanningBase)
 
 
 
-        delete Game.rooms[this.name].memory.roomCM
+        delete this.memory.roomCM
     }
 
-    Game.rooms[this.name].memory.ifSuccessPlanningStage = true;
-
+    this.memory.ifSuccessPlanningStage = true;
+    
 
     // //console.log("VISUALS");
 
     var ifVisualize = true
     if (ifVisualize) {
-        visualizeBase(spawn);
+        this.visualizeBase();
     }
 
 
@@ -1220,41 +1364,5 @@ Spawn.prototype.buildRoom = function buildRoom(type) {
 
 
 
-function visualizeBase(spawn) {
-    for (let i = 0; i < 50; i++) {
-        for (let j = 0; j < 50; j++) {
-            if (Game.rooms[this.name].memory.roomPlan[i][j] == STRUCTURE_EXTENSION) {
-                Game.rooms[this.name].visual.circle(i, j, { fill: '#ffff00', radius: 0.5, stroke: 'red' });
-                ////console.log("SHOWING EXTENSION");
-            }
-            else if (Game.rooms[this.name].memory.roomPlan[i][j] == STRUCTURE_ROAD) {
-                Game.rooms[this.name].visual.circle(i, j, { fill: '#666666', radius: 0.5, stroke: 'black' });
-            }
-            else if (Game.rooms[this.name].memory.roomPlan[i][j] == STRUCTURE_CONTAINER) {
-                Game.rooms[this.name].visual.rect(i - 0.25, j - 0.4, 0.5, 0.8, { fill: 'red', stroke: 'black' });
-            }
-            else if (Game.rooms[this.name].memory.roomPlan[i][j] == STRUCTURE_SPAWN) {
-                Game.rooms[this.name].visual.circle(i, j, { fill: '#666666', radius: 0.5, stroke: 'pink' });
-            }
-            else if (Game.rooms[this.name].memory.roomPlan[i][j] == STRUCTURE_STORAGE) {
-                Game.rooms[this.name].visual.rect(i - 0.25, j - 0.4, 0.5, 0.8, { fill: '#666666', stroke: 'white' });
-            }
-            else if (Game.rooms[this.name].memory.roomPlan[i][j] == STRUCTURE_TOWER) {
-                Game.rooms[this.name].visual.circle(i, j, { fill: 'red', radius: 0.5, stroke: 'red' });
-            }
-            else if (Game.rooms[this.name].memory.roomPlan[i][j] == STRUCTURE_RAMPART) {
-                Game.rooms[this.name].visual.circle(i, j, { fill: 'green', radius: 0.5, stroke: 'green' });
-            }
-            else if (Game.rooms[this.name].memory.roomPlan[i][j] == STRUCTURE_WALL) {
-                Game.rooms[this.name].visual.rect(i - 0.25, j - 0.4, 0.5, 0.8, { fill: '#000000', stroke: 'grey' });
-            }
-            else if (Game.rooms[this.name].memory.roomPlan[i][j] == STRUCTURE_LINK) {
-                Game.rooms[this.name].visual.rect(i - 0.25, j - 0.4, 0.5, 0.8, { fill: '#000000', stroke: 'blue' });
-            }
-            else if (Game.rooms[this.name].memory.roomPlan[i][j] == STRUCTURE_LAB) {
-                Game.rooms[this.name].visual.circle(i - 0.25, j - 0.4, 0.5, 0.8, { fill: 'pink', stroke: 'pink' });
-            }
-        }
-    }
-}
+
 
