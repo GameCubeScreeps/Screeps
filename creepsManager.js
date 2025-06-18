@@ -45,5 +45,5 @@ Room.prototype.creepsManager = function creepsManager() {
         }
     }
 
-    console.log(this.name, " have scout: ", global.heap.rooms[this.name].haveScout)
+    //console.log(this.name, " have scout: ", global.heap.rooms[this.name].haveScout)
 }

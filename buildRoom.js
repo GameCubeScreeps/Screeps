@@ -8,7 +8,7 @@ const C = require('constants');
 
 
 // Mandatory:
-// global.heap.rooms[this.name].baseVariations[type].startPos - roomPosition of spawn (spawn does not have to be there)
+// global.heap.rooms[this.name].baseVariations[type].spawnPos - roomPosition of spawn (spawn does not have to be there)
 
 
 class buildingListElement {
@@ -34,7 +34,7 @@ function isPosFree(x, y, roomName) {
 }
 
 
-Room.prototype.planRoadToTarget = function planRoadToTarget(roomCM, target, rcl, myRange, start,type) {
+Room.prototype.planRoadToTarget = function planRoadToTarget(roomCM, target, rcl, myRange, start, type) {
 
     var spawn = this.find(FIND_MY_STRUCTURES, {
         filter:
@@ -63,11 +63,11 @@ Room.prototype.planRoadToTarget = function planRoadToTarget(roomCM, target, rcl,
         myRange = 1;
     }
 
-    //console.log("target: ", target);
     destination = target;
     var spawnPos = null;
-    if (global.heap.rooms[this.name].baseVariations[type].startPos != undefined) {
-        spawnPos = new RoomPosition(global.heap.rooms[this.name].baseVariations[type].startPos.x, global.heap.rooms[this.name].baseVariations[type].startPos.y, this.name)
+    console.log("type in planRoatToTarget:",type)
+    if (global.heap.rooms[this.name].baseVariations[type].spawnPos != undefined) {
+        spawnPos = new RoomPosition(global.heap.rooms[this.name].baseVariations[type].spawnPos.x, global.heap.rooms[this.name].baseVariations[type].spawnPos.y, this.name)
     }
     else {
         return -1
@@ -98,8 +98,6 @@ Room.prototype.planRoadToTarget = function planRoadToTarget(roomCM, target, rcl,
                 costs = roomCM;
             }
             else {
-                // setting costmatrix for for rooms other than this.name
-                //console.log(roomName);
                 costs = new PathFinder.CostMatrix;
                 const terrain = room.getTerrain()
 
@@ -178,7 +176,6 @@ Room.prototype.planRoadToTarget = function planRoadToTarget(roomCM, target, rcl,
 
                 //Game.rooms[ret.path[i].roomName].visual.circle(ret.path[i].x, ret.path[i].y, { fill: '#666666', radius: 0.5, stroke: 'pink' });
 
-                //console.log(ret.path[i].x, " ", ret.path[i].y);
                 if ((this.memory.roomPlan[ret.path[i].x][ret.path[i].y] == 0 || this.memory.roomPlan[ret.path[i].x][ret.path[i].y] == STRUCTURE_ROAD)
                     && isPosFree(ret.path[i].x, ret.path[i].y, ret.path[i].roomName) == true && roomCM.get(ret.path[i].x, ret.path[i].y) < 255
 
@@ -337,8 +334,8 @@ Room.prototype.planExtensionStamp = function planExtensionStamp(roomCM, rcl, typ
 
         seeds.push(this.memory.storagePos);
 
-        if (global.heap.rooms[this.name].baseVariations[type].startPos != undefined) {
-            seeds.push(global.heap.rooms[this.name].baseVariations[type].startPos)
+        if (global.heap.rooms[this.name].baseVariations[type].spawnPos != undefined) {
+            seeds.push(global.heap.rooms[this.name].baseVariations[type].spawnPos)
         }
         var floodCM = this.floodFill(seeds);
 
@@ -386,8 +383,8 @@ Room.prototype.planManagerStamp = function planManagerStamp(roomCM, type) {
 
     var posForManager = new RoomPosition(0, 0, this.name);
     seeds = [];
-    if (global.heap.rooms[this.name].baseVariations[type].startPos != undefined) {
-        seeds.push(global.heap.rooms[this.name].baseVariations[type].startPos)
+    if (global.heap.rooms[this.name].baseVariations[type].spawnPos != undefined) {
+        seeds.push(global.heap.rooms[this.name].baseVariations[type].spawnPos)
     }
     else {
         return -2
@@ -430,13 +427,18 @@ Room.prototype.planManagerStamp = function planManagerStamp(roomCM, type) {
 Room.prototype.planMainSpawnStamp = function planMainSpawnStamp(roomCM, type) {
 
     var spawnPos = null;
-    if (global.heap.rooms[this.name].baseVariations[type].startPos != undefined) {
-        spawnPos = new RoomPosition(global.heap.rooms[this.name].baseVariations[type].startPos.x, global.heap.rooms[this.name].baseVariations[type].startPos.y, this.name)
+    console.log("debugging type: ", type)
+    if (global.heap.rooms[this.name].baseVariations[type].spawnPos != undefined) {
+        spawnPos = new RoomPosition(global.heap.rooms[this.name].baseVariations[type].spawnPos.x, global.heap.rooms[this.name].baseVariations[type].spawnPos.y, this.name)
     }
     else {
         return -1
     }
-
+    if(spawnPos.x==0 || spawnPos.y==0)
+    {
+        return -1;
+    }
+    console.log("spawnPos: ", spawnPos)
     this.memory.roomPlan[spawnPos.x][spawnPos.y] = STRUCTURE_SPAWN; // seting spawn pos at plan
 
     //if (this.controller.level >= 2) {
@@ -569,7 +571,6 @@ Room.prototype.planLabsStamp = function planLabsStamp(roomCM) {
             }
         }
     }
-    console.log("x: ", posForLabs.x, " y: ", posForLabs.y)
     if (posForLabs.x != 0 && posForLabs.y != 0) {
         this.createLabsStamp(posForLabs.x, posForLabs.y)
     }
@@ -592,7 +593,6 @@ Room.prototype.planLabsStamp = function planLabsStamp(roomCM) {
 }
 
 Room.prototype.createLabsStamp = function createLabsStamp(x, y) {
-    console.log("pos for labs: ", x, " ", y)
     this.memory.roomPlan[x - 1][y] = STRUCTURE_LAB;
     this.memory.buildingList.push(new buildingListElement(x - 1, y, this.name, STRUCTURE_LAB, 6));
     this.memory.inputLab1Pos = new RoomPosition(x - 1, y, this.name)
@@ -662,8 +662,8 @@ Room.prototype.planTowersStamp = function planTowersStamp(roomCM, type) {
     var posForTower = new RoomPosition(0, 0, this.name);
     seeds = [];
     seeds.push(this.memory.storagePos);
-    if (global.heap.rooms[this.name].baseVariations[type].startPos != undefined) {
-        seeds.push(global.heap.rooms[this.name].baseVariations[type].startPos)
+    if (global.heap.rooms[this.name].baseVariations[type].spawnPos != undefined) {
+        seeds.push(global.heap.rooms[this.name].baseVariations[type].spawnPos)
     }
 
     distanceCM = this.distanceTransform(roomCM, false);
@@ -823,7 +823,6 @@ Room.prototype.planBorders = function planBorders(rcl, type) {
         }
     }
 
-    //console.log(sources2.length);
 
     // Use minCutToExit with the prepared sources and costMap
     const rampartPositions = mincut.minCutToExit(sources2, costMap);
@@ -898,7 +897,6 @@ Room.prototype.planControllerContainer = function planControllerContainer(roomCM
         this.memory.roomPlan[posForContainer.x][posForContainer.y] = STRUCTURE_CONTAINER;
         this.memory.buildingList.push(new buildingListElement(posForContainer.x, posForContainer.y, this.name, STRUCTURE_CONTAINER, 2));
         this.memory.controllerContainerPos = posForContainer
-        console.log("pos for container: ", posForContainer.x, " ", posForContainer.y)
 
         if (this.memory.roomPlan[posForContainer.x + 1][posForContainer.y] == 0) {
             this.memory.roomPlan[posForContainer.x + 1][posForContainer.y] = STRUCTURE_LINK;
@@ -946,16 +944,11 @@ Room.prototype.planSourcesContainers = function planSourcesContainers() {
                         }
                     }
                     if (isFree) {
-                        //console.log("pos: ",position," is free");
                         this.memory.roomPlan[position.x][position.y] = STRUCTURE_LINK;
                         this.memory.buildingList.push(new buildingListElement(position.x, position.y, this.name, STRUCTURE_LINK, 8));
                         this.memory.sourcesLinksPos.push(new RoomPosition(position.x, position.y, this.name))
                         break;
-                    }/*
-                    else
-                    {
-                        console.log("pos: ",position," is not free");
-                    }*/
+                    }
                 }
 
 
@@ -996,7 +989,6 @@ Room.prototype.visualizeBase = function visualizeBase() {
         for (let j = 0; j < 50; j++) {
             if (this.memory.roomPlan[i][j] == STRUCTURE_EXTENSION) {
                 this.visual.circle(i, j, { fill: '#ffff00', radius: 0.5, stroke: 'red' });
-                ////console.log("SHOWING EXTENSION");
             }
             else if (this.memory.roomPlan[i][j] == STRUCTURE_ROAD) {
                 this.visual.circle(i, j, { fill: '#666666', radius: 0.5, stroke: 'black' });
@@ -1031,7 +1023,7 @@ Room.prototype.visualizeBase = function visualizeBase() {
 
 Room.prototype.buildRoom = function buildRoom(type) {
 
-    if (global.heap.rooms[this.name].baseVariations[C.SRC_1].startPos == undefined) {
+    if (global.heap.rooms[this.name].baseVariations[type].spawnPos == undefined) {
         var sources = this.find(FIND_SOURCES)
         var seeds = [];
         switch (type) {
@@ -1043,7 +1035,7 @@ Room.prototype.buildRoom = function buildRoom(type) {
                 }
             case C.SRC_2:
                 {
-                    if (source.length > 1) {
+                    if (sources.length > 1) {
                         seeds.push(sources[1].pos)
                     }
                     else {
@@ -1053,7 +1045,7 @@ Room.prototype.buildRoom = function buildRoom(type) {
                 }
             case C.SRC_1_2:
                 {
-                    if (source.length > 1) {
+                    if (sources.length > 1) {
                         seeds.push(sources[0].pos)
                         seeds.push(sources[1].pos)
                     }
@@ -1075,7 +1067,7 @@ Room.prototype.buildRoom = function buildRoom(type) {
                 }
             case C.SRC_2_CONTROLLER:
                 {
-                    if (source.length > 1) {
+                    if (sources.length > 1) {
                         seeds.push(sources[1].pos)
                     }
                     else {
@@ -1116,15 +1108,18 @@ Room.prototype.buildRoom = function buildRoom(type) {
         var minDistanceForSpawn = 999999
         for (var i = 0; i < 50; i++) {
             for (var j = 0; j < 50; j++) {
-                if (distanceCM.get(i, j) >= 4 && floodCM.get(i, j - 2) < minDistanceForSpawn && i > 7 && i < 43 && j > 7 && j < 43) {
-                    minDistanceForSpawn = floodCM.get(i, j - 2);
+                if (distanceCM.get(i, j) >= 6.5 && floodCM.get(i, j) < minDistanceForSpawn && i > 7 && i < 43 && j > 7 && j< 43) {
+                    minDistanceForSpawn = floodCM.get(i, j);
                     minPos.x = i;
-                    minPos.y = j;
+                    minPos.y = j+2 ;
                 }
             }
         }
+        console.log("setting spawnPos: ",minPos)
+        if (minPos.x != 0 && minPos.y != 0) {
+            global.heap.rooms[this.name].baseVariations[type].spawnPos = new RoomPosition(minPos.x, minPos.y, this.name)
 
-        global.heap.rooms[this.name].baseVariations[C.SRC_1].startPos = new RoomPosition(minPos.x, minPos.y, this.name)
+        }
 
     }
 
@@ -1186,9 +1181,12 @@ Room.prototype.buildRoom = function buildRoom(type) {
     var rows = 50;
     var cols = 50;
 
-
+    if (stage > 3 && global.heap.rooms[this.name].variationToBuild == undefined) {
+        return -1;
+    }
 
     console.log(this.name, " is planing ", stage, " stage")
+    this.visual.text(stage,25,3)
     if (stage == 0 && this.memory.ifSuccessPlanningBase != true) // planning stamps
     {
 
@@ -1247,11 +1245,12 @@ Room.prototype.buildRoom = function buildRoom(type) {
     {
         var cpuBefore = Game.cpu.getUsed()
         let roomCM_2 = PathFinder.CostMatrix.deserialize(this.memory.roomCM);
-        this.planRoadToTarget(roomCM_2, this.controller.pos.getNearbyPositions(), 2,type);
+        //function planRoadToTarget(roomCM, target, rcl, myRange, start, type) 
+        this.planRoadToTarget(roomCM_2, this.controller.pos.getNearbyPositions(), 2,undefined,undefined, type);
         var mineral = this.find(FIND_MINERALS);
-        this.planRoadToTarget(roomCM_2, mineral[0].pos.getNearbyPositions(), 6,type);
+        this.planRoadToTarget(roomCM_2, mineral[0].pos.getNearbyPositions(), 6,undefined,undefined, type);
         var labs_pos = new RoomPosition(this.memory.labsStampPos.x, this.memory.labsStampPos.y, this.name)
-        this.planRoadToTarget(roomCM_2, labs_pos.getNearbyPositions(), 6,type)
+        this.planRoadToTarget(roomCM_2, labs_pos.getNearbyPositions(), 6, undefined,undefined,type)
         if (Game.shard.name != 'shard3') {
             this.planControllerRamparts();
         }
@@ -1265,11 +1264,9 @@ Room.prototype.buildRoom = function buildRoom(type) {
 
 
                 for (let src of this.memory.harvestingSources) {
-                    //console.log("src: ",src)
                     if (Game.getObjectById(src.id) != null) {
-                        //console.log("planning to: ", Game.getObjectById(src.id).pos);
-                        this.planRoadToTarget(roomCM_2, Game.getObjectById(src.id).pos.getNearbyPositions(), 2)
-                        //console.log(" ");
+                        this.planRoadToTarget(roomCM_2, Game.getObjectById(src.id).pos.getNearbyPositions(), 2,undefined,undefined,type)
+          
                     }
 
                 }
@@ -1293,10 +1290,8 @@ Room.prototype.buildRoom = function buildRoom(type) {
 
             if (this.memory.keepersSources != undefined && this.memory.keepersSources.length > 0) {
                 for (let src of this.memory.keepersSources) {
-                    //console.log("src: ",src)
                     if (Game.getObjectById(src.id) != null) {
-                        //console.log("planning to: ", Game.getObjectById(src.id).pos);
-                        this.planRoadToTarget(spawn, roomCM_2, Game.getObjectById(src.id).pos.getNearbyPositions(), 2)
+                        this.planRoadToTarget(spawn, roomCM_2, Game.getObjectById(src.id).pos.getNearbyPositions(),2,undefined,undefined,type)
 
 
                         // planning road between sources
@@ -1305,10 +1300,9 @@ Room.prototype.buildRoom = function buildRoom(type) {
                                 && Game.getObjectById(otherSrc.id).pos != undefined) {
                                 this.planRoadToTarget(spawn, roomCM_2,
                                     Game.getObjectById(src.id).pos.getNearbyPositions(), 7, 2,
-                                    Game.getObjectById(otherSrc.id).pos,type)
+                                    Game.getObjectById(otherSrc.id).pos, undefined,undefined,type)
                             }
                         }
-                        //console.log(" ");
                     }
 
                 }
@@ -1320,10 +1314,12 @@ Room.prototype.buildRoom = function buildRoom(type) {
         this.memory.buildingStage++;
         var cpuAfter = Game.cpu.getUsed()
         this.memory.cpuForRoads2 = cpuAfter - cpuBefore
-        global.heap.rooms[this.name].baseVariations[type].finished = false;
-
+        global.heap.rooms[this.name].baseVariations[type].variationFinished = true;
+        console.log(this.name, " finished planning base (", type,"): ",global.heap.rooms[this.name].baseVariations[type].variationFinished)
+        console.log("O",type,"O")
     }
     else if (stage == 4) {
+
         var cpuBefore = Game.cpu.getUsed()
         this.buildFromLists();
         this.memory.buildingStage++;
@@ -1332,11 +1328,8 @@ Room.prototype.buildRoom = function buildRoom(type) {
     }
     else if (stage == 5) {
         var mineral = this.find(FIND_MINERALS);
-        ////console.log("mineral pos: ", mineral[0].pos);
         this.createConstructionSite(mineral[0].pos, STRUCTURE_EXTRACTOR);
         this.memory.buildingStage++;
-        this.memory.ifSuccessPlanningBase = true
-        console.log("success plannig base: ", this.memory.ifSuccessPlanningBase)
 
 
 
@@ -1344,9 +1337,8 @@ Room.prototype.buildRoom = function buildRoom(type) {
     }
 
     this.memory.ifSuccessPlanningStage = true;
-    
 
-    // //console.log("VISUALS");
+
 
     var ifVisualize = true
     if (ifVisualize) {

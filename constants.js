@@ -47,6 +47,7 @@ const SRC_2 = 'src_2'
 const SRC_1_2 = 'src_1_2'
 const SRC_1_CONTROLLER='src_1_controller'
 const SRC_2_CONTROLLER='src_2_controller'
+const SRC_1_2_CONTROLLER='src_1_2_controller'
 const CONTROLLER = 'controller'
 const LAYOUT = {
     SRC_1: 'src_1',
@@ -90,6 +91,7 @@ module.exports = {
     CONTROLLER,
     SRC_1_CONTROLLER,
     SRC_2_CONTROLLER,
+    SRC_1_2_CONTROLLER,
     LAYOUT
 };
 

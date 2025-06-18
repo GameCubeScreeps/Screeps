@@ -112,7 +112,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     }
 
 
-    console.log("Balancer in queues driver: ", Game.rooms[this.name].memory.energyBalance)
+    //console.log("Balancer in queues driver: ", Game.rooms[this.name].memory.energyBalance)
     // Upgraders below RCL4 - wthout storage
     if (Game.rooms[this.name].storage == undefined) {
         if (Game.rooms[this.name].memory.energyBalance > 0.5) {

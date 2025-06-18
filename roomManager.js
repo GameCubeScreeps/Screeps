@@ -1,6 +1,6 @@
 // Every constant definied in separate file
 const C = require('constants');
-const buildRoom = require('buildRoom')
+const buildRoom = require('buildRoom');
 
 
 Room.prototype.roomManager = function roomManager() {
@@ -11,19 +11,19 @@ Room.prototype.roomManager = function roomManager() {
     if (Memory.mainRooms.includes(this.name)) {
 
         global.heap.rooms[this.name].construction = []
-        Game.rooms[this.name].memory.state = []
-        Game.rooms[this.name].memory.myStructures = []
-        Game.rooms[this.name].memory.myExtensions = []
-        Game.rooms[this.name].memory.myLabs = []
-        Game.rooms[this.name].memory.myTowers = []
-        Game.rooms[this.name].memory.myRamparts = []
-        Game.rooms[this.name].memory.myNuker = undefined
-        Game.rooms[this.name].memory.myLinks = []
-        Game.rooms[this.name].memory.myFactory = undefined
-        Game.rooms[this.name].memory.myExtractor = undefined
-        Game.rooms[this.name].memory.myObserver = undefined
+        this.memory.state = []
+        this.memory.myStructures = []
+        this.memory.myExtensions = []
+        this.memory.myLabs = []
+        this.memory.myTowers = []
+        this.memory.myRamparts = []
+        this.memory.myNuker = undefined
+        this.memory.myLinks = []
+        this.memory.myFactory = undefined
+        this.memory.myExtractor = undefined
+        this.memory.myObserver = undefined
 
-        var constr = Game.rooms[this.name].find(FIND_CONSTRUCTION_SITES)
+        var constr = this.find(FIND_CONSTRUCTION_SITES)
         if (constr.length > 0) {
             global.heap.rooms[this.name].building = true
             for (c of constr) {
@@ -37,89 +37,89 @@ Room.prototype.roomManager = function roomManager() {
             }
         }
 
-        if (Game.rooms[this.name].memory.energyBalance == undefined && Game.rooms[this.name].storage == undefined) {
-            Game.rooms[this.name].memory.energyBalance = 0.0;
+        if (this.memory.energyBalance == undefined && this.storage == undefined) {
+            this.memory.energyBalance = 0.0;
             console.log("Setting balancer")
         }
-        if (Game.rooms[this.name].memory.energyBalance != undefined) {
-            if (Game.rooms[this.name].storage != undefined) {
-                delete Game.rooms[this.name].memory.energyBalance
+        if (this.memory.energyBalance != undefined) {
+            if (this.storage != undefined) {
+                delete this.memory.energyBalance
                 console.log("removing balancer")
             }
             else {
                 console.log("asd")
-                if (Game.rooms[this.name].memory.energyBalance < C.BALANCER_HARVEST_LIMIT) {
-                    Game.rooms[this.name].memory.energyBalance = C.BALANCER_HARVEST_LIMIT;
+                if (this.memory.energyBalance < C.BALANCER_HARVEST_LIMIT) {
+                    this.memory.energyBalance = C.BALANCER_HARVEST_LIMIT;
                     console.log("below bottom edge")
                 }
-                else if (Game.rooms[this.name].memory.energyBalance > C.BALANCER_USE_LIMIT) {
-                    Game.rooms[this.name].memory.energyBalance = C.BALANCER_USE_LIMIT
+                else if (this.memory.energyBalance > C.BALANCER_USE_LIMIT) {
+                    this.memory.energyBalance = C.BALANCER_USE_LIMIT
                     console.log("Above top edge")
                 }
-                else if (Game.rooms[this.name].memory.energyBalance > -1 && Game.rooms[this.name].memory.energyBalance < C.BALANCER_HARVEST_LIMIT) {
-                    Game.rooms[this.name].memory.energyBalance -= C.BALANCER_DECAY
+                else if (this.memory.energyBalance > -1 && this.memory.energyBalance < C.BALANCER_HARVEST_LIMIT) {
+                    this.memory.energyBalance -= C.BALANCER_DECAY
                 }
-                else if (Game.rooms[this.name].memory.energyBalance < -2 && Game.rooms[this.name].memory.energyBalance > C.BALANCER_USE_LIMIT) {
-                    Game.rooms[this.name].memory.energyBalance += C.BALANCER_DECAY
+                else if (this.memory.energyBalance < -2 && this.memory.energyBalance > C.BALANCER_USE_LIMIT) {
+                    this.memory.energyBalance += C.BALANCER_DECAY
                 }
             }
 
         }
 
-        if (Game.rooms[this.name].memory.harvestingSources == undefined) {
-            Game.rooms[this.name].memory.harvestingSources = []
+        if (this.memory.harvestingSources == undefined) {
+            this.memory.harvestingSources = []
         }
-        else if (Game.rooms[this.name].memory.harvestingSources.length > 0) {
+        else if (this.memory.harvestingSources.length > 0) {
 
-            Game.rooms[this.name].memory.harvestingSources.sort((a, b) => a.bodyPartsCost - b.bodyPartsCost)
+            this.memory.harvestingSources.sort((a, b) => a.bodyPartsCost - b.bodyPartsCost)
 
             var sourcesAmount = 0;
             var bodyPartsSum = 0
             var counter = 0;
-            for (s of Game.rooms[this.name].memory.harvestingSources) {
+            for (s of this.memory.harvestingSources) {
                 bodyPartsSum += s.bodyPartsCost
                 counter++;
                 if (bodyPartsSum >= (CREEP_LIFE_TIME / CREEP_SPAWN_TIME) * C.HARVESTING_BODYPARTS_FRACTION) {
                     break;
                 }
             }
-            while (Game.rooms[this.name].memory.harvestingSources.length > counter) {
-                Game.rooms[this.name].memory.harvestingSources.pop()
+            while (this.memory.harvestingSources.length > counter) {
+                this.memory.harvestingSources.pop()
             }
 
-            for (s of Game.rooms[this.name].memory.harvestingSources) {
+            for (s of this.memory.harvestingSources) {
                 s.harvestingPower = 0;
                 s.carryPower = 0;
                 s.harvesters = 0;
             }
 
         }
-        if (Game.rooms[this.name].memory.harvestingRooms == undefined) {
-            Game.rooms[this.name].memory.harvestingRooms = []
+        if (this.memory.harvestingRooms == undefined) {
+            this.memory.harvestingRooms = []
         }
 
-        if (Game.rooms[this.name].memory.keepersSources == undefined) {
-            Game.rooms[this.name].memory.keepersSources = []
+        if (this.memory.keepersSources == undefined) {
+            this.memory.keepersSources = []
         }
 
-        if (Game.rooms[this.name].memory.keepersRooms == undefined) {
-            Game.rooms[this.name].memory.keepersRooms = []
+        if (this.memory.keepersRooms == undefined) {
+            this.memory.keepersRooms = []
         }
 
-        if (Game.rooms[this.name].memory.forcedUpgrades == undefined) {
-            Game.rooms[this.name].memory.forcedUpgrades = [0, 0, 0, 0, 0, 0, 0, 0]
+        if (this.memory.forcedUpgrades == undefined) {
+            this.memory.forcedUpgrades = [0, 0, 0, 0, 0, 0, 0, 0]
         }
 
         global.heap.rooms[this.name].workersParts = 0;
 
 
-        Game.rooms[this.name].memory.progressOld = Game.rooms[this.name].memory.progress;
-        Game.rooms[this.name].memory.progress = Game.rooms[this.name].controller.progress;
-        if (Game.rooms[this.name].memory.progressOld != 0) {
-            Game.rooms[this.name].memory.progressSum += (Game.rooms[this.name].memory.progress - Game.rooms[this.name].memory.progressOld);
+        this.memory.progressOld = this.memory.progress;
+        this.memory.progress = this.controller.progress;
+        if (this.memory.progressOld != 0) {
+            this.memory.progressSum += (this.memory.progress - this.memory.progressOld);
         }
-        else { Game.rooms[this.name].memory.progressSum = (Game.rooms[this.name].memory.progress - Game.rooms[this.name].memory.progressOld); }
-        Game.rooms[this.name].memory.progressCounter += 1;
+        else { this.memory.progressSum = (this.memory.progress - this.memory.progressOld); }
+        this.memory.progressCounter += 1;
 
 
 
@@ -134,33 +134,35 @@ Room.prototype.roomManager = function roomManager() {
             console.log("setting base variations")
 
             global.heap.rooms[this.name].baseVariations = []
-            //Game.rooms[this.name].memory.global.heap.rooms[this.name].baseVariations=[C.LAYOUT[C.SRC_1],C.LAYOUT[C.SRC_2],C.LAYOUT[C.SRC_1_2],C.LAYOUT[C.CONTROLER],C.LAYOUT[C.SRC_1_CONTROLLER],C.LAYOUT[C.SRC_1_2_CONTROLLER]]
+            //this.memory.global.heap.rooms[this.name].baseVariations=[C.LAYOUT[C.SRC_1],C.LAYOUT[C.SRC_2],C.LAYOUT[C.SRC_1_2],C.LAYOUT[C.CONTROLER],C.LAYOUT[C.SRC_1_CONTROLLER],C.LAYOUT[C.SRC_1_2_CONTROLLER]]
             global.heap.rooms[this.name].baseVariations[C.SRC_1] = {}
             global.heap.rooms[this.name].baseVariations[C.SRC_1].variationFinished = false;
             global.heap.rooms[this.name].baseVariations[C.SRC_1].rampartsAmount = 0;
+            global.heap.rooms[this.name].baseVariations[C.SRC_1].startPos = 0;
             global.heap.rooms[this.name].baseVariations[C.SRC_2] = {}
             global.heap.rooms[this.name].baseVariations[C.SRC_2].variationFinished = false;
             global.heap.rooms[this.name].baseVariations[C.SRC_2].rampartsAmount = 0;
+            global.heap.rooms[this.name].baseVariations[C.SRC_2].startPos = 0;
             global.heap.rooms[this.name].baseVariations[C.SRC_1_2] = {}
             global.heap.rooms[this.name].baseVariations[C.SRC_1_2].variationFinished = false;
             global.heap.rooms[this.name].baseVariations[C.SRC_1_2].rampartsAmount = 0;
+            global.heap.rooms[this.name].baseVariations[C.SRC_1_2].startPos = 0;
             global.heap.rooms[this.name].baseVariations[C.CONTROLLER] = {}
             global.heap.rooms[this.name].baseVariations[C.CONTROLLER].variationFinished = false;
             global.heap.rooms[this.name].baseVariations[C.CONTROLLER].rampartsAmount = 0;
+            global.heap.rooms[this.name].baseVariations[C.CONTROLLER].startPos = 0;
             global.heap.rooms[this.name].baseVariations[C.SRC_1_CONTROLLER] = {}
             global.heap.rooms[this.name].baseVariations[C.SRC_1_CONTROLLER].variationFinished = false;
             global.heap.rooms[this.name].baseVariations[C.SRC_1_CONTROLLER].rampartsAmount = 0;
+            global.heap.rooms[this.name].baseVariations[C.SRC_1_CONTROLLER].startPos = 0;
             global.heap.rooms[this.name].baseVariations[C.SRC_2_CONTROLLER] = {}
             global.heap.rooms[this.name].baseVariations[C.SRC_2_CONTROLLER].variationFinished = false;
             global.heap.rooms[this.name].baseVariations[C.SRC_2_CONTROLLER].rampartsAmount = 0;
+            global.heap.rooms[this.name].baseVariations[C.SRC_2_CONTROLLER].startPos = 0;
             global.heap.rooms[this.name].baseVariations[C.SRC_1_2_CONTROLLER] = {}
             global.heap.rooms[this.name].baseVariations[C.SRC_1_2_CONTROLLER].variationFinished = false;
             global.heap.rooms[this.name].baseVariations[C.SRC_1_2_CONTROLLER].rampartsAmount = 0;
-
-
-
-
-            console.log("test base variations: ", global.heap.rooms[this.name].baseVariations[C.SRC_2])
+            global.heap.rooms[this.name].baseVariations[C.SRC_1_2_CONTROLLER].startPos = 0;
 
         }
 
@@ -171,24 +173,51 @@ Room.prototype.roomManager = function roomManager() {
 
     console.log("base variations: ",global.heap.rooms[this.name])
 
-    for (variation in global.heap.rooms[this.name].baseVariations) {
+    global.heap.rooms[this.name].finishedPlanning=true
+    for (key in global.heap.rooms[this.name].baseVariations) {
+        
+        var variation=global.heap.rooms[this.name].baseVariations[key]
+        
         console.log("ASDASDASADS")
-        Game.rooms[this.name].buildRoom(variation)
-        console.log("building ", variation, " in ", this.name)
-        if (variation.finished == false) {
+        //this.buildRoom(variation)
+        console.log("building ", key, " in ", this.name)
+        console.log("variation.finished: ",variation.variationFinished)
+        if (global.heap.rooms[this.name].baseVariations[key].variationFinished ==false) {
             console.log("building in ", this.name)
-            Game.rooms[this.name].buildRoom(variation)
+            this.buildRoom(key)
+            console.log("key:",key,":")
+            //global.heap.rooms[this.name].baseVariations[key]=variation
             break;
         }
+
+    }
+
+    if(global.heap.rooms[this.name].finishedPlanning==true)
+    {
+        var minRamparts=Infinity
+        for(variation in global.heap.rooms[this.name].baseVariations)
+        {
+            if(variation.rampartsAmount<minRamparts)
+            {
+                minRamparts=variation.rampartsAmount
+                global.heap.rooms[this.name].variationToBuild=variation
+                this.memory.variationToBuild=variation
+            }
+        }
+    }
+    if(global.heap.rooms[this.name].variationToBuild!=undefined)
+    {
+        // Build chosen variation
+        this.buildRoom(variation)
     }
 
 
-    Game.rooms[this.name].memory.roads = []
-    Game.rooms[this.name].memory.containers = []
+    this.memory.roads = []
+    this.memory.containers = []
 
 
     //Finding hostile Creeps
-    var hostiles = Game.rooms[this.name].find(FIND_HOSTILE_CREEPS, {
+    var hostiles = this.find(FIND_HOSTILE_CREEPS, {
         filter:
             function (enemy) {
                 return !Memory.allies.includes(enemy.owner.username)
@@ -202,7 +231,7 @@ Room.prototype.roomManager = function roomManager() {
     }
 
     //Finding allied Creeps
-    var allies = Game.rooms[this.name].find(FIND_HOSTILE_CREEPS, {
+    var allies = this.find(FIND_HOSTILE_CREEPS, {
         filter:
             function (ally) {
                 return Memory.allies.includes(ally.owner.username)
@@ -216,37 +245,37 @@ Room.prototype.roomManager = function roomManager() {
     }
 
 
-    //Finding structures - single Room.Find then filtering and saving id to Game.rooms[this.name].memory 
+    //Finding structures - single Room.Find then filtering and saving id to this.memory 
     var structures = this.find(FIND_STRUCTURES)
     for (str of structures) {
         if (str.my) {
-            Game.rooms[this.name].memory.myStructures = str.id
+            this.memory.myStructures = str.id
             const type = str.structureType
             switch (type) {
 
                 case STRUCTURE_EXTENSION:
-                    Game.rooms[this.name].memory.myExtensions.push(str.id);
+                    this.memory.myExtensions.push(str.id);
                     break;
                 case STRUCTURE_TOWER:
-                    Game.rooms[this.name].memory.myTowers.push(str.id);
+                    this.memory.myTowers.push(str.id);
                     break;
                 case STRUCTURE_LAB:
-                    Game.rooms[this.name].memory.myLabs.push(str.id);
+                    this.memory.myLabs.push(str.id);
                     break;
                 case STRUCTURE_EXTRACTOR:
-                    Game.rooms[this.name].memory.myExtractor = str.id;
+                    this.memory.myExtractor = str.id;
                     break;
                 case STRUCTURE_LINK:
-                    Game.rooms[this.name].memory.myLinks.push(str.id);
+                    this.memory.myLinks.push(str.id);
                     break;
                 case STRUCTURE_NUKER:
-                    Game.rooms[this.name].memory.myNuker = str.id
+                    this.memory.myNuker = str.id
                     break;
                 case STRUCTURE_FACTORY:
-                    Game.rooms[this.name].memory.myFactory = str.id
+                    this.memory.myFactory = str.id
                     break;
                 case STRUCTURE_OBSERVER:
-                    Game.rooms[this.name].memory.myObserver = str.id
+                    this.memory.myObserver = str.id
                     break;
             }
         }
@@ -257,10 +286,10 @@ Room.prototype.roomManager = function roomManager() {
             const type = str.structureType
             switch (type) {
                 case STRUCTURE_CONTAINER:
-                    Game.rooms[this.name].memory.containers.push(str.id);
+                    this.memory.containers.push(str.id);
                     break;
                 case STRUCTURE_ROAD:
-                    Game.rooms[this.name].memory.roads.push(str.id);
+                    this.memory.roads.push(str.id);
                     break;
             }
 
