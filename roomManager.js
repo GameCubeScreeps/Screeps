@@ -170,7 +170,7 @@ Room.prototype.roomManager = function roomManager() {
 
 
     }
-
+    //////testest
     console.log("base variations: ",global.heap.rooms[this.name])
 
     global.heap.rooms[this.name].finishedPlanning=true
