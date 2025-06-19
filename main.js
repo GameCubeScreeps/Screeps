@@ -65,7 +65,7 @@ module.exports.loop = function () {
 
     for (mainRoom of Memory.mainRooms) {
 
-
+      var start=Game.cpu.getUsed()
 
       Game.rooms[mainRoom].creepsManager()
 
@@ -75,6 +75,8 @@ module.exports.loop = function () {
 
       Game.rooms[mainRoom].visualize()
 
+
+      console.log("Used cpu: ",Game.cpu.getUsed()-start)  
       
     }
 

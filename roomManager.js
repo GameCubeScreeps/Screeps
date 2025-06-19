@@ -5,9 +5,12 @@ const buildRoom = require('buildRoom');
 
 Room.prototype.roomManager = function roomManager() {
 
-    global.heap.rooms[this.name] = {}
+
+
+
     global.heap.rooms[this.name].hostiles = []
     global.heap.rooms[this.name].allies = []
+
     if (Memory.mainRooms.includes(this.name)) {
 
         global.heap.rooms[this.name].construction = []
@@ -29,7 +32,7 @@ Room.prototype.roomManager = function roomManager() {
             for (c of constr) {
                 global.heap.rooms[this.name].construction.push(c.id)
             }
-            console.log("construction sites in: ", this.name, " ", constr.length)
+            //console.log("construction sites in: ", this.name, " ", constr.length)
         }
         else {
             if (global.heap.rooms[this.name].building != undefined) {
@@ -39,22 +42,21 @@ Room.prototype.roomManager = function roomManager() {
 
         if (this.memory.energyBalance == undefined && this.storage == undefined) {
             this.memory.energyBalance = 0.0;
-            console.log("Setting balancer")
+            //console.log("Setting balancer")
         }
         if (this.memory.energyBalance != undefined) {
             if (this.storage != undefined) {
                 delete this.memory.energyBalance
-                console.log("removing balancer")
+                //console.log("removing balancer")
             }
             else {
-                console.log("asd")
                 if (this.memory.energyBalance < C.BALANCER_HARVEST_LIMIT) {
                     this.memory.energyBalance = C.BALANCER_HARVEST_LIMIT;
-                    console.log("below bottom edge")
+                    //console.log("below bottom edge")
                 }
                 else if (this.memory.energyBalance > C.BALANCER_USE_LIMIT) {
                     this.memory.energyBalance = C.BALANCER_USE_LIMIT
-                    console.log("Above top edge")
+                    //console.log("Above top edge")
                 }
                 else if (this.memory.energyBalance > -1 && this.memory.energyBalance < C.BALANCER_HARVEST_LIMIT) {
                     this.memory.energyBalance -= C.BALANCER_DECAY
@@ -130,8 +132,11 @@ Room.prototype.roomManager = function roomManager() {
         // this array will store ramparts amount for different room variations - we will chose to build the one with the least ramparts
         // we do not have to have built spawn - it will be able to move spawn to calculated position
 
-        if (global.heap.rooms[this.name].baseVariations == undefined) {
+        if (global.heap.rooms[this.name].baseVariations == undefined
+            && this.memory.variationToBuild==undefined
+        ) {
             console.log("setting base variations")
+            this.visual.text("?", 25, 5)
 
             global.heap.rooms[this.name].baseVariations = []
             //this.memory.global.heap.rooms[this.name].baseVariations=[C.LAYOUT[C.SRC_1],C.LAYOUT[C.SRC_2],C.LAYOUT[C.SRC_1_2],C.LAYOUT[C.CONTROLER],C.LAYOUT[C.SRC_1_CONTROLLER],C.LAYOUT[C.SRC_1_2_CONTROLLER]]
@@ -164,6 +169,7 @@ Room.prototype.roomManager = function roomManager() {
             global.heap.rooms[this.name].baseVariations[C.SRC_1_2_CONTROLLER].rampartsAmount = 0;
             global.heap.rooms[this.name].baseVariations[C.SRC_1_2_CONTROLLER].startPos = 0;
 
+            global.heap.rooms[this.name].finishedPlanning = false
         }
 
 
@@ -171,46 +177,59 @@ Room.prototype.roomManager = function roomManager() {
 
     }
     //////I messed git branch: basePlanning
-
-    console.log("TEST")
+    var color='red'
+    if(global.heap.rooms[this.name].finishedPlanning ==true)
+    {
+        color='green'
+    }
+    this.visual.circle(15,4,{fill: color,radius: 0.5})
     //console.log("base variations: ",global.heap.rooms[this.name])
+    if (global.heap.rooms[this.name].finishedPlanning != true) {
+        for (key in global.heap.rooms[this.name].baseVariations) {
 
-    global.heap.rooms[this.name].finishedPlanning=true
-    for (key in global.heap.rooms[this.name].baseVariations) {
-        
-        var variation=global.heap.rooms[this.name].baseVariations[key]
-        
-        console.log("ASDASDASADS")
-        //this.buildRoom(variation)
-        console.log("building ", key, " in ", this.name)
-        console.log("variation.finished: ",variation.variationFinished)
-        if (global.heap.rooms[this.name].baseVariations[key].variationFinished ==false) {
-            console.log("building in ", this.name)
-            this.buildRoom(key)
-            console.log("key:",key,":")
-            //global.heap.rooms[this.name].baseVariations[key]=variation
-            break;
+            var variation = global.heap.rooms[this.name].baseVariations[key]
+
+            console.log("variation.finished: ", variation.variationFinished)
+            if (global.heap.rooms[this.name].baseVariations[key].variationFinished == false) {
+                console.log("building in ", this.name," key:", key, ":")
+                this.buildRoom(key)
+                global.heap.rooms[this.name].finishedPlanning = false
+                break;
+            }
+            global.heap.rooms[this.name].finishedPlanning = true
         }
-
     }
 
-    if(global.heap.rooms[this.name].finishedPlanning==true)
-    {
-        var minRamparts=Infinity
-        for(variation in global.heap.rooms[this.name].baseVariations)
-        {
-            if(variation.rampartsAmount<minRamparts)
-            {
-                minRamparts=variation.rampartsAmount
-                global.heap.rooms[this.name].variationToBuild=variation
-                this.memory.variationToBuild=variation
+
+    if (global.heap.rooms[this.name].finishedPlanning == true &&
+        global.heap.rooms[this.name].variationToBuild == undefined
+    ) {
+
+        console.log("chosing layout to build")
+        //var variation = global.heap.rooms[this.name].baseVariations[key]
+        var minRamparts = Infinity
+        this.memory.buildingVariations = []
+        for (key in global.heap.rooms[this.name].baseVariations) {
+            console.log('test')
+            console.log(key, global.heap.rooms[this.name].baseVariations[key].rampartsAmount)
+
+            this.memory.buildingVariations.push(global.heap.rooms[this.name].baseVariations[key].rampartsAmount)
+            if (global.heap.rooms[this.name].baseVariations[key].rampartsAmount < minRamparts) {
+                minRamparts = global.heap.rooms[this.name].baseVariations[key].rampartsAmount
+                global.heap.rooms[this.name].variationToBuild = key
+                this.memory.variationToBuild = key
             }
         }
     }
-    if(global.heap.rooms[this.name].variationToBuild!=undefined)
-    {
+
+    
+    // here add some time-condition not to call it to often
+    if (global.heap.rooms[this.name].variationToBuild != undefined
+        && Game.time%C.BUILD_TIME_STEP==Memory.mainRooms.indexOf(this.name)
+    ) {
         // Build chosen variation
-        this.buildRoom(variation)
+
+        this.buildRoom(global.heap.rooms[this.name].variationToBuild)
     }
 
 

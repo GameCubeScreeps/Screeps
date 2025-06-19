@@ -65,7 +65,6 @@ Room.prototype.planRoadToTarget = function planRoadToTarget(roomCM, target, rcl,
 
     destination = target;
     var spawnPos = null;
-    console.log("type in planRoatToTarget:",type)
     if (global.heap.rooms[this.name].baseVariations[type].spawnPos != undefined) {
         spawnPos = new RoomPosition(global.heap.rooms[this.name].baseVariations[type].spawnPos.x, global.heap.rooms[this.name].baseVariations[type].spawnPos.y, this.name)
     }
@@ -427,7 +426,6 @@ Room.prototype.planManagerStamp = function planManagerStamp(roomCM, type) {
 Room.prototype.planMainSpawnStamp = function planMainSpawnStamp(roomCM, type) {
 
     var spawnPos = null;
-    console.log("debugging type: ", type)
     if (global.heap.rooms[this.name].baseVariations[type].spawnPos != undefined) {
         spawnPos = new RoomPosition(global.heap.rooms[this.name].baseVariations[type].spawnPos.x, global.heap.rooms[this.name].baseVariations[type].spawnPos.y, this.name)
     }
@@ -438,7 +436,6 @@ Room.prototype.planMainSpawnStamp = function planMainSpawnStamp(roomCM, type) {
     {
         return -1;
     }
-    console.log("spawnPos: ", spawnPos)
     this.memory.roomPlan[spawnPos.x][spawnPos.y] = STRUCTURE_SPAWN; // seting spawn pos at plan
 
     //if (this.controller.level >= 2) {
@@ -1023,7 +1020,9 @@ Room.prototype.visualizeBase = function visualizeBase() {
 
 Room.prototype.buildRoom = function buildRoom(type) {
 
-    if (global.heap.rooms[this.name].baseVariations[type].spawnPos == undefined) {
+    if (global.heap.rooms[this.name].baseVariations[type].spawnPos == undefined
+        && global.heap.rooms[this.name].variationToBuild == undefined
+    ) {
         var sources = this.find(FIND_SOURCES)
         var seeds = [];
         switch (type) {
@@ -1078,7 +1077,7 @@ Room.prototype.buildRoom = function buildRoom(type) {
                 }
             case C.SRC_1_2_CONTROLLER:
                 {
-                    if (source.length > 1) {
+                    if (sources.length > 1) {
                         seeds.push(sources[0].pos)
                         seeds.push(sources[1].pos)
                     }
@@ -1148,22 +1147,17 @@ Room.prototype.buildRoom = function buildRoom(type) {
     }
     this.memory.ifSuccessPlanningStage = false;
 
-    if (this.memory.buildingStage == undefined || (this.memory.buildingStage != undefined && this.memory.buildingStage > 40)) { // if stage is out of bounds
+    if (this.memory.buildingStage == undefined || (this.memory.buildingStage != undefined && this.memory.buildingStage > 4)) { // if stage is out of bounds
         this.memory.buildingStage = 0;
+        stage=0;
+    }
+    else
+    {
         stage = this.memory.buildingStage;
     }
 
 
 
-
-    if (this.memory.buildingStage != undefined && this.memory.buildingStage < 0 || this.memory.buildingStage > 5) {
-        console.log("stage out of bounds")
-        if (this.memory.buildingStage > 5) {
-            //stage++
-            this.memory.buildingStage++;
-        }
-        return;
-    }
     //this.memory.ifSuccessPlanningBase = false;
 
 
@@ -1175,18 +1169,29 @@ Room.prototype.buildRoom = function buildRoom(type) {
         this.buildFromLists()
         return;
     }
-    stage = this.memory.buildingStage;
+    
+
+    if(global.heap.rooms[this.name].variationToBuild != undefined &&
+        global.heap.rooms[this.name].variationToBuild == type
+    )
+    {
+        stage=4
+    }
 
     //stage=0;
     var rows = 50;
     var cols = 50;
 
+    // To not go into stage 4,5 when pnly planning room variations
     if (stage > 3 && global.heap.rooms[this.name].variationToBuild == undefined) {
+        this.visual.circle(20,7,{fill:'black',radius: 0.5})
         return -1;
     }
 
     console.log(this.name, " is planing ", stage, " stage")
     this.visual.text(stage,25,3)
+    
+    
     if (stage == 0 && this.memory.ifSuccessPlanningBase != true) // planning stamps
     {
 
@@ -1205,6 +1210,7 @@ Room.prototype.buildRoom = function buildRoom(type) {
         this.memory.buildingList = [];
         this.memory.roadBuildingList = [];
 
+        //13
         this.planMainSpawnStamp(roomCM, type);
 
         this.planManagerStamp(roomCM, type);
@@ -1212,12 +1218,15 @@ Room.prototype.buildRoom = function buildRoom(type) {
 
 
         //plan_road_to_controller(spawn, roomCM);
-        this.planExtensionStamp(roomCM, 4, type);
-        this.planExtensionStamp(roomCM, 5, type);
-        this.planExtensionStamp(roomCM, 6, type);
-        this.planExtensionStamp(roomCM, 6, type);
-        this.planExtensionStamp(roomCM, 7, type);
-        this.planExtensionStamp(roomCM, 7, type);
+        this.planExtensionStamp(roomCM, 4, type);//18 
+        this.planExtensionStamp(roomCM, 5, type);//23
+        this.planExtensionStamp(roomCM, 6, type);//28
+        this.planExtensionStamp(roomCM, 6, type);//33
+        this.planExtensionStamp(roomCM, 7, type);//38
+        this.planExtensionStamp(roomCM, 7, type);//43
+        this.planExtensionStamp(roomCM, 7, type);//48
+        this.planExtensionStamp(roomCM, 8, type);//53
+        this.planExtensionStamp(roomCM, 8, type);//58
         this.planTowersStamp(roomCM, type);
         this.planLabsStamp(roomCM);
         this.planSourcesContainers(roomCM, 2);
@@ -1315,6 +1324,7 @@ Room.prototype.buildRoom = function buildRoom(type) {
         var cpuAfter = Game.cpu.getUsed()
         this.memory.cpuForRoads2 = cpuAfter - cpuBefore
         global.heap.rooms[this.name].baseVariations[type].variationFinished = true;
+
         console.log(this.name, " finished planning base (", type,"): ",global.heap.rooms[this.name].baseVariations[type].variationFinished)
         console.log("O",type,"O")
     }
@@ -1323,10 +1333,7 @@ Room.prototype.buildRoom = function buildRoom(type) {
         var cpuBefore = Game.cpu.getUsed()
         this.buildFromLists();
         this.memory.buildingStage++;
-        var cpuAfter = Game.cpu.getUsed()
-        this.memory.cpuForBuilding = cpuAfter - cpuBefore
-    }
-    else if (stage == 5) {
+
         var mineral = this.find(FIND_MINERALS);
         this.createConstructionSite(mineral[0].pos, STRUCTURE_EXTRACTOR);
         this.memory.buildingStage++;
@@ -1334,12 +1341,22 @@ Room.prototype.buildRoom = function buildRoom(type) {
 
 
         delete this.memory.roomCM
+
+
+        var cpuAfter = Game.cpu.getUsed()
+        this.memory.cpuForBuilding = cpuAfter - cpuBefore
     }
 
     this.memory.ifSuccessPlanningStage = true;
 
 
-
+    var color='red'
+    if(global.heap.rooms[this.name].baseVariations[key].variationFinished)
+    {
+        color='green'
+    }
+    this.visual.circle(26,3,{radius: 1, fill: color})
+    this.visual.text(type,27,5)
     var ifVisualize = true
     if (ifVisualize) {
         this.visualizeBase();
