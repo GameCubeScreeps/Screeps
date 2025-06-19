@@ -336,6 +336,9 @@ Room.prototype.planExtensionStamp = function planExtensionStamp(roomCM, rcl, typ
         if (global.heap.rooms[this.name].baseVariations[type].spawnPos != undefined) {
             seeds.push(global.heap.rooms[this.name].baseVariations[type].spawnPos)
         }
+        else{
+            return -1;
+        }
         var floodCM = this.floodFill(seeds);
 
         var posForStamp = new RoomPosition(0, 0, this.name);
@@ -1119,6 +1122,10 @@ Room.prototype.buildRoom = function buildRoom(type) {
             global.heap.rooms[this.name].baseVariations[type].spawnPos = new RoomPosition(minPos.x, minPos.y, this.name)
 
         }
+        else{
+            console.log("unable to find position for spawn")
+            return -1
+        }
 
     }
 
@@ -1149,11 +1156,8 @@ Room.prototype.buildRoom = function buildRoom(type) {
 
     if (this.memory.buildingStage == undefined || (this.memory.buildingStage != undefined && this.memory.buildingStage > 4)) { // if stage is out of bounds
         this.memory.buildingStage = 0;
-        stage=0;
-    }
-    else
-    {
         stage = this.memory.buildingStage;
+        stage=0;
     }
 
 
