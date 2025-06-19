@@ -115,7 +115,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     //console.log("Balancer in queues driver: ", Game.rooms[this.name].memory.energyBalance)
     // Upgraders below RCL4 - wthout storage
     if (Game.rooms[this.name].storage == undefined) {
-        if (Game.rooms[this.name].memory.energyBalance > 0.5) {
+        if (Game.rooms[this.name].memory.energyBalance > 1.5) {
             
             global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_WORKER))
             

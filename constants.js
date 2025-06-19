@@ -26,6 +26,8 @@ const TASK_COLLECT = 'collect'
 
 //Economy const
 const BALANCER_STEP = 0.01 // value by which workers and carriers change value of balancer
+const BALANCER_WORKER_STEP=0.02
+const BALANCER_CARRIER_STEP = 0.01
 const BALANCER_DECAY = 0.001 // natural decay towards 0 of balancer
 const BALANCER_HARVEST_LIMIT = -2.0 // harvesting limit of balancer - if that would go too high then it would take a lot of time to switch to using energy
 const BALANCER_USE_LIMIT = 2.0 // carrying balancer of balancer
@@ -45,9 +47,9 @@ const TEXT_COLOR = '#fc03b6'
 const SRC_1 = 'src_1'
 const SRC_2 = 'src_2'
 const SRC_1_2 = 'src_1_2'
-const SRC_1_CONTROLLER='src_1_controller'
-const SRC_2_CONTROLLER='src_2_controller'
-const SRC_1_2_CONTROLLER='src_1_2_controller'
+const SRC_1_CONTROLLER = 'src_1_controller'
+const SRC_2_CONTROLLER = 'src_2_controller'
+const SRC_1_2_CONTROLLER = 'src_1_2_controller'
 const CONTROLLER = 'controller'
 const LAYOUT = {
     SRC_1: 'src_1',
@@ -57,7 +59,7 @@ const LAYOUT = {
     SRC_2_CONTROLLER: 'src_2_controller',
     SRC_1_2_CONTROLLER: 'src_1_2_controller',
 }
-const BUILD_TIME_STEP=1500
+const BUILD_TIME_STEP = 1500
 
 
 module.exports = {
@@ -74,6 +76,9 @@ module.exports = {
     TASK_BUILD,
     TASK_COLLECT,
     BALANCER_STEP,
+    BALANCER_WORKER_STEP,
+    BALANCER_CARRIER_STEP,
+
     BALANCER_DECAY,
     BALANCER_HARVEST_LIMIT,
     BALANCER_USE_LIMIT,
@@ -93,7 +98,7 @@ module.exports = {
     SRC_2_CONTROLLER,
     SRC_1_2_CONTROLLER,
     LAYOUT,
-    
+
     BUILD_TIME_STEP
 };
 

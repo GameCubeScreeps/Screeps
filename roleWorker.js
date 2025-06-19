@@ -119,7 +119,7 @@ Creep.prototype.roleWorker = function roleWorker() {
         else if (this.memory.task == C.TASK_COLLECT) {// go to deposits
 
             if (Game.getObjectById(this.memory.deposit) != null && Game.getObjectById(this.memory.deposit).store[RESOURCE_ENERGY] == 0 && Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
-                Game.rooms[this.memory.homeRoom].memory.energyBalance -= C.BALANCER_STEP
+                Game.rooms[this.memory.homeRoom].memory.energyBalance -= C.BALANCER_WORKER_STEP
                 this.say('b-')
                 this.memory.deposit=undefined
             }
@@ -172,7 +172,7 @@ Creep.prototype.roleWorker = function roleWorker() {
                     }
                     else{
                         if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
-                            Game.rooms[this.memory.homeRoom].memory.energyBalance -= C.BALANCER_STEP
+                            Game.rooms[this.memory.homeRoom].memory.energyBalance -= C.BALANCER_WORKER_STEP
                             this.say("3b-")
                         
                         }
@@ -185,7 +185,7 @@ Creep.prototype.roleWorker = function roleWorker() {
                     }
                     else {
                         if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
-                            Game.rooms[this.memory.homeRoom].memory.energyBalance -= C.BALANCER_STEP
+                            Game.rooms[this.memory.homeRoom].memory.energyBalance -= C.BALANCER_WORKER_STEP
                             this.say("2b-")
                         
                         }
