@@ -133,7 +133,7 @@ Room.prototype.roomManager = function roomManager() {
         // we do not have to have built spawn - it will be able to move spawn to calculated position
 
         if (global.heap.rooms[this.name].baseVariations == undefined
-            && this.memory.variationToBuild==undefined
+            && this.memory.variationToBuild==undefined || this.memory.manualBasePlan!=false
         ) {
             console.log("setting base variations")
             this.visual.text("?", 25, 5)
@@ -170,6 +170,10 @@ Room.prototype.roomManager = function roomManager() {
             global.heap.rooms[this.name].baseVariations[C.SRC_1_2_CONTROLLER].startPos = 0;
 
             global.heap.rooms[this.name].finishedPlanning = false
+            
+            this.memory.roomPlan=undefined
+            this.memory.buildingStage=0
+            this.memory.manualBasePlan=false;
         }
 
 
@@ -200,7 +204,7 @@ Room.prototype.roomManager = function roomManager() {
         }
     }
 
-
+    console.log("global.heap.rooms[this.name].finishedPlanning: ",global.heap.rooms[this.name].finishedPlanning)
     if (global.heap.rooms[this.name].finishedPlanning == true &&
         global.heap.rooms[this.name].variationToBuild == undefined
     ) {
@@ -225,7 +229,7 @@ Room.prototype.roomManager = function roomManager() {
     
     // here add some time-condition not to call it to often
     if (global.heap.rooms[this.name].variationToBuild != undefined
-        && Game.time%C.BUILD_TIME_STEP==Memory.mainRooms.indexOf(this.name)
+        && (Game.time%C.BUILD_TIME_STEP==Memory.mainRooms.indexOf(this.name))
     ) {
         // Build chosen variation
 

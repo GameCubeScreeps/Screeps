@@ -336,7 +336,7 @@ Room.prototype.planExtensionStamp = function planExtensionStamp(roomCM, rcl, typ
         if (global.heap.rooms[this.name].baseVariations[type].spawnPos != undefined) {
             seeds.push(global.heap.rooms[this.name].baseVariations[type].spawnPos)
         }
-        else{
+        else {
             return -1;
         }
         var floodCM = this.floodFill(seeds);
@@ -346,7 +346,7 @@ Room.prototype.planExtensionStamp = function planExtensionStamp(roomCM, rcl, typ
         for (i = 0; i < 50; i++) {
             for (let j = 0; j < 50; j++) {
                 if (distanceCM.get(i, j) >= 2 && floodCM.get(i, j) < minDistanceFromSpawn
-                    && (i > 5 && i < 45) && (j > 5 && j < 45)) {
+                    && (i > 8 && i < 43) && (j > 8 && j < 43)) {
                     minDistanceFromSpawn = floodCM.get(i, j);
                     posForStamp.x = i;
                     posForStamp.y = j;
@@ -435,8 +435,7 @@ Room.prototype.planMainSpawnStamp = function planMainSpawnStamp(roomCM, type) {
     else {
         return -1
     }
-    if(spawnPos.x==0 || spawnPos.y==0)
-    {
+    if (spawnPos.x == 0 || spawnPos.y == 0) {
         return -1;
     }
     this.memory.roomPlan[spawnPos.x][spawnPos.y] = STRUCTURE_SPAWN; // seting spawn pos at plan
@@ -563,7 +562,7 @@ Room.prototype.planLabsStamp = function planLabsStamp(roomCM) {
     minDistanceFromStorage = Infinity;
     for (i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
-            if (distanceCM.get(i, j) >= 5 && floodCM.get(i, j) < minDistanceFromStorage
+            if (distanceCM.get(i, j) >= 3 && floodCM.get(i, j) < minDistanceFromStorage
                 && i > 6 && i < 44 && j > 6 && j < 44) {
                 minDistanceFromStorage = floodCM.get(i, j);
                 posForLabs.x = i;
@@ -786,28 +785,40 @@ Room.prototype.planBorders = function planBorders(rcl, type) {
             && building.structureType != STRUCTURE_CONTAINER && building.structureType != STRUCTURE_LINK && building.structureType != STRUCTURE_EXTRACTOR
             && building.x > 4 && building.x < 46 && building.y > 4 && building.y < 46) {
             sources2.push({ x: building.x, y: building.y });
-            costMap.set(building.x, building.y, 255);
+            costMap.set(building.x, building.y, 250);
         }
     }
 
 
+    const padding = 3;
     // Determine the bounding box around buildings
     buildings.forEach(building => {
-        /*if (building.structureType != STRUCTURE_ROAD && building.structureType != STRUCTURE_RAMPART && building.structureType != STRUCTURE_WALL
-            && building.structureType != STRUCTURE_CONTAINER
-        )*/
+
         if (building.structureType == STRUCTURE_EXTENSION || building.structureType == STRUCTURE_TOWER || building.structureType == STRUCTURE_SPAWN
             || building.structureType == STRUCTURE_STORAGE || building.structureType == STRUCTURE_LAB
         ) {
+
             max_x = Math.max(max_x, building.x);
             min_x = Math.min(min_x, building.x);
             max_y = Math.max(max_y, building.y);
             min_y = Math.min(min_y, building.y);
+            for (var x = building.x - padding; x < building.x + padding; x++) {
+                for (var y = building.y - padding; y < building.y + padding; y++) {
+                    //if (costMap.get(x, y) !== 250 || true) {
+                        if(new RoomPosition(building.x,building.y,this.name).getRangeTo(x,y)<=3 && costMap.get(x,y)!=255)
+                        {
+                            costMap.set(x, y, 200); // Slightly lower cost to indicate preference for ramparts
+                        }
+                            
+                        
+                    //}
+                }
+            }
         }
     });
 
+    /*
     // Expand the bounding box slightly
-    const padding = 2;
     min_x = Math.max(min_x - padding, 0);
     min_y = Math.max(min_y - padding, 0);
     max_x = Math.min(max_x + padding, 49);
@@ -817,11 +828,12 @@ Room.prototype.planBorders = function planBorders(rcl, type) {
     for (let x = min_x; x <= max_x; x++) {
         for (let y = min_y; y <= max_y; y++) {
             // Only set the cost if it's not a building tile
-            if (costMap.get(x, y) !== 200) {
-                costMap.set(x, y, 150); // Slightly lower cost to indicate preference for ramparts
+            if (costMap.get(x, y) !== 250) {
+                costMap.set(x, y, 100); // Slightly lower cost to indicate preference for ramparts
             }
         }
     }
+        */
 
 
     // Use minCutToExit with the prepared sources and costMap
@@ -913,6 +925,8 @@ Room.prototype.planControllerContainer = function planControllerContainer(roomCM
 Room.prototype.planSourcesContainers = function planSourcesContainers() {
 
     this.memory.sourcesLinksPos = []
+
+
 
     for (sourceId of this.memory.harvestingSources) {
 
@@ -1103,26 +1117,27 @@ Room.prototype.buildRoom = function buildRoom(type) {
                 }
             }
         }
-        let distanceCM = this.diagonalDistanceTransform(roomCM, false);
+        let distanceCM = this.distanceTransform(roomCM, false);
 
         var floodCM = this.floodFill(seeds);
         var minPos = new RoomPosition(0, 0, this.name)
         var minDistanceForSpawn = 999999
         for (var i = 0; i < 50; i++) {
             for (var j = 0; j < 50; j++) {
-                if (distanceCM.get(i, j) >= 6.5 && floodCM.get(i, j) < minDistanceForSpawn && i > 7 && i < 43 && j > 7 && j< 43) {
+                this.visual.text(distanceCM.get(i, j), i, j)
+                if (distanceCM.get(i, j) >= 5 && floodCM.get(i, j) < minDistanceForSpawn && i > 7 && i < 43 && j > 7 && j < 43) {
                     minDistanceForSpawn = floodCM.get(i, j);
                     minPos.x = i;
-                    minPos.y = j+2 ;
+                    minPos.y = j + 2;
                 }
             }
         }
-        console.log("setting spawnPos: ",minPos)
+        console.log("setting spawnPos: ", minPos)
         if (minPos.x != 0 && minPos.y != 0) {
             global.heap.rooms[this.name].baseVariations[type].spawnPos = new RoomPosition(minPos.x, minPos.y, this.name)
 
         }
-        else{
+        else {
             console.log("unable to find position for spawn")
             return -1
         }
@@ -1143,21 +1158,26 @@ Room.prototype.buildRoom = function buildRoom(type) {
         // /controllerContainerId
     }
 
-
+    /*
     if (this.memory.roomsToScan != undefined && this.memory.roomsToScan.length > 0) {
         this.memory.ifSuccessPlanningBase = false;
-        return
+        return -1
     }
+        */
 
     if (this.memory.ifSuccessPlanningStage == false) {
         this.memory.buildingStage = undefined
     }
     this.memory.ifSuccessPlanningStage = false;
 
-    if (this.memory.buildingStage == undefined || (this.memory.buildingStage != undefined && this.memory.buildingStage > 4)) { // if stage is out of bounds
+    if (this.memory.buildingStage == undefined || (this.memory.buildingStage != undefined && this.memory.buildingStage > 1 && this.memory.variationToBuild != undefined)
+        || (this.memory.buildingStage > 4)) { // if stage is out of bounds
+        this.visual.text("Stage out of bounds", 26, 4)
         this.memory.buildingStage = 0;
-        stage = this.memory.buildingStage;
-        stage=0;
+        stage = 0;
+    }
+    else {
+        stage = this.memory.buildingStage
     }
 
 
@@ -1173,29 +1193,39 @@ Room.prototype.buildRoom = function buildRoom(type) {
         this.buildFromLists()
         return;
     }
-    
 
-    if(global.heap.rooms[this.name].variationToBuild != undefined &&
+
+    if (global.heap.rooms[this.name].variationToBuild != undefined &&
         global.heap.rooms[this.name].variationToBuild == type
-    )
-    {
-        stage=4
+    ) {
+        stage = 4
     }
+
+    /*
+    if(this.memory.harvestingSources==undefined)
+    {
+        console.log("not planning because still scouting")
+        return -1;
+    }
+        */
+
 
     //stage=0;
     var rows = 50;
     var cols = 50;
 
     // To not go into stage 4,5 when pnly planning room variations
-    if (stage > 3 && global.heap.rooms[this.name].variationToBuild == undefined) {
-        this.visual.circle(20,7,{fill:'black',radius: 0.5})
+    if (stage > 1 && global.heap.rooms[this.name].variationToBuild == undefined) {
+        this.visual.circle(20, 7, { fill: 'black', radius: 0.5 })
         return -1;
     }
 
+
+
     console.log(this.name, " is planing ", stage, " stage")
-    this.visual.text(stage,25,3)
-    
-    
+    this.visual.text("stage: " + stage, 25, 3)
+
+
     if (stage == 0 && this.memory.ifSuccessPlanningBase != true) // planning stamps
     {
 
@@ -1236,6 +1266,12 @@ Room.prototype.buildRoom = function buildRoom(type) {
         this.planSourcesContainers(roomCM, 2);
         this.planKeeperSourcesContainers(7)
 
+        if (Game.shard.name != 'shard3') {
+            this.planControllerRamparts();
+        }
+
+
+
 
         this.memory.roomCM = roomCM.serialize();
         this.memory.buildingStage++;
@@ -1250,23 +1286,29 @@ Room.prototype.buildRoom = function buildRoom(type) {
             this.planBorders(4, type);
         }
         this.memory.roomCM = roomCM_1.serialize();
+
+        global.heap.rooms[this.name].baseVariations[type].variationFinished = true;
+
+        console.log(this.name, " finished planning base (", type, "): ", global.heap.rooms[this.name].baseVariations[type].variationFinished)
+        console.log("O", type, "O")
+
         this.memory.buildingStage++;
         var cpuAfter = Game.cpu.getUsed()
         this.memory.cpuForBorders = cpuAfter - cpuBefore
+
+
+
     }
     else if (stage == 2 && this.memory.ifSuccessPlanningBase != true) // planing roads
     {
         var cpuBefore = Game.cpu.getUsed()
         let roomCM_2 = PathFinder.CostMatrix.deserialize(this.memory.roomCM);
         //function planRoadToTarget(roomCM, target, rcl, myRange, start, type) 
-        this.planRoadToTarget(roomCM_2, this.controller.pos.getNearbyPositions(), 2,undefined,undefined, type);
+        this.planRoadToTarget(roomCM_2, this.controller.pos.getNearbyPositions(), 2, undefined, undefined, type);
         var mineral = this.find(FIND_MINERALS);
-        this.planRoadToTarget(roomCM_2, mineral[0].pos.getNearbyPositions(), 6,undefined,undefined, type);
+        this.planRoadToTarget(roomCM_2, mineral[0].pos.getNearbyPositions(), 6, undefined, undefined, type);
         var labs_pos = new RoomPosition(this.memory.labsStampPos.x, this.memory.labsStampPos.y, this.name)
-        this.planRoadToTarget(roomCM_2, labs_pos.getNearbyPositions(), 6, undefined,undefined,type)
-        if (Game.shard.name != 'shard3') {
-            this.planControllerRamparts();
-        }
+        this.planRoadToTarget(roomCM_2, labs_pos.getNearbyPositions(), 6, undefined, undefined, type)
 
 
 
@@ -1278,8 +1320,8 @@ Room.prototype.buildRoom = function buildRoom(type) {
 
                 for (let src of this.memory.harvestingSources) {
                     if (Game.getObjectById(src.id) != null) {
-                        this.planRoadToTarget(roomCM_2, Game.getObjectById(src.id).pos.getNearbyPositions(), 2,undefined,undefined,type)
-          
+                        this.planRoadToTarget(roomCM_2, Game.getObjectById(src.id).pos.getNearbyPositions(), 2, undefined, undefined, type)
+
                     }
 
                 }
@@ -1304,7 +1346,7 @@ Room.prototype.buildRoom = function buildRoom(type) {
             if (this.memory.keepersSources != undefined && this.memory.keepersSources.length > 0) {
                 for (let src of this.memory.keepersSources) {
                     if (Game.getObjectById(src.id) != null) {
-                        this.planRoadToTarget(spawn, roomCM_2, Game.getObjectById(src.id).pos.getNearbyPositions(),2,undefined,undefined,type)
+                        this.planRoadToTarget(spawn, roomCM_2, Game.getObjectById(src.id).pos.getNearbyPositions(), 2, undefined, undefined, type)
 
 
                         // planning road between sources
@@ -1313,7 +1355,7 @@ Room.prototype.buildRoom = function buildRoom(type) {
                                 && Game.getObjectById(otherSrc.id).pos != undefined) {
                                 this.planRoadToTarget(spawn, roomCM_2,
                                     Game.getObjectById(src.id).pos.getNearbyPositions(), 7, 2,
-                                    Game.getObjectById(otherSrc.id).pos, undefined,undefined,type)
+                                    Game.getObjectById(otherSrc.id).pos, undefined, undefined, type)
                             }
                         }
                     }
@@ -1327,10 +1369,7 @@ Room.prototype.buildRoom = function buildRoom(type) {
         this.memory.buildingStage++;
         var cpuAfter = Game.cpu.getUsed()
         this.memory.cpuForRoads2 = cpuAfter - cpuBefore
-        global.heap.rooms[this.name].baseVariations[type].variationFinished = true;
 
-        console.log(this.name, " finished planning base (", type,"): ",global.heap.rooms[this.name].baseVariations[type].variationFinished)
-        console.log("O",type,"O")
     }
     else if (stage == 4) {
 
@@ -1354,13 +1393,12 @@ Room.prototype.buildRoom = function buildRoom(type) {
     this.memory.ifSuccessPlanningStage = true;
 
 
-    var color='red'
-    if(global.heap.rooms[this.name].baseVariations[key].variationFinished)
-    {
-        color='green'
+    var color = 'red'
+    if (global.heap.rooms[this.name].baseVariations[key].variationFinished) {
+        color = 'green'
     }
-    this.visual.circle(26,3,{radius: 1, fill: color})
-    this.visual.text(type,27,5)
+    this.visual.circle(26, 3, { radius: 1, fill: color })
+    this.visual.text(type, 27, 5)
     var ifVisualize = true
     if (ifVisualize) {
         this.visualizeBase();

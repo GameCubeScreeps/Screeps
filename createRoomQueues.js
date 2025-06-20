@@ -91,7 +91,8 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
                 break;
             }
         }
-        else if(Game.rooms[this.name].memory.energyBalance<= 0){
+        else if(Game.rooms[this.name].memory.energyBalance<= 0.5)
+        {
             if (harvestingSource.carryPower < harvestingSource.harvestingPower) {
                 //Carriers
                 global.heap.rooms[this.name].harvestingQueue.push(new harvestingSourceRequestCarrier(harvestingSource.id, harvestingSource.roomName, harvestingSource.distance))
@@ -113,7 +114,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
 
 
     //console.log("Balancer in queues driver: ", Game.rooms[this.name].memory.energyBalance)
-    // Upgraders below RCL4 - wthout storage
+    // Workers below RCL4 - wthout storage
     if (Game.rooms[this.name].storage == undefined) {
         if (Game.rooms[this.name].memory.energyBalance > 1.5) {
             
@@ -121,7 +122,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
             
         }
     }
-    else {//Upgraders above and on RCL4
+    else {//Workers above and on RCL4
         if (Game.rooms[this.name].storage.store[RESOURCE_ENERGY] < C.STORAGE_BALANCER_START) {
             if (global.heap.rooms[this.name].upgradersParts < 1) {
                 global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_WORKER))
