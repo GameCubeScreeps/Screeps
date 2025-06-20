@@ -1125,7 +1125,7 @@ Room.prototype.buildRoom = function buildRoom(type) {
         for (var i = 0; i < 50; i++) {
             for (var j = 0; j < 50; j++) {
                 this.visual.text(distanceCM.get(i, j), i, j)
-                if (distanceCM.get(i, j) >= 5 && floodCM.get(i, j) < minDistanceForSpawn && i > 7 && i < 43 && j > 7 && j < 43) {
+                if (distanceCM.get(i, j) >= 4 && floodCM.get(i, j) < minDistanceForSpawn && i > 7 && i < 43 && j > 7 && j < 43) {
                     minDistanceForSpawn = floodCM.get(i, j);
                     minPos.x = i;
                     minPos.y = j + 2;
