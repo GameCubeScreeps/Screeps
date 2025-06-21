@@ -55,6 +55,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
         }
     }
 
+
     //  Carriers / Harvesters
     var areCarriersSatisfied = true
     var areHarvestersSatisfied = true
@@ -74,6 +75,13 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
             continue;
         }
 
+        // Fillers
+        if (this.controller.level > 1 && global.heap.rooms[this.name].fillers < 4) {
+            global.heap.rooms[this.name].harvestingQueue.push(new generalRoomRequest(this.name, C.ROLE_FILLER))
+            console.log("adding filler to queue")
+        }
+
+
         //Carriers and Harvesters for sure won't be mixed on queue
         if (Game.rooms[this.name].storage != undefined) {
             if (harvestingSource.carryPower < harvestingSource.harvestingPower) {
@@ -91,8 +99,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
                 break;
             }
         }
-        else if(Game.rooms[this.name].memory.energyBalance<= 0.5)
-        {
+        else if (Game.rooms[this.name].memory.energyBalance <= 0.5) {
             if (harvestingSource.carryPower < harvestingSource.harvestingPower) {
                 //Carriers
                 global.heap.rooms[this.name].harvestingQueue.push(new harvestingSourceRequestCarrier(harvestingSource.id, harvestingSource.roomName, harvestingSource.distance))
@@ -112,14 +119,16 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
 
     }
 
+    
+
 
     //console.log("Balancer in queues driver: ", Game.rooms[this.name].memory.energyBalance)
     // Workers below RCL4 - wthout storage
     if (Game.rooms[this.name].storage == undefined) {
         if (Game.rooms[this.name].memory.energyBalance > 1.5) {
-            
+
             global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_WORKER))
-            
+
         }
     }
     else {//Workers above and on RCL4

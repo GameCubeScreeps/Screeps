@@ -10,9 +10,15 @@ Room.prototype.roomManager = function roomManager() {
 
     global.heap.rooms[this.name].hostiles = []
     global.heap.rooms[this.name].allies = []
+    global.heap.rooms[this.name].myWorkers = [];
 
     if (Memory.mainRooms.includes(this.name)) {
 
+        //Tracking creeps
+        global.heap.rooms[this.name].fillers=0
+
+
+        //Tracking structures
         global.heap.rooms[this.name].construction = []
         this.memory.state = []
         this.memory.myStructures = []
@@ -132,8 +138,8 @@ Room.prototype.roomManager = function roomManager() {
         // this array will store ramparts amount for different room variations - we will chose to build the one with the least ramparts
         // we do not have to have built spawn - it will be able to move spawn to calculated position
 
-        if (global.heap.rooms[this.name].baseVariations == undefined
-            && this.memory.variationToBuild==undefined || this.memory.manualBasePlan!=false
+        if ((global.heap.rooms[this.name].baseVariations == undefined) && Game.rooms[this.name].memory.finishedPlanning!=true
+            || this.memory.manualBasePlan != false // for debugging
         ) {
             console.log("setting base variations")
             this.visual.text("?", 25, 5)
@@ -169,71 +175,81 @@ Room.prototype.roomManager = function roomManager() {
             global.heap.rooms[this.name].baseVariations[C.SRC_1_2_CONTROLLER].rampartsAmount = 0;
             global.heap.rooms[this.name].baseVariations[C.SRC_1_2_CONTROLLER].startPos = 0;
 
-            global.heap.rooms[this.name].finishedPlanning = false
-            
-            this.memory.roomPlan=undefined
-            this.memory.buildingStage=0
-            this.memory.manualBasePlan=false;
+            Game.rooms[this.name].memory.finishedPlanning = false
+
+            this.memory.roomPlan = undefined
+            this.memory.buildingStage = 0
+            this.memory.manualBasePlan = false;
         }
 
-
-
-
-    }
-    //////I messed git branch: basePlanning
-    var color='red'
-    if(global.heap.rooms[this.name].finishedPlanning ==true)
-    {
-        color='green'
-    }
-    this.visual.circle(15,4,{fill: color,radius: 0.5})
-    //console.log("base variations: ",global.heap.rooms[this.name])
-    if (global.heap.rooms[this.name].finishedPlanning != true) {
-        for (key in global.heap.rooms[this.name].baseVariations) {
-
-            var variation = global.heap.rooms[this.name].baseVariations[key]
-
-            console.log("variation.finished: ", variation.variationFinished)
-            if (global.heap.rooms[this.name].baseVariations[key].variationFinished == false) {
-                console.log("building in ", this.name," key:", key, ":")
-                this.buildRoom(key)
-                global.heap.rooms[this.name].finishedPlanning = false
-                break;
-            }
-            global.heap.rooms[this.name].finishedPlanning = true
+        //////I messed git branch: basePlanning
+        var color = 'red'
+        if (Game.rooms[this.name].memory.finishedPlanning == true) {
+            color = 'green'
         }
-    }
+        this.visual.circle(15, 4, { fill: color, radius: 0.5 })
+        //console.log("base variations: ",global.heap.rooms[this.name])
+        console.log("QWEQWE: ",Game.rooms[this.name].memory.finishedPlanning!=true)
+        if (Game.rooms[this.name].memory.finishedPlanning != true) {
 
-    console.log("global.heap.rooms[this.name].finishedPlanning: ",global.heap.rooms[this.name].finishedPlanning)
-    if (global.heap.rooms[this.name].finishedPlanning == true &&
-        global.heap.rooms[this.name].variationToBuild == undefined
-    ) {
+            console.log("opoppop")
+            console.log("global.heap.rooms[this.name].baseVariations: ",global.heap.rooms[this.name].baseVariations)
+            for (key in global.heap.rooms[this.name].baseVariations) {
+                console.log("yuyuyuyyuyu")
+                var variation = global.heap.rooms[this.name].baseVariations[key]
 
-        console.log("chosing layout to build")
-        //var variation = global.heap.rooms[this.name].baseVariations[key]
-        var minRamparts = Infinity
-        this.memory.buildingVariations = []
-        for (key in global.heap.rooms[this.name].baseVariations) {
-            console.log('test')
-            console.log(key, global.heap.rooms[this.name].baseVariations[key].rampartsAmount)
-
-            this.memory.buildingVariations.push(global.heap.rooms[this.name].baseVariations[key].rampartsAmount)
-            if (global.heap.rooms[this.name].baseVariations[key].rampartsAmount < minRamparts) {
-                minRamparts = global.heap.rooms[this.name].baseVariations[key].rampartsAmount
-                global.heap.rooms[this.name].variationToBuild = key
-                this.memory.variationToBuild = key
+                console.log("variation.finished: ", variation.variationFinished)
+                if (global.heap.rooms[this.name].baseVariations[key].variationFinished == false) {
+                    console.log("building in ", this.name, " key:", key, ":")
+                    this.buildRoom(key)
+                    Game.rooms[this.name].memory.finishedPlanning = false
+                    break;
+                }
+                Game.rooms[this.name].memory.finishedPlanning = true
             }
         }
-    }
 
-    
-    // here add some time-condition not to call it to often
-    if (global.heap.rooms[this.name].variationToBuild != undefined
-        && (Game.time%C.BUILD_TIME_STEP==Memory.mainRooms.indexOf(this.name))
-    ) {
-        // Build chosen variation
+        console.log("global.heap.rooms[", this.name, "].finishedPlanning: ", Game.rooms[this.name].memory.finishedPlanning)
+        console.log("global.heap.rooms[", this.name, "].variationToBuild: ", global.heap.rooms[this.name].variationToBuild)
+        if (Game.rooms[this.name].memory.finishedPlanning == true &&
+            global.heap.rooms[this.name].variationToBuild == undefined
+        ) {
 
-        this.buildRoom(global.heap.rooms[this.name].variationToBuild)
+            console.log("chosing layout to build")
+            //var variation = global.heap.rooms[this.name].baseVariations[key]
+            var minRamparts = Infinity
+            this.memory.buildingVariations = []
+            for (key in global.heap.rooms[this.name].baseVariations) {
+                console.log('test')
+                console.log(key, global.heap.rooms[this.name].baseVariations[key].rampartsAmount)
+
+                this.memory.buildingVariations.push(global.heap.rooms[this.name].baseVariations[key].rampartsAmount)
+                if (global.heap.rooms[this.name].baseVariations[key].rampartsAmount < minRamparts) {
+                    minRamparts = global.heap.rooms[this.name].baseVariations[key].rampartsAmount
+                    global.heap.rooms[this.name].variationToBuild = key
+                    this.memory.spawnPos=global.heap.rooms[this.name].baseVariations[key].spawnPos
+                }
+            }
+        }
+        /*
+        else if(Game.rooms[this.name].memory.finishedPlanning==undefined
+            && 
+        )
+            */
+
+
+        // here add some time-condition not to call it to often
+        if (global.heap.rooms[this.name].variationToBuild != undefined
+            && (Game.time % C.BUILD_TIME_STEP == Memory.mainRooms.indexOf(this.name) || global.heap.rooms[this.name].forcedBuild != true)
+        ) {
+            // Build chosen variation
+            console.log("cuilding in: ", this.name)
+            global.heap.rooms[this.name].forcedBuild=true
+            this.buildRoom(global.heap.rooms[this.name].variationToBuild)
+        }
+
+
+
     }
 
 
@@ -319,6 +335,18 @@ Room.prototype.roomManager = function roomManager() {
             }
 
         }
+    }
+
+
+    //Finding my workers
+    var workers = this.find(FIND_MY_CREEPS, {
+        filter:
+            function (cr) {
+                return cr.memory.role == C.ROLE_WORKER
+            }
+    })
+    for (w of workers) {
+        global.heap.rooms[this.name].myWorkers.push(w.id)
     }
 
 

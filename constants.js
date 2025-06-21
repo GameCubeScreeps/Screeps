@@ -8,6 +8,10 @@ for (spawnName in Game.spawns) {
     break;
 }
 const USERNAME = global.heap.userName
+
+//CPU/Benchmarking 
+const AVG_STEP=1500
+
 //Creep Roles
 const ROLE_HARVESTER = 'harvester'
 const ROLE_CARRIER = 'carrier'
@@ -59,11 +63,12 @@ const LAYOUT = {
     SRC_2_CONTROLLER: 'src_2_controller',
     SRC_1_2_CONTROLLER: 'src_1_2_controller',
 }
-const BUILD_TIME_STEP = 1500
+const BUILD_TIME_STEP = 2000
 
 
 module.exports = {
     TEST_CONST,
+    AVG_STEP,
     USERNAME,
     ROLE_HARVESTER,
     ROLE_CARRIER,

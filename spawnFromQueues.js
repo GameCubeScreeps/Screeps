@@ -3,7 +3,7 @@ const C = require('constants');
 
 const harvesterBody = require('harvesterBody')
 const carrierBody = require('carrierBody')
-const workerBody=require('workerBody')
+const workerBody = require('workerBody')
 const { result } = require('lodash');
 
 
@@ -44,7 +44,7 @@ Room.prototype.spawnFromQueues = function spawnFromQueues() {
                     //console.log("Spawning harvester: ")
                     //console.log("Energy Cap: ", energyCap)
                     //console.log("harvesterBody(energyCap): ", harvesterBody(energyCap))
-                    var result = spawn.spawnCreep(harvesterBody(energyCap), 'harvester_' + this.name + Game.time, { memory: { role: 'harvester', homeRoom: this.name, targetRoom: request.sourceRoom, sourceId: request.sourceId } })
+                    var result = spawn.spawnCreep(harvesterBody(energyCap), C.ROLE_HARVESTER + '_' + this.name + Game.time, { memory: { role: C.ROLE_HARVESTER, homeRoom: this.name, targetRoom: request.sourceRoom, sourceId: request.sourceId } })
                     if (result == OK) {
                         global.heap.rooms[this.name].harvestingQueue.shift()
 
@@ -53,12 +53,23 @@ Room.prototype.spawnFromQueues = function spawnFromQueues() {
                 }
             case C.ROLE_CARRIER:
                 {
-                    var result = spawn.spawnCreep(carrierBody(energyCap), 'carrier' + this.name + Game.time, { memory: { role: 'carrier', homeRoom: this.name, targetRoom: request.sourceRoom, sourceId: request.sourceId } })
+                    var result = spawn.spawnCreep(carrierBody(energyCap), C.ROLE_CARRIER + '_' + this.name + Game.time, { memory: { role: C.ROLE_CARRIER, homeRoom: this.name, targetRoom: request.sourceRoom, sourceId: request.sourceId } })
                     if (result == OK) {
                         global.heap.rooms[this.name].harvestingQueue.shift()
 
                     }
                     break;
+                }
+            case C.ROLE_FILLER:
+                {
+                    var body = [MOVE, CARRY]
+                    if (spawn.room.controller.level == 7) {
+                        body = [MOVE, CARRY, CARRY]
+                    }
+                    else if (spawn.room.controller.level == 8) {
+                        body = [MOVE, CARRY, CARRY, CARRY, CARRY]
+                    }
+                    var result = spawn.spawnCreep(body, C.ROLE_FILLER + '_' + this.name + Game.time, { memory: { role: C.ROLE_FILLER, homeRoom: this.name, spanwId: this.id } })
                 }
         }
 
@@ -70,22 +81,23 @@ Room.prototype.spawnFromQueues = function spawnFromQueues() {
         switch (type) {
             case C.ROLE_SCOUT:
                 {
-                    var result = spawn.spawnCreep([MOVE], 'scout_' + this.name + Game.time, { memory: { role: 'scout', homeRoom: this.name, homeSpawnID: spawn.id } })
+                    var result = spawn.spawnCreep([MOVE], C.ROLE_SCOUT + '_' + this.name + Game.time, { memory: { role: C.ROLE_SCOUT, homeRoom: this.name, homeSpawnID: spawn.id } })
                     if (result == OK) {
                         global.heap.rooms[this.name].civilianQueue.shift()
-                        
+
                     }
                     break;
                 }
             case C.ROLE_WORKER:
                 {
-                    var result=spawn.spawnCreep(workerBody(energyCap),'worker_'+this.name+Game.time,{ memory:{ role: 'worker', homeRoom: this.name}})
+                    var result = spawn.spawnCreep(workerBody(energyCap), C.ROLE_WORKER + '_' + this.name + Game.time, { memory: { role: C.ROLE_WORKER, homeRoom: this.name } })
                     if (result == OK) {
                         global.heap.rooms[this.name].civilianQueue.shift()
-                        
+
                     }
                     break;
                 }
+
 
         }
     }

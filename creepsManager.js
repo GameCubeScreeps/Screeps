@@ -5,6 +5,7 @@ const roleScout = require('roleScout')
 const roleHarvester = require('roleHarvester')
 const roleCarrier = require('roleCarrier')
 const roleWorker=require('roleWorker')
+const roleFiller=require('roleFiller')
 
 Room.prototype.creepsManager = function creepsManager() {
 
@@ -41,6 +42,10 @@ Room.prototype.creepsManager = function creepsManager() {
             case C.ROLE_WORKER:
                 creep.roleWorker()
                 global.heap.rooms[this.name].workersParts+=_.filter(this.body, { type: WORK }).length
+                continue
+            case C.ROLE_FILLER:
+                creep.roleFiller()
+                global.heap.rooms[this.name].fillers++;
                 continue
         }
     }

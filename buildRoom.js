@@ -728,6 +728,10 @@ Room.prototype.createTowerStamp = function createTowerStamp(x, y) {
 
 Room.prototype.buildFromLists = function buildFromLists() {
     var rcl = this.controller.level;
+    if(this.memory.buildingList==undefined)
+    {
+        return -1;
+    }
     for (let i = 0; i < this.memory.buildingList.length; i++) {
         if (Game.rooms[this.memory.buildingList[i].roomName] != undefined && (this.memory.buildingList[i].minRCL <= rcl || this.memory.buildingList[i] == undefined)) {
             if (this.memory.buildingList[i].structureType == STRUCTURE_SPAWN && this.memory.buildingList[i].minRCL == 7) {
@@ -1170,7 +1174,7 @@ Room.prototype.buildRoom = function buildRoom(type) {
     }
     this.memory.ifSuccessPlanningStage = false;
 
-    if (this.memory.buildingStage == undefined || (this.memory.buildingStage != undefined && this.memory.buildingStage > 1 && this.memory.variationToBuild != undefined)
+    if (this.memory.buildingStage == undefined || (this.memory.buildingStage != undefined && this.memory.buildingStage > 1 && this.memory.variationToBuild == undefined)
         || (this.memory.buildingStage > 4)) { // if stage is out of bounds
         this.visual.text("Stage out of bounds", 26, 4)
         this.memory.buildingStage = 0;
@@ -1399,7 +1403,7 @@ Room.prototype.buildRoom = function buildRoom(type) {
     }
     this.visual.circle(26, 3, { radius: 1, fill: color })
     this.visual.text(type, 27, 5)
-    var ifVisualize = true
+    var ifVisualize = false
     if (ifVisualize) {
         this.visualizeBase();
     }

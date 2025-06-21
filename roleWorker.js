@@ -11,7 +11,6 @@ const C = require('constants')
 
     Will Calculate in its own:
     this.memory.workPartsNum - 
-    this.memory.otherWorkers - other workers -> when upgrading it will pass energy to worker which is closer to controller
     this.memory.boosters - acceptable boosters - putting only upgrade controller for now
     this.memory.task - currently done task -> colelct/upgrade/build 
 
@@ -28,28 +27,32 @@ Creep.prototype.roleWorker = function roleWorker() {
     if (this.memory.workPartsNum == undefined) {
         this.memory.workPartsNum = _.filter(this.body, { type: WORK }).length
     }
-    if (this.memory.otherWorkers != undefined) {
-        for (a of this.memory.otherWorkers) {
+
+
+    /////
+    /*
+    if (global.heap.rooms[this.memory.homeRoom].myWorkers != undefined) {
+        for (a of global.heap.rooms[this.memory.homeRoom].myWorkers) {
             if (Game.getObjectById(a) == null) {
-                this.memory.otherWorkers == undefined
+                global.heap.rooms[this.memory.homeRoom].myWorkers == undefined
                 break;
             }
         }
 
     }
-    if (this.memory.otherWorkers == undefined) {
+    if (global.heap.rooms[this.memory.homeRoom].myWorkers == undefined) {
         var upgraders = this.room.find(FIND_MY_CREEPS, {
             filter: function (cr) {
                 return cr.memory.role == 'worker' && cr.id != this.id;
             }
         })
-        this.memory.otherWorkers = [];
+        global.heap.rooms[this.memory.homeRoom].myWorkers = [];
         for (a of upgraders) {
-            this.memory.otherWorkers.push(a.id)
+            global.heap.rooms[this.memory.homeRoom].myWorkers.push(a.id)
         }
-
-
     }
+        */
+    //////
 
     if (this.memory.boosters == undefined) {
         this.memory.boosters = ["XGH2O"];//boost types that creep accepts
@@ -93,8 +96,8 @@ Creep.prototype.roleWorker = function roleWorker() {
             }
 
 
-            if (this.store[RESOURCE_ENERGY] > 0 && this.memory.otherWorkers != undefined && this.memory.otherWorkers.length > 0) {
-                for (a of this.memory.otherWorkers) {
+            if (this.store[RESOURCE_ENERGY] > 0 && global.heap.rooms[this.memory.homeRoom].myWorkers != undefined && global.heap.rooms[this.memory.homeRoom].myWorkers.length > 0) {
+                for (a of global.heap.rooms[this.memory.homeRoom].myWorkers) {
                     cr = Game.getObjectById(a)
                     if (cr == null) { continue; }
 
@@ -120,7 +123,7 @@ Creep.prototype.roleWorker = function roleWorker() {
 
             if (Game.getObjectById(this.memory.deposit) != null && Game.getObjectById(this.memory.deposit).store[RESOURCE_ENERGY] == 0 && Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
                 Game.rooms[this.memory.homeRoom].memory.energyBalance -= C.BALANCER_WORKER_STEP
-                this.say('b-')
+                //this.say('b-')
                 this.memory.deposit=undefined
             }
 
@@ -173,7 +176,7 @@ Creep.prototype.roleWorker = function roleWorker() {
                     else{
                         if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
                             Game.rooms[this.memory.homeRoom].memory.energyBalance -= C.BALANCER_WORKER_STEP
-                            this.say("3b-")
+                            //this.say("3b-")
                         
                         }
                     }
@@ -186,7 +189,7 @@ Creep.prototype.roleWorker = function roleWorker() {
                     else {
                         if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
                             Game.rooms[this.memory.homeRoom].memory.energyBalance -= C.BALANCER_WORKER_STEP
-                            this.say("2b-")
+                            //this.say("2b-")
                         
                         }
                     }
@@ -217,6 +220,7 @@ Creep.prototype.roleWorker = function roleWorker() {
             }
         }
         else if (this.memory.task == C.TASK_BUILD) {
+
 
             if (global.heap.rooms[this.memory.homeRoom].building != true) {
                 this.memory.task = undefined

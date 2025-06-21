@@ -41,4 +41,13 @@ Room.prototype.visualize = function visualizeroomManager() {
         Game.rooms[this.name].visual.text('🕓' + Math.round((ttu)), Game.rooms[this.name].controller.pos.x + 1.5, Game.rooms[this.name].controller.pos.y - 1.5, { color: C.TEXT_COLOR })
     }
 
+    //Cpu usage visualization
+    if(global.heap.rooms[mainRoom].avgCpu!=undefined)
+    {
+        tempAvg=(Math.round((global.heap.rooms[this.name].avgCpu) * 100) / 100)
+        tempUsed=(Math.round((global.heap.rooms[this.name].usedCpu) * 100) / 100)
+        Game.rooms[mainRoom].visual.text("avgCpu: "+tempAvg,41,1)
+        Game.rooms[mainRoom].visual.text("usedCpu: "+tempUsed,41,2)
+    }
+
 }

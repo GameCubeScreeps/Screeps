@@ -39,7 +39,7 @@ module.exports.loop = function () {
 
     for (roomName in Game.rooms) {
 
-      console.log("--------------- ", roomName, "---------------")
+      
 
       if (global.heap.rooms[roomName] == undefined) {
         global.heap.rooms[roomName] = {}
@@ -65,6 +65,8 @@ module.exports.loop = function () {
 
     for (mainRoom of Memory.mainRooms) {
 
+      console.log("--------------- ", roomName, "---------------")
+      
       var start=Game.cpu.getUsed()
 
       Game.rooms[mainRoom].creepsManager()
@@ -75,6 +77,19 @@ module.exports.loop = function () {
 
       Game.rooms[mainRoom].visualize()
 
+      global.heap.rooms[mainRoom].usedCpu=Game.cpu.getUsed()-start
+      if(global.heap.rooms[mainRoom].cpuSum==undefined)
+      {
+        global.heap.rooms[mainRoom].cpuSum=global.heap.rooms[mainRoom].usedCpu
+        global.heap.rooms[mainRoom].avgCounter=1;
+      }
+      else
+      {
+        global.heap.rooms[mainRoom].cpuSum+=global.heap.rooms[mainRoom].usedCpu
+        global.heap.rooms[mainRoom].avgCounter++;
+        global.heap.rooms[mainRoom].avgCpu=global.heap.rooms[mainRoom].cpuSum/global.heap.rooms[mainRoom].avgCounter
+        
+      }
 
       console.log("Used cpu: ",Game.cpu.getUsed()-start)  
       
