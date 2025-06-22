@@ -1,5 +1,6 @@
 //const { boosting_driver } = require('boosting_driver');
 const C = require('constants')
+const Movement = require('screeps-movement');
 
 /*Creep needs:
    Mandatory:
@@ -89,7 +90,7 @@ Creep.prototype.roleWorker = function roleWorker() {
             return
         }
 
-        if (this.store.getUsedCapacity() == 0) {
+        if (this.store.getUsedCapacity() == 0 && Game.rooms[this.memory.homeRoom].memory.energyBalance!=undefined && Game.rooms[this.memory.homeRoom].memory.energyBalance>C.ENERGY_BALANCER_UPGRADER_START) {
             this.memory.task = C.TASK_COLLECT
         }
         else if (global.heap.rooms[this.memory.homeRoom].building == true

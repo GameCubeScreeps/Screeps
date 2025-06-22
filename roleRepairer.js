@@ -1,14 +1,22 @@
 var roleWorker = require('roleWorker');
+const Movement = require('screeps-movement');
+const C = require('constants')
 //const getMaxEnergyDeposit = require("getMaxEnergyDeposit");
 
 localHeap={}
 
-Creep.prototype.roleRepairer = function roleRepairer(spawn) {
+Creep.prototype.roleRepairer = function roleRepairer() {
 
-    global.heap.rooms[this.memory.targetRoom].repairerId=this.id
-    //this.suicide();
-    //this.say("R");
-    //var targets=this.room.find(FIND_CONSTRUCTION_SITES)
+
+    for(harvestingRoom of Game.rooms[this.memory.homeRoom].memory.harvestingRooms)
+    {
+        if(harvestingRoom.name==this.memory.targetRoom)
+        {
+            harvestingRoom.repairerId=this.id
+            break;
+        }
+    }
+
     if (this.room.name == this.memory.targetRoom) {
 
         /*
@@ -107,22 +115,19 @@ Creep.prototype.roleRepairer = function roleRepairer(spawn) {
         }
         else if (global.heap.rooms[this.memory.targetRoom].damagedStructuresId != undefined && global.heap.rooms[this.memory.targetRoom].damagedStructuresId.length >= 1) {
 
-
+           
             localHeap.repairing = true;
 
             if (localHeap.repairing && this.store[RESOURCE_ENERGY] == 0) {
                 localHeap.repairing = false;
-                //this.say('🔄 harvest');
 
             }
             //console.log("wolne miejsce: ",this.store.getFreeCapacity());
             if (localHeap.repairing == false && this.store.getFreeCapacity() == 0) { // go repair
                 localHeap.repairing = true;
-                //this.say('🚧 Repairing');
             }
 
             if (localHeap.repairing) {
-                //this.say("QWERT");
 
                 if (global.heap.rooms[this.memory.targetRoom].damagedStructuresId != undefined && global.heap.rooms[this.memory.targetRoom].damagedStructuresId.length >0) {
 
@@ -138,31 +143,26 @@ Creep.prototype.roleRepairer = function roleRepairer(spawn) {
                         localHeap.targetStructureId=global.heap.rooms[this.memory.targetRoom].damagedStructuresId[0];//take first structure
                     }
 
-
                     if (localHeap.targetStructureId != undefined) {
-                        var targetStructureId = Game.getObjectById(localHeap.targetStructureId)
-                        if (targetStructureId != null && targetStructureId.hits < targetStructureId.hitsMax) {
-                            //this.say("rep")
-                            if (this.repair(targetStructureId) == ERR_NOT_IN_RANGE) {
-                                this.moveTo(targetStructureId, { visualizePathStyle: { stroke: 'red' }, reusePath: 17,maxRooms:1 });
+                        var targetStructure = Game.getObjectById(localHeap.targetStructureId)
+                        if (targetStructure != null && targetStructure.hits < targetStructure.hitsMax) {
+                            if (this.repair(targetStructure) == ERR_NOT_IN_RANGE) {
+                                this.moveTo(targetStructure, { visualizePathStyle: { stroke: 'red' }, reusePath: 17,maxRooms:1 });
                                 //move_avoid_hostile(this, closest_target.pos, 2, false);
                             }
                         }
                         else {
-                            this.say("renew")
                             localHeap.targetStructureId = undefined;
                             global.heap.rooms[this.memory.targetRoom].damagedStructuresId=undefined;
                         }
                     }
-                    //this.say(closest_target.pos.x+" "+closest_target.pos.y)
 
 
                 }
             }
-            else if (this.store[RESOURCE_ENERGY] == 0 && this.memory.containers != undefined && this.memory.containers.length > 0) {// go to deposits
+            else if (this.store[RESOURCE_ENERGY] == 0 && Game.rooms[this.memory.targetRoom].memory.containers!=undefined && Game.rooms[this.memory.targetRoom].memory.containers.length > 0) {// go to deposits
                 var containers = [];
-                //this.say("ener")
-                for (containerId of global.heap.rooms[this.memory.targetRoom].containersId) {
+                for (containerId of Game.rooms[this.memory.targetRoom].memory.containers) {
                     if (Game.getObjectById(containerId) != null && Game.getObjectById(containerId).store[RESOURCE_ENERGY] > 0) {
                         containers.push(Game.getObjectById(containerId))
                     }
@@ -171,9 +171,7 @@ Creep.prototype.roleRepairer = function roleRepairer(spawn) {
                 var source = this.pos.findClosestByRange(containers);
                 var  withdrawResult=this.withdraw(source, RESOURCE_ENERGY)
                 if (withdrawResult == ERR_NOT_IN_RANGE) {
-                    //this.say("Going to Cintainer");
                     this.moveTo(source, { reusePath: 17,maxRooms:1 });
-                    //move_avoid_hostile(this, source.pos,1);
                 }
 
             }
@@ -191,11 +189,6 @@ Creep.prototype.roleRepairer = function roleRepairer(spawn) {
                 }
             }
         }
-        /*
-        else {
-            global.heap.rooms[this.memory.targetRoom].damagedStructuresId = undefined
-        }
-            */
 
     }
     else {

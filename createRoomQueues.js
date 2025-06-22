@@ -44,13 +44,13 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     //console.log("rooms to scan: ",Game.rooms[this.name].memory.roomsToScan)
     if (Game.rooms[this.name].memory.roomsToScan == undefined) {
         global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_SCOUT))
-        console.log("adding: ", C.ROLE_SCOUT)
+        //console.log("adding: ", C.ROLE_SCOUT)
     }
     else if (Game.rooms[this.name].memory.roomsToScan != undefined) {
         if (Game.rooms[this.name].memory.roomsToScan.length > 0) {
             if (global.heap.rooms[this.name].haveScout == false) {
                 global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_SCOUT))
-                console.log("adding: ", C.ROLE_SCOUT)
+                //console.log("adding: ", C.ROLE_SCOUT)
             }
         }
     }
@@ -78,7 +78,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
         // Fillers
         if (this.controller.level > 1 && global.heap.rooms[this.name].fillers < 4) {
             global.heap.rooms[this.name].harvestingQueue.push(new generalRoomRequest(this.name, C.ROLE_FILLER))
-            console.log("adding filler to queue")
+            //console.log("adding filler to queue")
         }
 
 
@@ -87,14 +87,14 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
             if (harvestingSource.carryPower < harvestingSource.harvestingPower) {
                 //Carriers
                 global.heap.rooms[this.name].harvestingQueue.push(new harvestingSourceRequestCarrier(harvestingSource.id, harvestingSource.roomName, harvestingSource.distance))
-                console.log("Adding Carrier to queue")
+                //console.log("Adding Carrier to queue")
                 areCarriersSatisfied = false
                 break;
 
             }//Farmers
             else if (harvestingSource.harvestingPower < (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) && harvestingSource.harvesters < harvestingSource.maxHarvesters) {
                 global.heap.rooms[this.name].harvestingQueue.push(new harvestingSourceRequestFarmer(harvestingSource.id, harvestingSource.roomName, harvestingSource.distance))
-                console.log("Adding harvester to queue")
+                //console.log("Adding harvester to queue")
                 areHarvestersSatisfied = false
                 break;
             }
@@ -103,14 +103,14 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
             if (harvestingSource.carryPower < harvestingSource.harvestingPower) {
                 //Carriers
                 global.heap.rooms[this.name].harvestingQueue.push(new harvestingSourceRequestCarrier(harvestingSource.id, harvestingSource.roomName, harvestingSource.distance))
-                console.log("Adding Carrier to queue")
+                //console.log("Adding Carrier to queue")
                 areCarriersSatisfied = false
                 break;
 
             }//Farmers
             else if (harvestingSource.harvestingPower < (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) && harvestingSource.harvesters < harvestingSource.maxHarvesters) {
                 global.heap.rooms[this.name].harvestingQueue.push(new harvestingSourceRequestFarmer(harvestingSource.id, harvestingSource.roomName, harvestingSource.distance))
-                console.log("Adding harvester to queue")
+                //console.log("Adding harvester to queue")
                 areHarvestersSatisfied = false
                 break;
             }
@@ -121,7 +121,6 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
 
     for(harvestingRoom of this.memory.harvestingRooms)
     {
-        console.log("harvesting room: ",harvestingRoom.name)
         if(harvestingRoom.repairerId==undefined)
         {
             global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(harvestingRoom.name,C.ROLE_REPAIRER))
@@ -133,10 +132,9 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     
 
 
-    //console.log("Balancer in queues driver: ", Game.rooms[this.name].memory.energyBalance)
     // Workers below RCL4 - wthout storage
     if (Game.rooms[this.name].storage == undefined) {
-        if (Game.rooms[this.name].memory.energyBalance > 1.5) {
+        if (Game.rooms[this.name].memory.energyBalance > C.ENERGY_BALANCER_WORKER_SPAWN) {
 
             global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_WORKER))
 
