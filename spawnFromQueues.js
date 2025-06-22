@@ -95,9 +95,19 @@ Room.prototype.spawnFromQueues = function spawnFromQueues() {
                         global.heap.rooms[this.name].civilianQueue.shift()
 
                     }
+                    console.log("worker spawning result: ",result)
                     break;
                 }
+            case C.ROLE_REPAIRER:
+                {
+                    var result = spawn.spawnCreep(workerBody(energyCap), C.ROLE_REPAIRER + '_' + this.name + Game.time, { memory: { role: C.ROLE_REPAIRER, targetRoom: request.roomName ,homeRoom: this.name } })
+                    if (result == OK) {
+                        global.heap.rooms[this.name].civilianQueue.shift()
 
+                    }
+                    console.log("Repairer spawning result: ",result)
+                    break;
+                }
 
         }
     }

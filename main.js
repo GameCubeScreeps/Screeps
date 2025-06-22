@@ -78,7 +78,7 @@ module.exports.loop = function () {
       Game.rooms[mainRoom].visualize()
 
       global.heap.rooms[mainRoom].usedCpu=Game.cpu.getUsed()-start
-      if(global.heap.rooms[mainRoom].cpuSum==undefined)
+      if(global.heap.rooms[mainRoom].cpuSum==undefined || global.heap.rooms[mainRoom].avgCounter>C.AVG_STEP)
       {
         global.heap.rooms[mainRoom].cpuSum=global.heap.rooms[mainRoom].usedCpu
         global.heap.rooms[mainRoom].avgCounter=1;

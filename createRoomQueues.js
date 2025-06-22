@@ -66,12 +66,12 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
         //Skipping reserved by not "me"
         if (Game.rooms[harvestingSource.roomName] != undefined && Game.rooms[harvestingSource.roomName].controller.reservation != undefined
             && Game.rooms[harvestingSource.roomName].controller.reservation.username != global.heap.userName) {
-            console.log("skipping room reserved by not player")
+            //console.log("skipping room reserved by not player")
             continue;
         }
         //Skippig rooms containing hostileCreeps
         if (global.heap.rooms[harvestingSource.roomName] != undefined && global.heap.rooms[harvestingSource.roomName].hostiles.length > 1 && harvestingSource.roomName != this.name) {
-            console.log("Skipping room with hostiles")
+            //console.log("Skipping room with hostiles")
             continue;
         }
 
@@ -117,6 +117,17 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
         }
 
 
+    }
+
+    for(harvestingRoom of this.memory.harvestingRooms)
+    {
+        console.log("harvesting room: ",harvestingRoom.name)
+        if(harvestingRoom.repairerId==undefined)
+        {
+            global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(harvestingRoom.name,C.ROLE_REPAIRER))
+            console.log("adding repairer")
+            break;
+        }
     }
 
     

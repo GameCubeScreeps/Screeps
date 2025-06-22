@@ -19,6 +19,29 @@ const C = require('constants')
 Creep.prototype.roleWorker = function roleWorker() {
 
     //this.suicide();
+    //switching role to harvester if homeRoom run out of harvesters
+    /*
+    if(this.ticksToLive%17==0)
+    {
+        for (harvestingSource of Game.rooms[this.memory.homeRoom].memory.harvestingSources) {
+            if(harvestingSource.roomName!=this.memory.homeRoom)
+            {
+                break;
+            }
+            if (harvestingSource.harvestingPower < (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) && harvestingSource.harvesters < harvestingSource.maxHarvesters) {
+                
+                this.memory.role=C.ROLE_HARVESTER
+                this.memory.targetRoom=harvestingSource.roomName
+                this.memory.sourceId=harvestingSource.id
+                this.say("Switch")
+                break;
+            }
+        }
+    }
+        */
+
+
+
     if (Game.rooms[this.memory.homeRoom].memory.state.includes("STATE_UNDER_ATTACK") && Game.rooms[this.memory.homeRoom].room.controller.ticksToDowngrade > 2000) {
         this.say("rep")
         //this.roleRampartRepairer(creep);
@@ -130,7 +153,7 @@ Creep.prototype.roleWorker = function roleWorker() {
             if ((this.memory.deposit != undefined && Game.getObjectById(this.memory.deposit) != null && Game.getObjectById(this.memory.deposit).store[RESOURCE_ENERGY] == 0
             /* && Game.getObjectById(this.memory.deposit).structureType != STRUCTURE_LINK*/)
                 || (Game.getObjectById(Game.rooms[this.memory.homeRoom].memory.controllerLinkId) != null && Game.rooms[this.memory.homeRoom].memory.controllerLinkId != this.memory.deposit && Game.getObjectById(Game.rooms[this.memory.homeRoom].memory.controllerLinkId).store[RESOURCE_ENERGY] > 0)
-                || (Game.rooms[this.memory.homeRoom].memory.controller_container_id != undefined && Game.getObjectById(Game.rooms[this.memory.homeRoom].memory.controller_container_id) != null && Game.rooms[this.memory.homeRoom].memory.controller_container_id != this.memory.deposit && Game.getObjectById(Game.rooms[this.memory.homeRoom].memory.controller_container_id).store[RESOURCE_ENERGY] > 0)) {
+                || (Game.rooms[this.memory.homeRoom].memory.controllerContainerId != undefined && Game.getObjectById(Game.rooms[this.memory.homeRoom].memory.controllerContainerId) != null && Game.rooms[this.memory.homeRoom].memory.controllerContainerId != this.memory.deposit && Game.getObjectById(Game.rooms[this.memory.homeRoom].memory.controllerContainerId).store[RESOURCE_ENERGY] > 0)) {
                 
                 
 

@@ -1041,8 +1041,9 @@ Room.prototype.visualizeBase = function visualizeBase() {
 
 Room.prototype.buildRoom = function buildRoom(type) {
 
-    if (global.heap.rooms[this.name].baseVariations[type].spawnPos == undefined
-        && global.heap.rooms[this.name].variationToBuild == undefined
+    if (global.heap.rooms[this.name].baseVariations!=undefined &&
+        global.heap.rooms[this.name].baseVariations[type].spawnPos == undefined
+        && this.memory.variationToBuild == undefined
     ) {
         var sources = this.find(FIND_SOURCES)
         var seeds = [];
@@ -1199,8 +1200,8 @@ Room.prototype.buildRoom = function buildRoom(type) {
     }
 
 
-    if (global.heap.rooms[this.name].variationToBuild != undefined &&
-        global.heap.rooms[this.name].variationToBuild == type
+    if (this.memory.variationToBuild != undefined &&
+        this.memory.variationToBuild == type
     ) {
         stage = 4
     }
@@ -1219,7 +1220,7 @@ Room.prototype.buildRoom = function buildRoom(type) {
     var cols = 50;
 
     // To not go into stage 4,5 when pnly planning room variations
-    if (stage > 1 && global.heap.rooms[this.name].variationToBuild == undefined) {
+    if (stage > 1 && this.memory.variationToBuild == undefined) {
         this.visual.circle(20, 7, { fill: 'black', radius: 0.5 })
         return -1;
     }
@@ -1398,7 +1399,7 @@ Room.prototype.buildRoom = function buildRoom(type) {
 
 
     var color = 'red'
-    if (global.heap.rooms[this.name].baseVariations[key].variationFinished) {
+    if (global.heap.rooms[this.name].baseVariations!=undefined && global.heap.rooms[this.name].baseVariations[key].variationFinished) {
         color = 'green'
     }
     this.visual.circle(26, 3, { radius: 1, fill: color })

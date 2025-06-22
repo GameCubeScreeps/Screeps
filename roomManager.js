@@ -11,6 +11,10 @@ Room.prototype.roomManager = function roomManager() {
     global.heap.rooms[this.name].hostiles = []
     global.heap.rooms[this.name].allies = []
     global.heap.rooms[this.name].myWorkers = [];
+    global.heap.rooms[this.name].myDamagedStructuresId=[]
+    global.heap.rooms[this.name].containersId=[]
+
+    this.memory.repairerId=undefined
 
     if (Memory.mainRooms.includes(this.name)) {
 
@@ -22,6 +26,7 @@ Room.prototype.roomManager = function roomManager() {
         global.heap.rooms[this.name].construction = []
         this.memory.state = []
         this.memory.myStructures = []
+        
         this.memory.myExtensions = []
         this.memory.myLabs = []
         this.memory.myTowers = []
@@ -64,10 +69,10 @@ Room.prototype.roomManager = function roomManager() {
                     this.memory.energyBalance = C.BALANCER_USE_LIMIT
                     //console.log("Above top edge")
                 }
-                else if (this.memory.energyBalance > -1 && this.memory.energyBalance < C.BALANCER_HARVEST_LIMIT) {
+                /* else */ if ( this.memory.energyBalance > 0 /* &&  this.memory.energyBalance < C.BALANCER_HARVEST_LIMIT */) {
                     this.memory.energyBalance -= C.BALANCER_DECAY
                 }
-                else if (this.memory.energyBalance < -2 && this.memory.energyBalance > C.BALANCER_USE_LIMIT) {
+                else if ( this.memory.energyBalance < -2 /* &&  this.memory.energyBalance > C.BALANCER_USE_LIMIT*/) {
                     this.memory.energyBalance += C.BALANCER_DECAY
                 }
             }
@@ -210,9 +215,9 @@ Room.prototype.roomManager = function roomManager() {
         }
 
         console.log("global.heap.rooms[", this.name, "].finishedPlanning: ", Game.rooms[this.name].memory.finishedPlanning)
-        console.log("global.heap.rooms[", this.name, "].variationToBuild: ", global.heap.rooms[this.name].variationToBuild)
+        console.log("global.heap.rooms[", this.name, "].variationToBuild: ", Game.rooms[this.name].memory.variationToBuild)
         if (Game.rooms[this.name].memory.finishedPlanning == true &&
-            global.heap.rooms[this.name].variationToBuild == undefined
+            Game.rooms[this.name].memory.variationToBuild == undefined
         ) {
 
             console.log("chosing layout to build")
@@ -226,7 +231,8 @@ Room.prototype.roomManager = function roomManager() {
                 this.memory.buildingVariations.push(global.heap.rooms[this.name].baseVariations[key].rampartsAmount)
                 if (global.heap.rooms[this.name].baseVariations[key].rampartsAmount < minRamparts) {
                     minRamparts = global.heap.rooms[this.name].baseVariations[key].rampartsAmount
-                    global.heap.rooms[this.name].variationToBuild = key
+                    Game.rooms[this.name].memory.variationToBuild = key
+
                     this.memory.spawnPos=global.heap.rooms[this.name].baseVariations[key].spawnPos
                 }
             }
@@ -239,13 +245,13 @@ Room.prototype.roomManager = function roomManager() {
 
 
         // here add some time-condition not to call it to often
-        if (global.heap.rooms[this.name].variationToBuild != undefined
-            && (Game.time % C.BUILD_TIME_STEP == Memory.mainRooms.indexOf(this.name) || global.heap.rooms[this.name].forcedBuild != true)
-        ) {
+        if ((Game.rooms[this.name].memory.variationToBuild != undefined
+            && Game.time % C.BUILD_TIME_STEP == Memory.mainRooms.indexOf(this.name)) || global.heap.rooms[this.name].forcedBuild != true)
+         {
             // Build chosen variation
-            console.log("cuilding in: ", this.name)
+            console.log("building in: ", this.name)
             global.heap.rooms[this.name].forcedBuild=true
-            this.buildRoom(global.heap.rooms[this.name].variationToBuild)
+            this.buildRoom(Game.rooms[this.name].memory.variationToBuild)
         }
 
 
@@ -290,7 +296,7 @@ Room.prototype.roomManager = function roomManager() {
     var structures = this.find(FIND_STRUCTURES)
     for (str of structures) {
         if (str.my) {
-            this.memory.myStructures = str.id
+            this.memory.myStructures.push(str.id)
             const type = str.structureType
             switch (type) {
 
@@ -318,7 +324,20 @@ Room.prototype.roomManager = function roomManager() {
                 case STRUCTURE_OBSERVER:
                     this.memory.myObserver = str.id
                     break;
+                case STRUCTURE_CONTAINER:
+                    global.heap.rooms[this.name].containersId.push(str.id)
+                    break;
+
             }
+            if(type!=STRUCTURE_RAMPART && STRUCTURE_WALL && str.hits<str.hitsMax)
+            {
+                global.heap.rooms[this.name].myDamagedStructuresId.push(str.id)
+            }
+            else if(str.hits<C.RAMPART_HITS_BOTTOM_LIMIT)
+            {
+                global.heap.rooms[this.name].myDamagedStructuresId.push(str.id)
+            }
+
         }
         else if (str.owner != undefined && Memory.allies.includes(str.owner.username)) {
             // What allied structures we need to know ??

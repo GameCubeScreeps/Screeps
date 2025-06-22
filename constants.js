@@ -10,7 +10,7 @@ for (spawnName in Game.spawns) {
 const USERNAME = global.heap.userName
 
 //CPU/Benchmarking 
-const AVG_STEP=1500
+const AVG_STEP=15000
 
 //Creep Roles
 const ROLE_HARVESTER = 'harvester'
@@ -19,6 +19,7 @@ const ROLE_FILLER = 'filler'
 const ROLE_SOLDIER = 'soldier'
 const ROLE_SCOUT = 'scout'
 const ROLE_WORKER = 'worker'
+const ROLE_REPAIRER = 'repairer'
 
 //Creep constants
 const CREEP_MAX_BODYPARTS = 50; // maximum creep body length - couldn't find in API
@@ -32,7 +33,7 @@ const TASK_COLLECT = 'collect'
 const BALANCER_STEP = 0.01 // value by which workers and carriers change value of balancer
 const BALANCER_WORKER_STEP=0.02
 const BALANCER_CARRIER_STEP = 0.01
-const BALANCER_DECAY = 0.001 // natural decay towards 0 of balancer
+const BALANCER_DECAY = 0.005 // natural decay towards 0 of balancer
 const BALANCER_HARVEST_LIMIT = -2.0 // harvesting limit of balancer - if that would go too high then it would take a lot of time to switch to using energy
 const BALANCER_USE_LIMIT = 2.0 // carrying balancer of balancer
 const UPGRADE_FACTOR = 10000
@@ -41,7 +42,7 @@ const ENERGY_BALANCER_UPGRADER_START = 0.5
 const HARVESTING_BODYPARTS_FRACTION = 0.8 // percentage of body parts that we destinate to gather (harvest and carry) energy
 const CONTROLLER_DOWNGRADE_LIMIT = 0.5 // below that percentage of downgrade workers will ignore construction sites
 const STORAGE_ENERGY_UPGRADE_LIMIT = 5000 // below that amount workers wouldn't take energy from storage
-
+const RAMPART_HITS_BOTTOM_LIMIT=5000
 
 // Room Visualization
 const OUTLINE_COLOR = 'black'
@@ -76,6 +77,8 @@ module.exports = {
     ROLE_SOLDIER,
     ROLE_SCOUT,
     ROLE_WORKER,
+    ROLE_REPAIRER,
+    
     CREEP_MAX_BODYPARTS,
     TASK_UPGRADE,
     TASK_BUILD,
@@ -93,6 +96,8 @@ module.exports = {
     HARVESTING_BODYPARTS_FRACTION,
     CONTROLLER_DOWNGRADE_LIMIT,
     STORAGE_ENERGY_UPGRADE_LIMIT,
+    RAMPART_HITS_BOTTOM_LIMIT,
+
     OUTLINE_COLOR,
     TEXT_COLOR,
     SRC_1,
