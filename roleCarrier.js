@@ -310,7 +310,7 @@ Creep.prototype.roleCarrier = function roleCarrier() {
             }
             if (this.memory.homeContainer != undefined && Game.getObjectById(this.memory.homeContainer) != null) {
 
-                //testing - it might be a bad idea
+                //testing - it might be a bad idea - passing energy to workers
                 if (Game.rooms[this.memory.homeRoom].memory.energyBalance > C.ENERGY_BALANCER_UPGRADER_START) {
                     for (w of global.heap.rooms[this.memory.homeRoom].myWorkers) {
                         var worker = Game.getObjectById(w)
@@ -359,10 +359,7 @@ Creep.prototype.roleCarrier = function roleCarrier() {
                         if (Game.getObjectById(this.memory.homeContainer) != null && Game.getObjectById(this.memory.homeContainer).store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
 
                             if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
-                                //console.log("before: ",Game.rooms[this.memory.homeRoom].memory.energyBalance)
                                 Game.rooms[this.memory.homeRoom].memory.energyBalance += C.BALANCER_STEP
-                                //console.log("after: ",Game.rooms[this.memory.homeRoom].memory.energyBalance)
-                                //this.say("no place")
                             }
 
                             this.fleeFrom([Game.getObjectById(this.memory.homeContainer)], 3)
@@ -379,6 +376,10 @@ Creep.prototype.roleCarrier = function roleCarrier() {
                         else if (transferResut == ERR_FULL) {
 
                             this.memory.maxContainer = undefined;
+                            if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
+                                Game.rooms[this.memory.homeRoom].memory.energyBalance += C.BALANCER_STEP
+                            }
+
                             //this.drop(RESOURCE_ENERGY)
 
                         }
