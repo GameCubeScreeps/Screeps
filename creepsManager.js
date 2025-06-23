@@ -7,6 +7,8 @@ const roleCarrier = require('roleCarrier')
 const roleWorker=require('roleWorker')
 const roleFiller=require('roleFiller')
 const roleRepairer=require('roleRepairer')
+const roleHauler=require('roleHauler')
+
 
 Room.prototype.creepsManager = function creepsManager() {
 
@@ -50,6 +52,9 @@ Room.prototype.creepsManager = function creepsManager() {
                 continue
             case C.ROLE_REPAIRER:
                 creep.roleRepairer()
+                continue
+            case C.ROLE_HAULER:
+                creep.roleHauler()
                 continue
         }
     }

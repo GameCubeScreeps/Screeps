@@ -108,6 +108,16 @@ Room.prototype.spawnFromQueues = function spawnFromQueues() {
                     console.log("Repairer spawning result: ",result)
                     break;
                 }
+            case C.ROLE_HAULER:
+                {
+                    var result = spawn.spawnCreep(carrierBody(energyCap), C.ROLE_HAULER + '_' + this.name + Game.time, { memory: { role: C.ROLE_HAULER,homeRoom: this.name } })
+                    if (result == OK) {
+                        global.heap.rooms[this.name].civilianQueue.shift()
+
+                    }
+                    console.log("Hauler spawning result: ",result)
+                    break;
+                }
 
         }
     }

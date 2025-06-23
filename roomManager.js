@@ -219,13 +219,12 @@ Room.prototype.roomManager = function roomManager() {
                 }
             }
         }
-        
+
 
         //Forcing building room on RCL upgrade
-        if(global.heap.rooms[this.name].lastRCL!=this.controller.level)
-        {
-            global.heap.rooms[this.name].forcedBuild=false
-            global.heap.rooms[this.name].lastRCL=this.controller.level
+        if (global.heap.rooms[this.name].lastRCL != this.controller.level) {
+            global.heap.rooms[this.name].forcedBuild = false
+            global.heap.rooms[this.name].lastRCL = this.controller.level
         }
 
         // here add some time-condition not to call it to often
@@ -290,7 +289,7 @@ Room.prototype.roomManager = function roomManager() {
 
         if (str.my) {
             this.memory.myStructures.push(str.id)
-            
+
             switch (type) {
 
                 case STRUCTURE_EXTENSION:
@@ -337,6 +336,54 @@ Room.prototype.roomManager = function roomManager() {
                     break;
             }
 
+        }
+    }
+
+    // Upgraders container
+    if (this.memory.upgradersContainerId != undefined && Game.getObjectById(this.memory.upgradersContainerId) == null) {
+        this.memory.upgradersContainerId = undefined
+    }
+
+    if (this.memory.upgradersContainerId == undefined) {
+        if (this.memory.controllerContainerPos != undefined) {
+            auxPos=this.memory.controllerContainerPos
+            var cont = this.find(FIND_STRUCTURES, {
+                filter:
+                    function (str) {
+                        return str.structureType === STRUCTURE_CONTAINER && str.pos.x == auxPos.x
+                            && str.pos.y == auxPos.y
+                    }
+            });
+            if (cont.length > 0) {
+                this.memory.upgradersContainerId = cont[0].id
+            }
+        }
+    }
+
+    // Defining fillers containers
+    var spawnPos=this.memory.spawnPos
+    if (this.memory.fillerContainers == undefined && spawnPos!=undefined) {
+        var fillerContainers = this.find(FIND_STRUCTURES, {
+            filter: function (structure) {
+                return structure.structureType == STRUCTURE_CONTAINER &&
+                    ((structure.pos.x == spawnPos.x + 2 && structure.pos.y == spawnPos.y - 2) ||
+                        (structure.pos.x == spawnPos.x - 2 && structure.pos.y == spawnPos.y - 2));
+            }
+        });
+
+        if (fillerContainers.length > 0) {
+            this.memory.fillerContainers = [];
+            for (let i = 0; i < fillerContainers.length; i++) {
+                this.memory.fillerContainers.push(fillerContainers[i].id)
+            }
+            if (this.room.storage != undefined && this.memory.fillerContainers.length > 1) {
+                var closerContainer = this.room.storage.pos.findClosestByPath(fillerContainers)
+                if (closerContainer.id != this.memory.fillerContainers[0]) {
+                    var aux = this.memory.fillerContainers[0]
+                    this.memory.fillerContainers[0] = this.memory.fillerContainers[1]
+                    this.memory.fillerContainers[1] = aux;
+                }
+            }
         }
     }
 

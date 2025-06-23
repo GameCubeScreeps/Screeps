@@ -1177,7 +1177,8 @@ Room.prototype.buildRoom = function buildRoom(type) {
 
     if (this.memory.buildingStage == undefined || (this.memory.buildingStage != undefined && this.memory.buildingStage > 1 && this.memory.variationToBuild == undefined)
         || (this.memory.buildingStage > 4)) { // if stage is out of bounds
-        this.visual.text("Stage out of bounds", 26, 4)
+
+        this.visual.text("Stage out of bounds: ",this.memory.buildingStage, 26, 4)
         this.memory.buildingStage = 0;
         stage = 0;
     }
@@ -1351,14 +1352,14 @@ Room.prototype.buildRoom = function buildRoom(type) {
             if (this.memory.keepersSources != undefined && this.memory.keepersSources.length > 0) {
                 for (let src of this.memory.keepersSources) {
                     if (Game.getObjectById(src.id) != null) {
-                        this.planRoadToTarget(spawn, roomCM_2, Game.getObjectById(src.id).pos.getNearbyPositions(), 2, undefined, undefined, type)
+                        this.planRoadToTarget( roomCM_2, Game.getObjectById(src.id).pos.getNearbyPositions(), 2, undefined, undefined, type)
 
 
                         // planning road between sources
                         for (let otherSrc of this.memory.keepersSources) {
                             if (Game.getObjectById(otherSrc.id) != null && otherSrc.id != src.id
                                 && Game.getObjectById(otherSrc.id).pos != undefined) {
-                                this.planRoadToTarget(spawn, roomCM_2,
+                                this.planRoadToTarget(roomCM_2,
                                     Game.getObjectById(src.id).pos.getNearbyPositions(), 7, 2,
                                     Game.getObjectById(otherSrc.id).pos, undefined, undefined, type)
                             }

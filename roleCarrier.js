@@ -43,6 +43,12 @@ Creep.prototype.roleCarrier = function roleCarrier() {
             this.memory.spawnId = undefined
         }
 
+        var spawn = null;
+        if (this.memory.spawnId != undefined && Game.getObjectById(this.memory.spawnId) != null) {
+            spawn = Game.getObjectById(this.memory.spawnId)
+        }
+
+
         if (this.memory.spawnId == undefined) {
             spawn = Game.rooms[this.memory.homeRoom].find(FIND_MY_STRUCTURES, {
                 filter: function (str) {
@@ -52,11 +58,6 @@ Creep.prototype.roleCarrier = function roleCarrier() {
             if (spawn.length > 0) {
                 this.memory.spawnId = spawn[0].id
             }
-        }
-
-        var spawn = null;
-        if (this.memory.spawnId != undefined && Game.getObjectById(this.memory.spawnId) != null) {
-            spawn = Game.getObjectById(this.memory.spawnId)
         }
 
 
@@ -72,7 +73,7 @@ Creep.prototype.roleCarrier = function roleCarrier() {
         if (this.store.getFreeCapacity() == 0 || this.ticksToLive < this.memory.sourceDistance * 1.1) {
             this.memory.collecting = false;
         }
-        else if (this.store.getUsedCapacity() == 0 || this.memory.collecting == undefined) {
+        else if (this.store.getFreeCapacity() > 0  || this.memory.collecting == undefined) {
             this.memory.collecting = true;
             this.memory.closestHomeContainer = undefined;
         }
@@ -125,7 +126,6 @@ Creep.prototype.roleCarrier = function roleCarrier() {
             if ((Game.rooms[this.memory.targetRoom] == undefined || this.pos.inRangeTo(spawn, 4))
                 && global.heap.rooms[this.memory.homeRoom].defensiveQueue != undefined &&
                 !global.heap.rooms[this.memory.homeRoom].defensiveQueue.some(obj => obj.type === C.ROLE_SOLDIER)
-                //spawn.memory.need_soldier != this.memory.targetRoom
             ) {
                 const destination = new RoomPosition(25, 25, this.memory.targetRoom);
                 this.moveTo(destination, { reusePath: 25, avoidCreeps: true });

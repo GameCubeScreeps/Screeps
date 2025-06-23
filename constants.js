@@ -20,6 +20,8 @@ const ROLE_SOLDIER = 'soldier'
 const ROLE_SCOUT = 'scout'
 const ROLE_WORKER = 'worker'
 const ROLE_REPAIRER = 'repairer'
+const ROLE_HAULER = 'hauler'
+
 
 //Creep constants
 const CREEP_MAX_BODYPARTS = 50; // maximum creep body length - couldn't find in API
@@ -28,6 +30,10 @@ const CREEP_MAX_BODYPARTS = 50; // maximum creep body length - couldn't find in 
 const TASK_UPGRADE = 'upgrade'
 const TASK_BUILD = 'build'
 const TASK_COLLECT = 'collect'
+const TASK_FILL_UPGRADERS_CONTAIER='fill_upgraders_container'
+const TASK_FILL_EXTENSIONS='fill_extensions'
+const TASK_FILL_SPAWN='fill_spawn'
+
 
 //Economy const
 const BALANCER_STEP = 0.01 // value by which workers and carriers change value of balancer
@@ -79,11 +85,16 @@ module.exports = {
     ROLE_SCOUT,
     ROLE_WORKER,
     ROLE_REPAIRER,
+    ROLE_HAULER,
 
     CREEP_MAX_BODYPARTS,
     TASK_UPGRADE,
     TASK_BUILD,
     TASK_COLLECT,
+    TASK_FILL_UPGRADERS_CONTAIER,
+    TASK_FILL_EXTENSIONS,
+    TASK_FILL_SPAWN,
+
     BALANCER_STEP,
     BALANCER_WORKER_STEP,
     BALANCER_CARRIER_STEP,

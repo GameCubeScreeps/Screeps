@@ -41,13 +41,13 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
 
 
     // Scout
-    //console.log("rooms to scan: ",Game.rooms[this.name].memory.roomsToScan)
-    if (Game.rooms[this.name].memory.roomsToScan == undefined) {
+    //console.log("rooms to scan: ",this.memory.roomsToScan)
+    if (this.memory.roomsToScan == undefined) {
         global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_SCOUT))
         //console.log("adding: ", C.ROLE_SCOUT)
     }
-    else if (Game.rooms[this.name].memory.roomsToScan != undefined) {
-        if (Game.rooms[this.name].memory.roomsToScan.length > 0) {
+    else if (this.memory.roomsToScan != undefined) {
+        if (this.memory.roomsToScan.length > 0) {
             if (global.heap.rooms[this.name].haveScout == false) {
                 global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_SCOUT))
                 //console.log("adding: ", C.ROLE_SCOUT)
@@ -83,7 +83,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
 
 
         //Carriers and Harvesters for sure won't be mixed on queue
-        if (Game.rooms[this.name].storage != undefined) {
+        if (this.storage != undefined) {
             if (harvestingSource.carryPower < harvestingSource.harvestingPower) {
                 //Carriers
                 global.heap.rooms[this.name].harvestingQueue.push(new harvestingSourceRequestCarrier(harvestingSource.id, harvestingSource.roomName, harvestingSource.distance))
@@ -99,7 +99,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
                 break;
             }
         }
-        else if (Game.rooms[this.name].memory.energyBalance <= 0.5) {
+        else if (this.memory.energyBalance <= 0.5) {
             if (harvestingSource.carryPower < harvestingSource.harvestingPower) {
                 //Carriers
                 global.heap.rooms[this.name].harvestingQueue.push(new harvestingSourceRequestCarrier(harvestingSource.id, harvestingSource.roomName, harvestingSource.distance))
@@ -121,44 +121,43 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
 
     for(harvestingRoom of this.memory.harvestingRooms)
     {
-        if(harvestingRoom.repairerId==undefined)
+        if(harvestingRoom.repairerId==undefined && this.memory.roomsToScan.length==0)
         {
             global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(harvestingRoom.name,C.ROLE_REPAIRER))
             console.log("adding repairer")
             break;
         }
     }
-
+        
     
 
 
     // Workers below RCL4 - wthout storage
-    if (Game.rooms[this.name].storage == undefined) {
-        if (Game.rooms[this.name].memory.energyBalance > C.ENERGY_BALANCER_WORKER_SPAWN) {
+    if (this.storage == undefined) {
+        if (this.memory.energyBalance > C.ENERGY_BALANCER_WORKER_SPAWN) {
 
             global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_WORKER))
 
         }
     }
     else {//Workers above and on RCL4
-        if (Game.rooms[this.name].storage.store[RESOURCE_ENERGY] < C.STORAGE_BALANCER_START) {
+        if (this.storage.store[RESOURCE_ENERGY] < C.STORAGE_BALANCER_START) {
             if (global.heap.rooms[this.name].upgradersParts < 1) {
                 global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_WORKER))
             }
         }
-        else if (global.heap.rooms[this.name].upgradersParts < Game.rooms[this.name].storage.store[RESOURCE_ENERGY] / C.UPGRADE_FACTOR) {
+        else if (global.heap.rooms[this.name].upgradersParts < this.storage.store[RESOURCE_ENERGY] / C.UPGRADE_FACTOR) {
             global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_WORKER))
         }
-
-
     }
 
-
-
-
-
-
-
+    if(this.storage!=undefined)
+    {
+        if(global.heap.rooms[this.name].haulersParts<1)
+        {
+            global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_HAULER))
+        }
+    }
 
     global.heap.rooms[this.name].areHarvestingNeedsSatisfied = areHarvestersSatisfied && areCarriersSatisfied
 
@@ -167,7 +166,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     // Soldiers should add themselves (their targetRoom) to global.heap.rooms[roomName].soldier
     for (room in this.memory.harvestingRooms) {
         if (global.heap.rooms[this.name].hostiles.length > 0) {
-            if (Game.rooms[this.name].memory.isHarvestingRoom && global.heap.rooms[this.name].soldier == undefined) {
+            if (this.memory.isHarvestingRoom && global.heap.rooms[this.name].soldier == undefined) {
                 if (!global.heap.rooms[this.name].defensiveQueue.some(obj => obj.roomName === this.name)) {
                     global.heap.rooms[this.name].defensiveQueue.push(new generalRoomRequest(this.name, C.ROLE_SOLDIER))
                 }
