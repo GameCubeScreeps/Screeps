@@ -99,7 +99,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
                 break;
             }
         }
-        else if (this.memory.energyBalance <= 0.5) {
+        else if (this.memory.energyBalance <= 1.5) {
             if (harvestingSource.carryPower < harvestingSource.harvestingPower) {
                 //Carriers
                 global.heap.rooms[this.name].harvestingQueue.push(new harvestingSourceRequestCarrier(harvestingSource.id, harvestingSource.roomName, harvestingSource.distance))

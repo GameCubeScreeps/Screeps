@@ -328,45 +328,44 @@ Room.prototype.planExtensionStamp = function planExtensionStamp(roomCM, rcl, typ
     //Seeds - starting positions for floodfill (it have to be an array - something iterable)
     // extensions are builded as close as possible to storage and spawnPos
     var seeds = [];
-    if (this.storage != undefined || true) {
 
 
-        seeds.push(this.memory.storagePos);
+    seeds.push(this.memory.storagePos);
 
-        if (global.heap.rooms[this.name].baseVariations[type].spawnPos != undefined) {
-            seeds.push(global.heap.rooms[this.name].baseVariations[type].spawnPos)
-        }
-        else {
-            return -1;
-        }
-        var floodCM = this.floodFill(seeds);
-
-        var posForStamp = new RoomPosition(0, 0, this.name);
-        var minDistanceFromSpawn = 100;
-        for (i = 0; i < 50; i++) {
-            for (let j = 0; j < 50; j++) {
-                if (distanceCM.get(i, j) >= 2 && floodCM.get(i, j) < minDistanceFromSpawn
-                    && (i > 8 && i < 43) && (j > 8 && j < 43)) {
-                    minDistanceFromSpawn = floodCM.get(i, j);
-                    posForStamp.x = i;
-                    posForStamp.y = j;
-                }
-            }
-        }
-
-        this.createExtensionStamp(posForStamp.x, posForStamp.y, rcl);
-
-        for (let i = 0; i < 50; i++) {
-            for (let j = 0; j < 50; j++) {
-                if (this.memory.roomPlan[i][j] != 0) {
-                    roomCM.set(i, j, 255);
-                    isSuccess = true;
-                }
-            }
-        }
-
-        return isSuccess;
+    if (global.heap.rooms[this.name].baseVariations[type].spawnPos != undefined) {
+        seeds.push(global.heap.rooms[this.name].baseVariations[type].spawnPos)
     }
+    else {
+        return -1;
+    }
+    var floodCM = this.floodFill(seeds);
+
+    var posForStamp = new RoomPosition(0, 0, this.name);
+    var minDistanceFromSpawn = 100;
+    for (i = 0; i < 50; i++) {
+        for (let j = 0; j < 50; j++) {
+            if (distanceCM.get(i, j) >= 2 && floodCM.get(i, j) < minDistanceFromSpawn
+                && (i > 8 && i < 43) && (j > 8 && j < 43)) {
+                minDistanceFromSpawn = floodCM.get(i, j);
+                posForStamp.x = i;
+                posForStamp.y = j;
+            }
+        }
+    }
+
+    this.createExtensionStamp(posForStamp.x, posForStamp.y, rcl);
+
+    for (let i = 0; i < 50; i++) {
+        for (let j = 0; j < 50; j++) {
+            if (this.memory.roomPlan[i][j] != 0) {
+                roomCM.set(i, j, 255);
+                isSuccess = true;
+            }
+        }
+    }
+
+    return isSuccess;
+
 
 }
 
@@ -728,8 +727,7 @@ Room.prototype.createTowerStamp = function createTowerStamp(x, y) {
 
 Room.prototype.buildFromLists = function buildFromLists() {
     var rcl = this.controller.level;
-    if(this.memory.buildingList==undefined)
-    {
+    if (this.memory.buildingList == undefined) {
         return -1;
     }
     for (let i = 0; i < this.memory.buildingList.length; i++) {
@@ -809,12 +807,11 @@ Room.prototype.planBorders = function planBorders(rcl, type) {
             for (var x = building.x - padding; x < building.x + padding; x++) {
                 for (var y = building.y - padding; y < building.y + padding; y++) {
                     //if (costMap.get(x, y) !== 250 || true) {
-                        if(new RoomPosition(building.x,building.y,this.name).getRangeTo(x,y)<=3 && costMap.get(x,y)!=255)
-                        {
-                            costMap.set(x, y, 200); // Slightly lower cost to indicate preference for ramparts
-                        }
-                            
-                        
+                    if (new RoomPosition(building.x, building.y, this.name).getRangeTo(x, y) <= 3 && costMap.get(x, y) != 255) {
+                        costMap.set(x, y, 200); // Slightly lower cost to indicate preference for ramparts
+                    }
+
+
                     //}
                 }
             }
@@ -1003,6 +1000,7 @@ Room.prototype.planKeeperSourcesContainers = function planKeeperSourcesContainer
 }
 
 Room.prototype.visualizeBase = function visualizeBase() {
+    if (this.memory.roomPlan == undefined) { return -1 }
     for (let i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
             if (this.memory.roomPlan[i][j] == STRUCTURE_EXTENSION) {
@@ -1041,7 +1039,7 @@ Room.prototype.visualizeBase = function visualizeBase() {
 
 Room.prototype.buildRoom = function buildRoom(type) {
 
-    if (global.heap.rooms[this.name].baseVariations!=undefined &&
+    if (global.heap.rooms[this.name].baseVariations != undefined &&
         global.heap.rooms[this.name].baseVariations[type].spawnPos == undefined
         && this.memory.variationToBuild == undefined
     ) {
@@ -1137,15 +1135,29 @@ Room.prototype.buildRoom = function buildRoom(type) {
                 }
             }
         }
-        console.log("setting spawnPos: ", minPos)
-        if (minPos.x != 0 && minPos.y != 0) {
-            global.heap.rooms[this.name].baseVariations[type].spawnPos = new RoomPosition(minPos.x, minPos.y, this.name)
 
+        // this should find something only in first room (spawn created by respawn mechanic)
+        var spawn = this.find(FIND_MY_STRUCTURES, {
+            filter: function (str) {
+                return str.structureType === STRUCTURE_SPAWN
+            }
+        })
+        if (spawn.length > 0) {
+            this.memory.spawnPos = spawn[0].pos
+            global.heap.rooms[this.name].baseVariations[type].spawnPos = spawn[0].pos
         }
         else {
-            console.log("unable to find position for spawn")
-            return -1
+            console.log("setting spawnPos: ", minPos)
+            if (minPos.x != 0 && minPos.y != 0) {
+                global.heap.rooms[this.name].baseVariations[type].spawnPos = new RoomPosition(minPos.x, minPos.y, this.name)
+
+            }
+            else {
+                console.log("unable to find position for spawn")
+                return -1
+            }
         }
+
 
     }
 
@@ -1178,7 +1190,7 @@ Room.prototype.buildRoom = function buildRoom(type) {
     if (this.memory.buildingStage == undefined || (this.memory.buildingStage != undefined && this.memory.buildingStage > 1 && this.memory.variationToBuild == undefined)
         || (this.memory.buildingStage > 4)) { // if stage is out of bounds
 
-        this.visual.text("Stage out of bounds: ",this.memory.buildingStage, 26, 4)
+        this.visual.text("Stage out of bounds: ", this.memory.buildingStage, 26, 4)
         this.memory.buildingStage = 0;
         stage = 0;
     }
@@ -1202,7 +1214,7 @@ Room.prototype.buildRoom = function buildRoom(type) {
 
 
     if (this.memory.variationToBuild != undefined &&
-        this.memory.variationToBuild == type
+        this.memory.variationToBuild == type && this.memory.enteredStage3 == true
     ) {
         stage = 4
     }
@@ -1344,6 +1356,7 @@ Room.prototype.buildRoom = function buildRoom(type) {
     }
     else if (stage == 3 && this.memory.ifSuccessPlanningBase != true) {
 
+        this.memory.enteredStage3 = true
         var cpuBefore = Game.cpu.getUsed()
         let roomCM_2 = PathFinder.CostMatrix.deserialize(this.memory.roomCM);
         if ((this.memory.roomsToScan != undefined && this.memory.roomsToScan.length == 0) || this.controller.level >= 4) {
@@ -1352,7 +1365,7 @@ Room.prototype.buildRoom = function buildRoom(type) {
             if (this.memory.keepersSources != undefined && this.memory.keepersSources.length > 0) {
                 for (let src of this.memory.keepersSources) {
                     if (Game.getObjectById(src.id) != null) {
-                        this.planRoadToTarget( roomCM_2, Game.getObjectById(src.id).pos.getNearbyPositions(), 2, undefined, undefined, type)
+                        this.planRoadToTarget(roomCM_2, Game.getObjectById(src.id).pos.getNearbyPositions(), 2, undefined, undefined, type)
 
 
                         // planning road between sources
@@ -1400,12 +1413,12 @@ Room.prototype.buildRoom = function buildRoom(type) {
 
 
     var color = 'red'
-    if (global.heap.rooms[this.name].baseVariations!=undefined && global.heap.rooms[this.name].baseVariations[key].variationFinished) {
+    if (global.heap.rooms[this.name].baseVariations != undefined && global.heap.rooms[this.name].baseVariations[key].variationFinished) {
         color = 'green'
     }
     this.visual.circle(26, 3, { radius: 1, fill: color })
     this.visual.text(type, 27, 5)
-    var ifVisualize = false
+    var ifVisualize = true
     if (ifVisualize) {
         this.visualizeBase();
     }

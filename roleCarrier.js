@@ -73,7 +73,7 @@ Creep.prototype.roleCarrier = function roleCarrier() {
         if (this.store.getFreeCapacity() == 0 || this.ticksToLive < this.memory.sourceDistance * 1.1) {
             this.memory.collecting = false;
         }
-        else if (this.store.getFreeCapacity() > 0  || this.memory.collecting == undefined) {
+        else if (this.store.getFreeCapacity() > 0 || this.memory.collecting == undefined) {
             this.memory.collecting = true;
             this.memory.closestHomeContainer = undefined;
         }
@@ -276,7 +276,7 @@ Creep.prototype.roleCarrier = function roleCarrier() {
 
         }
         else {//creep is full - go home_room_container
-            if (Game.rooms[this.memory.homeRoom].storage != undefined && Game.rooms[this.memory.homeRoom].controller.level>=4) {
+            if (Game.rooms[this.memory.homeRoom].storage != undefined && Game.rooms[this.memory.homeRoom].controller.level >= 4) {
                 // if home_room have storage
                 this.memory.homeContainer = Game.rooms[this.memory.homeRoom].storage.id;
             }
@@ -290,22 +290,45 @@ Creep.prototype.roleCarrier = function roleCarrier() {
                 }
                 var spawnPos = Game.rooms[this.room.name].memory.spawnPos
                 //find containers that are fillers containers or controller container
-                var container = this.pos.findClosestByRange(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        return structure.store != undefined && structure.store.getCapacity() - structure.store.getUsedCapacity() > 0
-                            && structure.structureType != STRUCTURE_TERMINAL &&
-                            ((structure.structureType == STRUCTURE_CONTAINER && structure.pos.x == spawnPos.x + 2 && structure.pos.y == spawnPos.y - 2)
-                                || (structure.structureType == STRUCTURE_CONTAINER && structure.pos.x == spawnPos.x - 2 && structure.pos.y == spawnPos.y - 2)
-                                || structure.structureType == STRUCTURE_CONTAINER && structure.pos.inRangeTo(Game.rooms[this.memory.homeRoom].controller, 4));
+                if (spawnPos != undefined) {
+                    var container = this.pos.findClosestByRange(FIND_STRUCTURES, {
+                        filter: (structure) => {
+                            return structure.store != undefined && structure.store.getCapacity() - structure.store.getUsedCapacity() > 0
+                                && structure.structureType != STRUCTURE_TERMINAL &&
+                                ((structure.structureType == STRUCTURE_CONTAINER && structure.pos.x == spawnPos.x + 2 && structure.pos.y == spawnPos.y - 2)
+                                    || (structure.structureType == STRUCTURE_CONTAINER && structure.pos.x == spawnPos.x - 2 && structure.pos.y == spawnPos.y - 2)
+                                    || structure.structureType == STRUCTURE_CONTAINER && structure.pos.inRangeTo(Game.rooms[this.memory.homeRoom].controller, 4));
+                        }
+                    });
+                    if (container != null) {
+                        this.memory.homeContainer = container.id;
                     }
-                });
-                if (container != null) {
-                    this.memory.homeContainer = container.id;
+                    else if (spawn.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                        //target room do not have containers - store in spawn
+                        this.memory.homeContainer = spawn.id;
+                    }
+                    else if (global.heap.rooms[this.memory.homeRoom].myWorkers != undefined && global.heap.rooms[this.memory.homeRoom].myWorkers.length > 0) {
+
+                        // no free space in any structure - put energy into random worker
+                        var workersAmount = global.heap.rooms[this.memory.homeRoom].myWorkers.length
+                        this.memory.homeContainer = global.heap.rooms[this.memory.homeRoom].myWorkers[Math.random(workersAmount)]
+                        if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
+                            Game.rooms[this.memory.homeRoom].memory.energyBalance += C.BALANCER_STEP
+                        }
+
+                    }
+                    else{
+                        if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
+                            Game.rooms[this.memory.homeRoom].memory.energyBalance += 2*C.BALANCER_STEP
+                        }
+                        this.moveTo(new RoomPosition(spawnPos.x,spawnPos.y,this.memory.homeRoom),{reusePath: 20, range: 8})
+                        
+                    }
                 }
-                else {
-                    //target room do not have containers - store in spawn
-                    this.memory.homeContainer = spawn.id;
+                else{
+                    this.moveTo(new RoomPosition(25,25,this.memory.homeRoom),{reusePath: 20, range: 8})
                 }
+
                 //}
             }
             if (this.memory.homeContainer != undefined && Game.getObjectById(this.memory.homeContainer) != null) {
@@ -404,8 +427,6 @@ Creep.prototype.roleCarrier = function roleCarrier() {
 
                     }
                 }
-
-
             }
         }
 

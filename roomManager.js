@@ -133,13 +133,6 @@ Room.prototype.roomManager = function roomManager() {
 
 
 
-        //TODO 
-        // Implement planing base and building from that "plan"
-        //this.buildRoom()
-
-        // this array will store ramparts amount for different room variations - we will chose to build the one with the least ramparts
-        // we do not have to have built spawn - it will be able to move spawn to calculated position
-
         if ((global.heap.rooms[this.name].baseVariations == undefined) && Game.rooms[this.name].memory.finishedPlanning != true
             || this.memory.manualBasePlan != false // for debugging
         ) {
@@ -220,6 +213,7 @@ Room.prototype.roomManager = function roomManager() {
                     this.memory.spawnPos = global.heap.rooms[this.name].baseVariations[key].spawnPos
                 }
             }
+            this.memory.buildingStage=3
         }
 
 

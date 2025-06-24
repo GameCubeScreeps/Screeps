@@ -48,7 +48,8 @@ const STORAGE_BALANCER_START = 50000
 const ENERGY_BALANCER_UPGRADER_START = 0.5
 const ENERGY_BALANCER_WORKER_SPAWN=1.5
 const HARVESTING_BODYPARTS_FRACTION = 0.8 // percentage of body parts that we destinate to gather (harvest and carry) energy
-const CONTROLLER_DOWNGRADE_LIMIT = 0.5 // below that percentage of downgrade workers will ignore construction sites
+const CONTROLLER_DOWNGRADE_BOTTOM_LIMIT = 0.3 // below that percentage of downgrade workers will ignore construction sites
+const CONTROLLER_DOWNGRADE_TOP_LIMIT=0.8
 const STORAGE_ENERGY_UPGRADE_LIMIT = 5000 // below that amount workers wouldn't take energy from storage
 const RAMPART_HITS_BOTTOM_LIMIT=5000
 
@@ -109,7 +110,8 @@ module.exports = {
     ENERGY_BALANCER_UPGRADER_START,
     ENERGY_BALANCER_WORKER_SPAWN,
     HARVESTING_BODYPARTS_FRACTION,
-    CONTROLLER_DOWNGRADE_LIMIT,
+    CONTROLLER_DOWNGRADE_BOTTOM_LIMIT,
+    CONTROLLER_DOWNGRADE_TOP_LIMIT,
     STORAGE_ENERGY_UPGRADE_LIMIT,
     RAMPART_HITS_BOTTOM_LIMIT,
 
