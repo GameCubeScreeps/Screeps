@@ -73,7 +73,7 @@ Creep.prototype.roleCarrier = function roleCarrier() {
         if (this.store.getFreeCapacity() == 0 || this.ticksToLive < this.memory.sourceDistance * 1.1) {
             this.memory.collecting = false;
         }
-        else if (this.store.getFreeCapacity() > 0 || this.memory.collecting == undefined) {
+        else if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || this.memory.collecting == undefined) {
             this.memory.collecting = true;
             this.memory.closestHomeContainer = undefined;
         }

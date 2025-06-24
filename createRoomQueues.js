@@ -166,6 +166,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     // Soldiers should add themselves (their targetRoom) to global.heap.rooms[roomName].soldier
     for (room in this.memory.harvestingRooms) {
         if (global.heap.rooms[this.name].hostiles.length > 0) {
+            console.log("hostiles in: ",this.name," : ",global.heap.rooms[this.name].hostiles.length)
             if (this.memory.isHarvestingRoom && global.heap.rooms[this.name].soldier == undefined) {
                 if (!global.heap.rooms[this.name].defensiveQueue.some(obj => obj.roomName === this.name)) {
                     global.heap.rooms[this.name].defensiveQueue.push(new generalRoomRequest(this.name, C.ROLE_SOLDIER))
