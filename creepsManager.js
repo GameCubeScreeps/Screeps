@@ -44,7 +44,7 @@ Room.prototype.creepsManager = function creepsManager() {
                 continue
             case C.ROLE_WORKER:
                 creep.roleWorker()
-                global.heap.rooms[this.name].workersParts+=_.filter(this.body, { type: WORK }).length
+                global.heap.rooms[this.name].workersParts+=_.filter(creep.body, { type: WORK }).length
                 continue
             case C.ROLE_FILLER:
                 creep.roleFiller()
@@ -54,6 +54,7 @@ Room.prototype.creepsManager = function creepsManager() {
                 creep.roleRepairer()
                 continue
             case C.ROLE_HAULER:
+                global.heap.rooms[this.name].haulersParts+=_.filter(creep.body, { type: CARRY }).length
                 creep.roleHauler()
                 continue
         }

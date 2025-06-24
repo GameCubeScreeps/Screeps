@@ -133,7 +133,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
 
 
     // Workers below RCL4 - wthout storage
-    if (this.storage == undefined) {
+    if (this.storage == undefined || this.controller.level<4) {
         if (this.memory.energyBalance > C.ENERGY_BALANCER_WORKER_SPAWN) {
 
             global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_WORKER))
@@ -153,7 +153,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
 
     if(this.storage!=undefined)
     {
-        if(global.heap.rooms[this.name].haulersParts<1)
+        if(global.heap.rooms[this.name].haulersParts<C.HAULER_REQ_CARRY_PARTS)
         {
             global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_HAULER))
         }

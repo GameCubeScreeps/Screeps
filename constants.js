@@ -25,6 +25,7 @@ const ROLE_HAULER = 'hauler'
 
 //Creep constants
 const CREEP_MAX_BODYPARTS = 50; // maximum creep body length - couldn't find in API
+const HAULER_REQ_CARRY_PARTS=3;
 
 //Creeps tasks
 const TASK_UPGRADE = 'upgrade'
@@ -88,6 +89,7 @@ module.exports = {
     ROLE_HAULER,
 
     CREEP_MAX_BODYPARTS,
+    HAULER_REQ_CARRY_PARTS,
     TASK_UPGRADE,
     TASK_BUILD,
     TASK_COLLECT,

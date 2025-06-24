@@ -19,27 +19,7 @@ const Movement = require('screeps-movement');
 
 Creep.prototype.roleWorker = function roleWorker() {
 
-    //this.suicide();
-    //switching role to harvester if homeRoom run out of harvesters
-    /*
-    if(this.ticksToLive%17==0)
-    {
-        for (harvestingSource of Game.rooms[this.memory.homeRoom].memory.harvestingSources) {
-            if(harvestingSource.roomName!=this.memory.homeRoom)
-            {
-                break;
-            }
-            if (harvestingSource.harvestingPower < (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) && harvestingSource.harvesters < harvestingSource.maxHarvesters) {
-                
-                this.memory.role=C.ROLE_HARVESTER
-                this.memory.targetRoom=harvestingSource.roomName
-                this.memory.sourceId=harvestingSource.id
-                this.say("Switch")
-                break;
-            }
-        }
-    }
-        */
+
 
 
 
@@ -53,30 +33,7 @@ Creep.prototype.roleWorker = function roleWorker() {
     }
 
 
-    /////
-    /*
-    if (global.heap.rooms[this.memory.homeRoom].myWorkers != undefined) {
-        for (a of global.heap.rooms[this.memory.homeRoom].myWorkers) {
-            if (Game.getObjectById(a) == null) {
-                global.heap.rooms[this.memory.homeRoom].myWorkers == undefined
-                break;
-            }
-        }
 
-    }
-    if (global.heap.rooms[this.memory.homeRoom].myWorkers == undefined) {
-        var upgraders = this.room.find(FIND_MY_CREEPS, {
-            filter: function (cr) {
-                return cr.memory.role == 'worker' && cr.id != this.id;
-            }
-        })
-        global.heap.rooms[this.memory.homeRoom].myWorkers = [];
-        for (a of upgraders) {
-            global.heap.rooms[this.memory.homeRoom].myWorkers.push(a.id)
-        }
-    }
-        */
-    //////
 
     if (this.memory.boosters == undefined) {
         this.memory.boosters = ["XGH2O"];//boost types that creep accepts
@@ -90,7 +47,8 @@ Creep.prototype.roleWorker = function roleWorker() {
             return
         }
 
-        if (this.store.getUsedCapacity() == 0 && Game.rooms[this.memory.homeRoom].memory.energyBalance!=undefined && Game.rooms[this.memory.homeRoom].memory.energyBalance>C.ENERGY_BALANCER_UPGRADER_START) {
+        if (this.store.getUsedCapacity() == 0 //&& Game.rooms[this.memory.homeRoom].memory.energyBalance!=undefined && Game.rooms[this.memory.homeRoom].memory.energyBalance>C.ENERGY_BALANCER_UPGRADER_START
+        ) {
             this.memory.task = C.TASK_COLLECT
         }
         else if (global.heap.rooms[this.memory.homeRoom].building == true
@@ -125,14 +83,12 @@ Creep.prototype.roleWorker = function roleWorker() {
                     cr = Game.getObjectById(a)
                     if (cr == null) { continue; }
 
-                    //this.say(this.pos.getRangeTo(this.room.controller))
                     if (cr != null && cr.store[RESOURCE_ENERGY] < this.store[RESOURCE_ENERGY] &&
                         (cr.pos.getMyRangeTo(this.room.controller.pos) < this.pos.getMyRangeTo(this.room.controller.pos)
                             || (Game.getObjectById(this.memory.deposit) != undefined && cr.pos.getMyRangeTo(Game.getObjectById(this.memory.deposit).pos) > this.pos.getMyRangeTo(Game.getObjectById(this.memory.deposit).pos))
                         )
                         && this.pos.getMyRangeTo(cr.pos) < 1.5) {
 
-                        //this.say("pass")
                         this.upgradeController(this.room.controller);
                         this.transfer(cr, RESOURCE_ENERGY)
 
@@ -147,7 +103,6 @@ Creep.prototype.roleWorker = function roleWorker() {
 
             if (Game.getObjectById(this.memory.deposit) != null && Game.getObjectById(this.memory.deposit).store[RESOURCE_ENERGY] == 0 && Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
                 Game.rooms[this.memory.homeRoom].memory.energyBalance -= C.BALANCER_WORKER_STEP
-                //this.say('b-')
                 this.memory.deposit=undefined
             }
 
@@ -175,6 +130,7 @@ Creep.prototype.roleWorker = function roleWorker() {
                 }
                 else {
 
+
                     var deposits = this.room.find(FIND_STRUCTURES, {
                         filter: (structure) => {
                             return structure.structureType === STRUCTURE_STORAGE &&
@@ -187,7 +143,7 @@ Creep.prototype.roleWorker = function roleWorker() {
                                 && structure.store[RESOURCE_ENERGY] >= this.store.getCapacity();
                         }
                     }));
-
+                    this.say(deposits.length)
                     if(deposits.length==0 && false)
                     {
                         deposits = this.room.find(FIND_STRUCTURES, {
@@ -200,7 +156,6 @@ Creep.prototype.roleWorker = function roleWorker() {
                     else{
                         if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
                             Game.rooms[this.memory.homeRoom].memory.energyBalance -= C.BALANCER_WORKER_STEP
-                            //this.say("3b-")
                         
                         }
                     }
@@ -208,12 +163,12 @@ Creep.prototype.roleWorker = function roleWorker() {
 
                     var deposit = this.room.controller.pos.findClosestByRange(deposits);
                     if (deposit != null) {
+
                         this.memory.deposit = deposit.id;
                     }
                     else {
                         if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
                             Game.rooms[this.memory.homeRoom].memory.energyBalance -= C.BALANCER_WORKER_STEP
-                            //this.say("2b-")
                         
                         }
                     }
@@ -221,12 +176,16 @@ Creep.prototype.roleWorker = function roleWorker() {
             }
 
             if (Game.getObjectById(this.memory.deposit) != null) {
-                if (this.memory.deposit != undefined && Game.rooms[this.memory.homeRoom].memory.energyBalance> C.BALANCER_HARVEST_LIMIT) {
+                if ((this.room.controller.level>=4 && this.room.storage!=undefined && this.room.storage.store[RESOURCE_ENERGY]>C.STORAGE_ENERGY_UPGRADE_LIMIT && this.memory.deposit != undefined) 
+                    || (Game.rooms[this.memory.homeRoom].memory.energyBalance!=undefined && Game.rooms[this.memory.homeRoom].memory.energyBalance> C.BALANCER_HARVEST_LIMIT)) {
                     if (this.withdraw(Game.getObjectById(this.memory.deposit), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                         this.moveTo(Game.getObjectById(this.memory.deposit), { reusePath: 17, maxRooms: 1 });
                         //move_avoid_hostile(creep,Game.getObjectById(this.memory.deposit).pos,1);
 
                     }
+                }
+                else{
+                    this.memory.deposit=undefined
                 }
             }
             else { // collect dropped energy
@@ -255,23 +214,29 @@ Creep.prototype.roleWorker = function roleWorker() {
                 for (c of global.heap.rooms[this.memory.homeRoom].construction) {
                     if (Game.getObjectById(c) != null) {
                         sites.push(Game.getObjectById(c))
-                        if (Game.getObjectById(c).structureType == STRUCTURE_SPAWN) {
+                        var type=Game.getObjectById(c).structureType
+                        if (type === STRUCTURE_SPAWN) {
                             toFocus = Game.getObjectById(c)
+                            break
                         }
-                        else if (toFocus == null && Game.getObjectById(c).structureType == STRUCTURE_CONTAINER) {
+                        else if (toFocus == null && type === STRUCTURE_CONTAINER) {
                             toFocus = Game.getObjectById(c)
+                            break
                         }
-                        else if (toFocus == null && Game.getObjectById(c).structureType == STRUCTURE_EXTENSION) {
+                        else if (toFocus == null && type === STRUCTURE_EXTENSION) {
                             toFocus = Game.getObjectById(c)
+                            break;
                         }
                     }
                 }
                 if (toFocus != null) {
+                    //this.say(this.build(toFocus))
                     if (this.build(toFocus) == ERR_NOT_IN_RANGE) {
                         this.moveTo(toFocus, { range: 2, maxRooms: 1 })
                     }
                 }
-                if (sites.length > 0) {
+                else if (sites.length > 0) {
+
                     var closest = this.pos.findClosestByRange(sites)
                     if (closest != null) {
                         if (this.build(closest) == ERR_NOT_IN_RANGE) {

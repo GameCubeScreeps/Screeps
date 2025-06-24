@@ -20,7 +20,7 @@ Room.prototype.roomManager = function roomManager() {
 
         //Tracking creeps
         global.heap.rooms[this.name].fillers = 0
-
+        global.heap.rooms[this.name].haulersParts=0;
 
         //Tracking structures
         global.heap.rooms[this.name].construction = []
@@ -50,11 +50,13 @@ Room.prototype.roomManager = function roomManager() {
             }
         }
 
-        if (this.memory.energyBalance == undefined && this.storage == undefined) {
+        if (this.memory.energyBalance == undefined && (this.storage == undefined
+            || this.controller.level<4)
+        ) {
             this.memory.energyBalance = 0.0;
         }
         if (this.memory.energyBalance != undefined) {
-            if (this.storage != undefined) {
+            if (this.storage != undefined && this.controller.level>=4) {
                 delete this.memory.energyBalance
             }
             else {

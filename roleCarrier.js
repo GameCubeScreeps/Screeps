@@ -276,7 +276,7 @@ Creep.prototype.roleCarrier = function roleCarrier() {
 
         }
         else {//creep is full - go home_room_container
-            if (Game.rooms[this.memory.homeRoom].storage != undefined /* && this.memory.targetRoom!=this.memory.homeRoom*/) {
+            if (Game.rooms[this.memory.homeRoom].storage != undefined && Game.rooms[this.memory.homeRoom].controller.level>=4) {
                 // if home_room have storage
                 this.memory.homeContainer = Game.rooms[this.memory.homeRoom].storage.id;
             }
@@ -354,7 +354,6 @@ Creep.prototype.roleCarrier = function roleCarrier() {
                 else {
                     for (let res in this.store) {
 
-                        var amount = this.store[RESOURCE_ENERGY]
                         var transferResut = this.transfer(Game.getObjectById(this.memory.homeContainer), res);
                         if (Game.getObjectById(this.memory.homeContainer) != null && Game.getObjectById(this.memory.homeContainer).store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
 
