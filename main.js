@@ -27,7 +27,7 @@ module.exports.loop = function () {
     Memory.allies = ["JeallyRabbi", "Alphonzo", "insainmonkey", "Trepidimous"]
 
     //Setting enemies
-    Memory.allies = ["IronVengeance"]
+    Memory.enemies = ["IronVengeance"]
     //Defining global.heap.rooms which is supposed to have identical structure as Memory.rooms but is available always on the same tick and is not using Memory limit
     //Heap size limit is much higher than Memory size limit - as mentioned somewhere on discord it is notable achivement to reach Heap size limit
     if (global.heap.rooms == undefined) {
