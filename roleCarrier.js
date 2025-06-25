@@ -313,13 +313,13 @@ Creep.prototype.roleCarrier = function roleCarrier() {
                         var workersAmount = global.heap.rooms[this.memory.homeRoom].myWorkers.length
                         this.memory.homeContainer = global.heap.rooms[this.memory.homeRoom].myWorkers[Math.random(workersAmount)]
                         if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
-                            Game.rooms[this.memory.homeRoom].memory.energyBalance += C.BALANCER_STEP
+                            Game.rooms[this.memory.homeRoom].memory.energyBalance += C.BALANCER_CARRIER_STEP
                         }
 
                     }
                     else{
                         if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
-                            Game.rooms[this.memory.homeRoom].memory.energyBalance += 2*C.BALANCER_STEP
+                            Game.rooms[this.memory.homeRoom].memory.energyBalance += 2*C.BALANCER_CARRIER_STEP
                         }
                         this.moveTo(new RoomPosition(spawnPos.x,spawnPos.y,this.memory.homeRoom),{reusePath: 20, range: 8})
                         
@@ -364,12 +364,13 @@ Creep.prototype.roleCarrier = function roleCarrier() {
                         }
                         else if (transferResut == OK) {
 
+                            /*
                             if (Game.rooms[this.memory.homeRoom].memory.delivered_energy == undefined) {
                                 Game.rooms[this.memory.homeRoom].memory.delivered_energy = this.store[RESOURCE_ENERGY]
                             }
                             else {
                                 Game.rooms[this.memory.homeRoom].memory.delivered_energy += this.store[RESOURCE_ENERGY]
-                            }
+                            }*/
                             this.memory.maxContainer = undefined;
                         }
                     }
@@ -381,7 +382,7 @@ Creep.prototype.roleCarrier = function roleCarrier() {
                         if (Game.getObjectById(this.memory.homeContainer) != null && Game.getObjectById(this.memory.homeContainer).store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
 
                             if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
-                                Game.rooms[this.memory.homeRoom].memory.energyBalance += C.BALANCER_STEP
+                                Game.rooms[this.memory.homeRoom].memory.energyBalance += C.BALANCER_CARRIER_STEP
                             }
 
                             this.fleeFrom([Game.getObjectById(this.memory.homeContainer)], 3)
@@ -398,9 +399,13 @@ Creep.prototype.roleCarrier = function roleCarrier() {
                         else if (transferResut == ERR_FULL) {
 
                             this.memory.maxContainer = undefined;
-                            if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
-                                Game.rooms[this.memory.homeRoom].memory.energyBalance += C.BALANCER_STEP
+                            if (Game.rooms[this.memory.homeRoom].memory.delivered_energy == undefined) {
+                                Game.rooms[this.memory.homeRoom].memory.delivered_energy = this.store[RESOURCE_ENERGY]
                             }
+                            else if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
+                                Game.rooms[this.memory.homeRoom].memory.energyBalance += C.BALANCER_CARRIER_STEP
+                            }
+                            
 
                             //this.drop(RESOURCE_ENERGY)
 

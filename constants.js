@@ -73,7 +73,7 @@ const LAYOUT = {
     SRC_2_CONTROLLER: 'src_2_controller',
     SRC_1_2_CONTROLLER: 'src_1_2_controller',
 }
-const BUILD_TIME_STEP = 2000
+const BUILD_TIME_STEP = 2
 
 
 module.exports = {

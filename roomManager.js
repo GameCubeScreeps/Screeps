@@ -132,9 +132,10 @@ Room.prototype.roomManager = function roomManager() {
         this.memory.progressCounter += 1;
 
 
+        ////// START OF BUILDING ROOM MESS
 
         if ((global.heap.rooms[this.name].baseVariations == undefined) && Game.rooms[this.name].memory.finishedPlanning != true
-            || this.memory.manualBasePlan != false // for debugging
+            || this.memory._resetBasePlan==true  // for debugging
         ) {
             console.log("setting base variations")
             this.visual.text("?", 25, 5)
@@ -175,6 +176,7 @@ Room.prototype.roomManager = function roomManager() {
             this.memory.roomPlan = undefined
             this.memory.buildingStage = 0
             this.memory.manualBasePlan = false;
+            this.memory.variationToBuild = undefined
         }
 
         //////I messed git branch: basePlanning
@@ -183,6 +185,7 @@ Room.prototype.roomManager = function roomManager() {
             color = 'green'
         }
         this.visual.circle(15, 4, { fill: color, radius: 0.5 })
+        this.visual.text(this.memory.buildingStage,15,4)
         if (Game.rooms[this.name].memory.finishedPlanning != true) {
             for (key in global.heap.rooms[this.name].baseVariations) {
                 var variation = global.heap.rooms[this.name].baseVariations[key]
@@ -233,6 +236,7 @@ Room.prototype.roomManager = function roomManager() {
         }
 
 
+        /// END OF ROOM BUILDING MESS
 
     }
 

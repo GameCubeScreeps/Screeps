@@ -162,7 +162,6 @@ Creep.prototype.roleWorker = function roleWorker() {
                                 && structure.store[RESOURCE_ENERGY] >= this.store.getCapacity();
                         }
                     }));
-                    this.say(deposits.length)
                     if (deposits.length == 0 && false) {
                         deposits = this.room.find(FIND_STRUCTURES, {
                             filter: (structure) => {
