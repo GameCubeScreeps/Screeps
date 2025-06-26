@@ -65,6 +65,7 @@ const SRC_1_CONTROLLER = 'src_1_controller'
 const SRC_2_CONTROLLER = 'src_2_controller'
 const SRC_1_2_CONTROLLER = 'src_1_2_controller'
 const CONTROLLER = 'controller'
+const CURRENT_SPAWNPOS='spawn_position'
 const LAYOUT = {
     SRC_1: 'src_1',
     SRC_2: 'src_2',
@@ -124,6 +125,7 @@ module.exports = {
     SRC_1_CONTROLLER,
     SRC_2_CONTROLLER,
     SRC_1_2_CONTROLLER,
+    CURRENT_SPAWNPOS,
     LAYOUT,
 
     BUILD_TIME_STEP

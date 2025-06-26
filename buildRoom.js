@@ -6,20 +6,32 @@ const mincut = require("./mincut")
 const C = require('constants');
 
 
-Room.prototype.planRoadToTarget = function planRoadToTarget(roomCM, target, rcl, myRange, start, spawnPos) {
+class buildingListElement {
+    constructor(x, y, roomName, structureType, minRCL) {
+        this.x = x;
+        this.y = y;
+        this.roomName = roomName;
+        this.structureType = structureType;
+        this.minRCL = minRCL;
+    }
+}
 
-    var spawn = this.find(FIND_MY_STRUCTURES, {
-        filter:
-            function (str) {
-                return str.structureType === STRUCTURE_SPAWN && str.name.endsWith('1')
-            }
-    })
-    if (spawn.length > 0) {
-        spawn = spawn[0]
+function isPosFree(x, y, roomName) {
+    if (Game.rooms[roomName] != undefined) {
+        var structuresAtPos = Game.rooms[roomName].lookForAt(LOOK_STRUCTURES, x, y)
+        for (str of structuresAtPos) {
+            if (str.structureType != STRUCTURE_ROAD && str.structureType != STRUCTURE_RAMPART)
+                return false;
+            break;
+        }
+        return true
     }
-    else {
-        return -1
-    }
+
+}
+
+
+Room.prototype.planRoadToTarget = function planRoadToTarget(roomCM, target, rcl, myRange = 1, start = this.memory.spawnPos) {
+
     for (let i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
             if (this.memory.roomPlan[i][j] != 0 && this.memory.roomPlan[i][j] != STRUCTURE_ROAD && this.memory.roomPlan[i][j] != STRUCTURE_RAMPART) {
@@ -31,35 +43,17 @@ Room.prototype.planRoadToTarget = function planRoadToTarget(roomCM, target, rcl,
             }
         }
     }
-    if (myRange == undefined) {
-        myRange = 1;
-    }
-    console.log('type: ', type)
-    destination = target;
-    var spawnPos = null;
-    if (spawnPos == undefined) {
-        return -1
-    }
+    destination = { pos: target, range: myRange };
 
-    var startingPos = new RoomPosition(spawnPos.x, spawnPos.y, this.name)
-    if (start == undefined) { startingPos = start }
-    //var ret = PathFinder.search(spawnPos, destination, {
-    this.memory.beforeSearch = true //debugging
+    var startPosition = new RoomPosition(start.x, start.y, start.roomName)
 
-    var ret = PathFinder.search(startingPos, destination, {
+    var ret = PathFinder.search(startPosition, destination, {
         //maxRooms: 64,
-        range: myRange,
         plainCost: 2,
         swampCost: 2,
         maxOps: 8000,
 
         roomCallback: function (roomName) {
-
-            //let room = this.name;
-            // In this example `room` will always exist, but since 
-            // PathFinder supports searches which span multiple rooms 
-            // you should be careful!
-            //costs = new PathFinder.CostMatrix;
 
             let room = Game.rooms[roomName];
             if (!room) { return; }
@@ -115,18 +109,10 @@ Room.prototype.planRoadToTarget = function planRoadToTarget(roomCM, target, rcl,
                 costs.set(struct.pos.x, struct.pos.y, 1);
             });
 
-
-
-
-
-            //costs.set(destination.x, destination.y, 255);
-
             return costs;
         }
     });
 
-
-    this.memory.debuggingPath = ret
 
     ////////////////////////////////////
 
@@ -142,9 +128,6 @@ Room.prototype.planRoadToTarget = function planRoadToTarget(roomCM, target, rcl,
             if (ret.path[i].roomName == this.name && roomCM.get(ret.path[i].x, ret.path[i].y) < 255) {
                 this.memory.roomPlan[ret.path[i].x][ret.path[i].y] = STRUCTURE_ROAD;
 
-                //const terrain = this.getTerrain();
-
-                //Game.rooms[ret.path[i].roomName].visual.circle(ret.path[i].x, ret.path[i].y, { fill: '#666666', radius: 0.5, stroke: 'pink' });
 
                 if ((this.memory.roomPlan[ret.path[i].x][ret.path[i].y] == 0 || this.memory.roomPlan[ret.path[i].x][ret.path[i].y] == STRUCTURE_ROAD)
                     && isPosFree(ret.path[i].x, ret.path[i].y, ret.path[i].roomName) == true && roomCM.get(ret.path[i].x, ret.path[i].y) < 255
@@ -156,8 +139,6 @@ Room.prototype.planRoadToTarget = function planRoadToTarget(roomCM, target, rcl,
             }
 
 
-            //this.createConstructionSite(ret.path[i], STRUCTURE_ROAD);
-            // }
 
         }
     }
@@ -698,28 +679,28 @@ Room.prototype.buildFromLists = function buildFromLists() {
 
 
     var rcl = this.controller.level;
-    if (this.memory.buildingList == undefined) {
+    if (this.memory.finalBuildingList == undefined) {
         return -1;
     }
-    for (let i = 0; i < this.memory.buildingList.length; i++) {
-        if (Game.rooms[this.memory.buildingList[i].roomName] != undefined && (this.memory.buildingList[i].minRCL <= rcl || this.memory.buildingList[i] == undefined)) {
-            if (this.memory.buildingList[i].structureType == STRUCTURE_SPAWN && this.memory.buildingList[i].minRCL == 7) {
-                Game.rooms[this.memory.buildingList[i].roomName].createConstructionSite(this.memory.buildingList[i].x, this.memory.buildingList[i].y,
-                    this.memory.buildingList[i].structureType, this.name + "_2");
+    for (let i = 0; i < this.memory.finalBuildingList.length; i++) {
+        if (Game.rooms[this.memory.finalBuildingList[i].roomName] != undefined && (this.memory.finalBuildingList[i].minRCL <= rcl || this.memory.finalBuildingList[i] == undefined)) {
+            if (this.memory.finalBuildingList[i].structureType == STRUCTURE_SPAWN && this.memory.finalBuildingList[i].minRCL == 7) {
+                Game.rooms[this.memory.finalBuildingList[i].roomName].createConstructionSite(this.memory.finalBuildingList[i].x, this.memory.finalBuildingList[i].y,
+                    this.memory.finalBuildingList[i].structureType, this.name + "_2");
 
             }
-            else if (this.memory.buildingList[i].structureType == STRUCTURE_SPAWN && this.memory.buildingList[i].minRCL == 8) {
-                Game.rooms[this.memory.buildingList[i].roomName].createConstructionSite(this.memory.buildingList[i].x, this.memory.buildingList[i].y,
-                    this.memory.buildingList[i].structureType, this.name + "_3");
+            else if (this.memory.finalBuildingList[i].structureType == STRUCTURE_SPAWN && this.memory.finalBuildingList[i].minRCL == 8) {
+                Game.rooms[this.memory.finalBuildingList[i].roomName].createConstructionSite(this.memory.finalBuildingList[i].x, this.memory.finalBuildingList[i].y,
+                    this.memory.finalBuildingList[i].structureType, this.name + "_3");
 
             }
-            else if (this.memory.buildingList[i].structureType == STRUCTURE_RAMPART && this.memory.buildingList[i].minRCL <= rcl) {
-                Game.rooms[this.memory.buildingList[i].roomName].createConstructionSite(this.memory.buildingList[i].x, this.memory.buildingList[i].y, this.memory.buildingList[i].structureType);
+            else if (this.memory.finalBuildingList[i].structureType == STRUCTURE_RAMPART && this.memory.finalBuildingList[i].minRCL <= rcl) {
+                Game.rooms[this.memory.finalBuildingList[i].roomName].createConstructionSite(this.memory.finalBuildingList[i].x, this.memory.finalBuildingList[i].y, this.memory.finalBuildingList[i].structureType);
 
             }
-            else if (isPosFree(this.memory.buildingList[i].x, this.memory.buildingList[i].y, this.memory.buildingList[i].roomName) == true
-                && this.memory.buildingList[i].minRCL <= rcl) {
-                Game.rooms[this.memory.buildingList[i].roomName].createConstructionSite(this.memory.buildingList[i].x, this.memory.buildingList[i].y, this.memory.buildingList[i].structureType);
+            else if (isPosFree(this.memory.finalBuildingList[i].x, this.memory.finalBuildingList[i].y, this.memory.finalBuildingList[i].roomName) == true
+                && this.memory.finalBuildingList[i].minRCL <= rcl) {
+                Game.rooms[this.memory.finalBuildingList[i].roomName].createConstructionSite(this.memory.finalBuildingList[i].x, this.memory.finalBuildingList[i].y, this.memory.finalBuildingList[i].structureType);
             }
 
 
@@ -814,9 +795,9 @@ Room.prototype.planBorders = function planBorders(rcl, type) {
 
     });
 
-    global.heap.rooms[this.name].baseVariations[type].rampartsAmount = rampartsAmount
 
 
+    /*
     //terrain = Room.Terrain(this.name)
     var seeds = []
     for (var i = 0; i < 50; i++) {
@@ -833,9 +814,9 @@ Room.prototype.planBorders = function planBorders(rcl, type) {
             seeds.push(new RoomPosition(49, i, this.name))
         }
     }
+    */
 
-
-
+    return rampartsAmount
 }
 
 
@@ -1019,7 +1000,7 @@ Room.prototype.visualizeBase = function visualizeBase() {
 }
 
 Room.prototype.planSpawnPos = function planSpawnPos(type) {
-    if(type==undefined){return -1;}
+    if (type == undefined) { return -1; }
     var sources = this.find(FIND_SOURCES)
     var seeds = [];
     switch (type) {
@@ -1084,6 +1065,13 @@ Room.prototype.planSpawnPos = function planSpawnPos(type) {
                 seeds.push(this.controller.pos)
                 break;
             }
+        case C.CURRENT_SPAWNPOS:
+            {
+                var spawn = this.find(FIND_MY_SPAWNS)
+                this.memory.spawnPos = spawn[0].pos
+                global.heap.rooms[this.name].baseVariations[type].spawnPos = spawn[0].pos
+                seeds.push(spawn[0].pos)
+            }
     }
 
 
@@ -1112,54 +1100,52 @@ Room.prototype.planSpawnPos = function planSpawnPos(type) {
         }
     }
 
-    // this should find spawn only in first room (spawn created by respawn mechanic)
-    var spawn = this.find(FIND_MY_STRUCTURES, {
-        filter: function (str) {
-            return str.structureType === STRUCTURE_SPAWN
-        }
-    })
-    if (spawn.length > 0) {
-        this.memory.spawnPos = spawn[0].pos
-        global.heap.rooms[this.name].baseVariations[type].spawnPos = spawn[0].pos
+
+    console.log("setting spawnPos: ", minPos)
+    if (minPos.x != 0 && minPos.y != 0) {
+        global.heap.rooms[this.name].baseVariations[type].spawnPos = new RoomPosition(minPos.x, minPos.y, this.name)
+
     }
     else {
-        console.log("setting spawnPos: ", minPos)
-        if (minPos.x != 0 && minPos.y != 0) {
-            global.heap.rooms[this.name].baseVariations[type].spawnPos = new RoomPosition(minPos.x, minPos.y, this.name)
-
-        }
-        else {
-            console.log("unable to find position for spawn")
-            return -1
-        }
+        console.log("unable to find position for spawn")
+        return -1
     }
+
 }
 
 
 Room.prototype.buildRoom = function buildRoom(type) {
 
-    // Calculating spawnPosition for given variation
-    if(global.heap.rooms[this.name].baseVariations[type].spawnPos==undefined)
-    {
-        console.log("PLANNIGN SPAWN POS")
-        this.planSpawnPos(type)
+
+    var stage = null
+    console.log("type: ", type)
+    if (global.heap.rooms[this.name].baseVariations == undefined || global.heap.rooms[this.name].baseVariations[type] == undefined || global.heap.rooms[this.name].baseVariations[type].spawnPos == undefined) {
+        this.memory.finishedPlanning = undefined
+        this.memory.buildingStage = 0;
+        stage = 0
+    }
+    else {
+        if (this.memory.finishedPlanning == true) {
+            if (this.memory.plannedRoads != true) {
+                this.memory.buildingStage = 1
+                stage = 1
+            }
+            else {
+                this.memory.buildingStage = 2
+                stage = 2
+            }
+        }
+
+        if (this.memory.buildingStage == undefined) {
+            this.memory.buildingStage = 0;
+            stage = 0;
+        }
+
     }
 
-    // second check to verify if we managed to find spawnPos
-    if(global.heap.rooms[this.name].baseVariations[type].spawnPos==undefined)
-    {
-        return -1;
-    }
-    var stage=null
-    if(this.memory.stage==undefined)
-    {
-        this.memory.stage=0;
-        stage=0;
-    }
+    if (stage == 0) {
 
-    if(stage==0)
-    {
-
+        this.memory._inStage0 = true
         // Declaring variables for use in later stages
         var cpuBefore = Game.cpu.getUsed()
         let roomCM = new PathFinder.CostMatrix;
@@ -1177,6 +1163,110 @@ Room.prototype.buildRoom = function buildRoom(type) {
         this.memory.roomPlan = new Array(rows).fill(null).map(() => new Array(cols).fill(0));
         this.memory.buildingList = [];
         this.memory.roadBuildingList = [];
+
+        this.planSpawnPos(type);
+
+        var spawnPos = undefined
+        if (global.heap.rooms[this.name].baseVariations[type] != undefined && global.heap.rooms[this.name].baseVariations[type].spawnPos != undefined) {
+            spawnPos = global.heap.rooms[this.name].baseVariations[type].spawnPos
+        }
+        else {
+            console.log("no spawn pos in stage 0")
+            return -1
+
+        }
+        this.planMainSpawnStamp(roomCM, spawnPos)
+
+        this.planManagerStamp(roomCM, spawnPos);
+        this.planControllerContainer(roomCM)
+
+
+        //plan_road_to_controller(spawn, roomCM);
+        this.planExtensionStamp(roomCM, 4, spawnPos);//18 
+        this.planExtensionStamp(roomCM, 5, spawnPos);//23
+        this.planExtensionStamp(roomCM, 6, spawnPos);//28
+        this.planExtensionStamp(roomCM, 6, spawnPos);//33
+        this.planExtensionStamp(roomCM, 7, spawnPos);//38
+        this.planExtensionStamp(roomCM, 7, spawnPos);//43
+        this.planExtensionStamp(roomCM, 7, spawnPos);//48
+        this.planExtensionStamp(roomCM, 8, spawnPos);//53
+        this.planExtensionStamp(roomCM, 8, spawnPos);//58
+        this.planTowersStamp(roomCM, spawnPos);
+        this.planLabsStamp(roomCM);
+
+        this.visualizeBase()
+
+        if (Game.shard.name != 'shard3') {
+            this.planControllerRamparts();
+            var rampartsAmount = this.planBorders(3, type)
+        }
+        else {
+            var rampartsAmount = 1;
+        }
+
+
+        this.memory._rampartsAmount = rampartsAmount
+        if (rampartsAmount < this.memory.minRampartsAmount) {
+            this.memory.minRampartsAmount = rampartsAmount
+            this.memory.fnalRoomPlan = this.memory.roomPlan
+            this.memory.finalBuildingList = this.memory.buildingList
+            this.memory.variationToBuild = type
+
+            //delete this.memory.roomPlan
+            //delete this.memory.buildingList
+        }
+
+        console.log("RoomPlan: ")
+        console.log(this.memory.roomPlan)
+
+        global.heap.rooms[this.name].baseVariations[key].variationFinished = true
+
+        this.memory.roomCM = roomCM.serialize();
+        this.memory.buildingStage++;
+        var cpuAfter = Game.cpu.getUsed();
+        this.memory.cpuSpentForStamps = cpuAfter - cpuBefore;
+
+
+
+    }
+    else if (stage == 1) {
+
+
+        this.memory._inStage1 = true
+        let roomCM1 = PathFinder.CostMatrix.deserialize(this.memory.roomCM);
+
+        //this.planSourcesContainers();
+        //this.planKeeperSourcesContainers(7)
+
+        //and plan roads here
+        // If finished scanning
+        if (this.memory.roomsToScan != undefined && this.memory.roomsToScan.length == 0) {
+            var spawnPos = global.heap.rooms[this.name].baseVariations[type].spawnPos
+            for (src of this.memory.harvestingSources) {
+                //function planRoadToTarget(roomCM, target, rcl, myRange, start, spawnPos) 
+                console.log("src: ")
+                console.log(src.id)
+                console.log(Game.getObjectById(src.id))
+                this.planRoadToTarget(roomCM1, src.pos, 2, 1, spawnPos)
+            }
+
+            for (src of this.memory.keepersSources) {
+                //function planRoadToTarget(roomCM, target, rcl, myRange, start, spawnPos) 
+                this.planRoadToTarget(roomCM1, src.pos, 8, 1, spawnPos)
+            }
+            this.memory.plannedRoads = true
+            this.memory.roomCM = roomCM1.serialize();
+            this.memory.stage++;
+
+        }
+
+
+
+    }
+    else if (stage == 2) {
+        //build from lists and visualize roomPlan
+        this.buildFromLists()
+        // do not increment stage here
     }
 
     // find spawn pos for variation here

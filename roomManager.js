@@ -20,7 +20,7 @@ Room.prototype.roomManager = function roomManager() {
 
         //Tracking creeps
         global.heap.rooms[this.name].fillers = 0
-        global.heap.rooms[this.name].haulersParts=0;
+        global.heap.rooms[this.name].haulersParts = 0;
 
         //Tracking structures
         global.heap.rooms[this.name].construction = []
@@ -51,12 +51,12 @@ Room.prototype.roomManager = function roomManager() {
         }
 
         if (this.memory.energyBalance == undefined && (this.storage == undefined
-            || this.controller.level<4)
+            || this.controller.level < 4)
         ) {
             this.memory.energyBalance = 0.0;
         }
         if (this.memory.energyBalance != undefined) {
-            if (this.storage != undefined && this.controller.level>=4) {
+            if (this.storage != undefined && this.controller.level >= 4) {
                 delete this.memory.energyBalance
             }
             else {
@@ -134,109 +134,108 @@ Room.prototype.roomManager = function roomManager() {
 
         ////// START OF BUILDING ROOM MESS
 
-        if ((global.heap.rooms[this.name].baseVariations == undefined) && Game.rooms[this.name].memory.finishedPlanning != true
-            || this.memory._resetBasePlan==true  // for debugging
-        ) {
-            console.log("setting base variations")
-            this.visual.text("?", 25, 5)
+        if (global.heap.isSomeRoomPlanning == false) {
+            global.heap.isSomeRoomPlanning = true; // assuring that only one room in a tick would go into room building
+            if (this.memory.finishedPlanning != true) {
 
-            global.heap.rooms[this.name].baseVariations = []
-            //this.memory.global.heap.rooms[this.name].baseVariations=[C.LAYOUT[C.SRC_1],C.LAYOUT[C.SRC_2],C.LAYOUT[C.SRC_1_2],C.LAYOUT[C.CONTROLER],C.LAYOUT[C.SRC_1_CONTROLLER],C.LAYOUT[C.SRC_1_2_CONTROLLER]]
-            global.heap.rooms[this.name].baseVariations[C.SRC_1] = {}
-            global.heap.rooms[this.name].baseVariations[C.SRC_1].variationFinished = false;
-            global.heap.rooms[this.name].baseVariations[C.SRC_1].rampartsAmount = 0;
-            global.heap.rooms[this.name].baseVariations[C.SRC_1].startPos = 0;
-            global.heap.rooms[this.name].baseVariations[C.SRC_2] = {}
-            global.heap.rooms[this.name].baseVariations[C.SRC_2].variationFinished = false;
-            global.heap.rooms[this.name].baseVariations[C.SRC_2].rampartsAmount = 0;
-            global.heap.rooms[this.name].baseVariations[C.SRC_2].startPos = 0;
-            global.heap.rooms[this.name].baseVariations[C.SRC_1_2] = {}
-            global.heap.rooms[this.name].baseVariations[C.SRC_1_2].variationFinished = false;
-            global.heap.rooms[this.name].baseVariations[C.SRC_1_2].rampartsAmount = 0;
-            global.heap.rooms[this.name].baseVariations[C.SRC_1_2].startPos = 0;
-            global.heap.rooms[this.name].baseVariations[C.CONTROLLER] = {}
-            global.heap.rooms[this.name].baseVariations[C.CONTROLLER].variationFinished = false;
-            global.heap.rooms[this.name].baseVariations[C.CONTROLLER].rampartsAmount = 0;
-            global.heap.rooms[this.name].baseVariations[C.CONTROLLER].startPos = 0;
-            global.heap.rooms[this.name].baseVariations[C.SRC_1_CONTROLLER] = {}
-            global.heap.rooms[this.name].baseVariations[C.SRC_1_CONTROLLER].variationFinished = false;
-            global.heap.rooms[this.name].baseVariations[C.SRC_1_CONTROLLER].rampartsAmount = 0;
-            global.heap.rooms[this.name].baseVariations[C.SRC_1_CONTROLLER].startPos = 0;
-            global.heap.rooms[this.name].baseVariations[C.SRC_2_CONTROLLER] = {}
-            global.heap.rooms[this.name].baseVariations[C.SRC_2_CONTROLLER].variationFinished = false;
-            global.heap.rooms[this.name].baseVariations[C.SRC_2_CONTROLLER].rampartsAmount = 0;
-            global.heap.rooms[this.name].baseVariations[C.SRC_2_CONTROLLER].startPos = 0;
-            global.heap.rooms[this.name].baseVariations[C.SRC_1_2_CONTROLLER] = {}
-            global.heap.rooms[this.name].baseVariations[C.SRC_1_2_CONTROLLER].variationFinished = false;
-            global.heap.rooms[this.name].baseVariations[C.SRC_1_2_CONTROLLER].rampartsAmount = 0;
-            global.heap.rooms[this.name].baseVariations[C.SRC_1_2_CONTROLLER].startPos = 0;
+                console.log("Entering roomPlaning")
 
-            Game.rooms[this.name].memory.finishedPlanning = false
+                if (global.heap.rooms[this.name].baseVariations == undefined) {
+                    global.heap.rooms[this.name].baseVariations = []
+                    //this.memory.global.heap.rooms[this.name].baseVariations=[C.LAYOUT[C.SRC_1],C.LAYOUT[C.SRC_2],C.LAYOUT[C.SRC_1_2],C.LAYOUT[C.CONTROLER],C.LAYOUT[C.SRC_1_CONTROLLER],C.LAYOUT[C.SRC_1_2_CONTROLLER]]
+                    global.heap.rooms[this.name].baseVariations[C.SRC_1] = {}
+                    global.heap.rooms[this.name].baseVariations[C.SRC_1].variationFinished = false;
+                    global.heap.rooms[this.name].baseVariations[C.SRC_1].rampartsAmount = 0;
+                    global.heap.rooms[this.name].baseVariations[C.SRC_1].startPos = 0;
+                    global.heap.rooms[this.name].baseVariations[C.SRC_2] = {}
+                    global.heap.rooms[this.name].baseVariations[C.SRC_2].variationFinished = false;
+                    global.heap.rooms[this.name].baseVariations[C.SRC_2].rampartsAmount = 0;
+                    global.heap.rooms[this.name].baseVariations[C.SRC_2].startPos = 0;
+                    global.heap.rooms[this.name].baseVariations[C.SRC_1_2] = {}
+                    global.heap.rooms[this.name].baseVariations[C.SRC_1_2].variationFinished = false;
+                    global.heap.rooms[this.name].baseVariations[C.SRC_1_2].rampartsAmount = 0;
+                    global.heap.rooms[this.name].baseVariations[C.SRC_1_2].startPos = 0;
+                    global.heap.rooms[this.name].baseVariations[C.CONTROLLER] = {}
+                    global.heap.rooms[this.name].baseVariations[C.CONTROLLER].variationFinished = false;
+                    global.heap.rooms[this.name].baseVariations[C.CONTROLLER].rampartsAmount = 0;
+                    global.heap.rooms[this.name].baseVariations[C.CONTROLLER].startPos = 0;
+                    global.heap.rooms[this.name].baseVariations[C.SRC_1_CONTROLLER] = {}
+                    global.heap.rooms[this.name].baseVariations[C.SRC_1_CONTROLLER].variationFinished = false;
+                    global.heap.rooms[this.name].baseVariations[C.SRC_1_CONTROLLER].rampartsAmount = 0;
+                    global.heap.rooms[this.name].baseVariations[C.SRC_1_CONTROLLER].startPos = 0;
+                    global.heap.rooms[this.name].baseVariations[C.SRC_2_CONTROLLER] = {}
+                    global.heap.rooms[this.name].baseVariations[C.SRC_2_CONTROLLER].variationFinished = false;
+                    global.heap.rooms[this.name].baseVariations[C.SRC_2_CONTROLLER].rampartsAmount = 0;
+                    global.heap.rooms[this.name].baseVariations[C.SRC_2_CONTROLLER].startPos = 0;
+                    global.heap.rooms[this.name].baseVariations[C.SRC_1_2_CONTROLLER] = {}
+                    global.heap.rooms[this.name].baseVariations[C.SRC_1_2_CONTROLLER].variationFinished = false;
+                    global.heap.rooms[this.name].baseVariations[C.SRC_1_2_CONTROLLER].rampartsAmount = 0;
+                    global.heap.rooms[this.name].baseVariations[C.SRC_1_2_CONTROLLER].startPos = 0;
 
-            this.memory.roomPlan = undefined
-            this.memory.buildingStage = 0
-            this.memory.manualBasePlan = false;
-            this.memory.variationToBuild = undefined
-        }
+                    //if there is spawn in room use only one variation
+                    if (this.find(FIND_MY_SPAWNS).length > 0) {
+                        global.heap.rooms[this.name].baseVariations = []
+                        global.heap.rooms[this.name].baseVariations[C.CURRENT_SPAWNPOS] = {}
+                        global.heap.rooms[this.name].baseVariations[C.CURRENT_SPAWNPOS].variationFinished = false;
+                        global.heap.rooms[this.name].baseVariations[C.CURRENT_SPAWNPOS].rampartsAmount = 0;
+                        global.heap.rooms[this.name].baseVariations[C.CURRENT_SPAWNPOS].startPos = 0;
+                    }
 
-        //////I messed git branch: basePlanning
-        var color = 'red'
-        if (Game.rooms[this.name].memory.finishedPlanning == true) {
-            color = 'green'
-        }
-        this.visual.circle(15, 4, { fill: color, radius: 0.5 })
-        this.visual.text(this.memory.buildingStage,15,4)
-        if (Game.rooms[this.name].memory.finishedPlanning != true) {
-            for (key in global.heap.rooms[this.name].baseVariations) {
-                var variation = global.heap.rooms[this.name].baseVariations[key]
 
-                if (global.heap.rooms[this.name].baseVariations[key].variationFinished == false) {
-                    this.buildRoom(key)
-                    Game.rooms[this.name].memory.finishedPlanning = false
-                    break;
+                    this.memory.finalRoomPlan = undefined
+                    this.memory.finalBuildingList = []
+                    this.memory.minRampartsAmount = 999999
+                    this.memory.finishedPlanning = false
+
                 }
-                Game.rooms[this.name].memory.finishedPlanning = true
+                else {
+
+                    this.memory._beforelooping = true
+                    // loop through room variations
+                    var finishedCounter = 0;
+                    for (key in global.heap.rooms[this.name].baseVariations) {
+
+                        this.memory._inLoop = true
+                        if (global.heap.rooms[this.name].baseVariations[key].variationFinished == false) {
+                            this.visual.text(key, 25, 3)
+                            console.log(key)
+                            this.buildRoom(key)
+                            break;
+                        }
+                        this.memory.finishedPlanning = true
+                        finishedCounter++;
+                    }
+                    this.memory._afterLoop = true
+
+                }
+            }
+            else {
+
+                console.log("@@@@@@@@@@@@@@@@@@@@@@")
+                //final room plan will be in this.memory.finalRoomPlan
+                if (this.memory.roomPlan != undefined && this.memory.plannedRoads == true) {
+                    //delete this.memory.roomPlan
+                }
+                //final building list wil be in this.memory.finalBuildingList
+                if (this.memory.buildingList != undefined && this.memory.plannedRoads == true) {
+                    //delete this.memory.buildingList
+                }
+                console.log(this.memory.variationToBuild)
+                if (this.memory.variationToBuild == undefined) {
+                    this.memory.finishedPlanning = undefined
+                    console.log("Backing to planning room")
+                }
+                console.log(global.heap.isSomeRoomPlanning)
+                if (Game.time % 5 == 0) {
+                    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                    this.buildRoom(this.memory.variationToBuild)
+                    global.heap.isSomeRoomPlanning = true
+                }
+
             }
         }
 
-        if (Game.rooms[this.name].memory.finishedPlanning == true &&
-            Game.rooms[this.name].memory.variationToBuild == undefined
-        ) {
 
-            //var variation = global.heap.rooms[this.name].baseVariations[key]
-            var minRamparts = Infinity
-            this.memory.buildingVariations = []
-            for (key in global.heap.rooms[this.name].baseVariations) {
-
-                this.memory.buildingVariations.push(global.heap.rooms[this.name].baseVariations[key].rampartsAmount)
-                if (global.heap.rooms[this.name].baseVariations[key].rampartsAmount < minRamparts) {
-                    minRamparts = global.heap.rooms[this.name].baseVariations[key].rampartsAmount
-                    Game.rooms[this.name].memory.variationToBuild = key
-
-                    this.memory.spawnPos = global.heap.rooms[this.name].baseVariations[key].spawnPos
-                }
-            }
-            this.memory.buildingStage=3
-        }
-
-
-        //Forcing building room on RCL upgrade
-        if (global.heap.rooms[this.name].lastRCL != this.controller.level) {
-            global.heap.rooms[this.name].forcedBuild = false
-            global.heap.rooms[this.name].lastRCL = this.controller.level
-        }
-
-        // here add some time-condition not to call it to often
-        if ((Game.rooms[this.name].memory.variationToBuild != undefined
-            && Game.time % C.BUILD_TIME_STEP == Memory.mainRooms.indexOf(this.name)) || global.heap.rooms[this.name].forcedBuild != true) {
-            // Build chosen variation
-            console.log("building in: ", this.name)
-            global.heap.rooms[this.name].forcedBuild = true
-            this.buildRoom(Game.rooms[this.name].memory.variationToBuild)
-        }
-
-
-        /// END OF ROOM BUILDING MESS
 
     }
 
@@ -346,7 +345,7 @@ Room.prototype.roomManager = function roomManager() {
 
     if (this.memory.upgradersContainerId == undefined) {
         if (this.memory.controllerContainerPos != undefined) {
-            auxPos=this.memory.controllerContainerPos
+            auxPos = this.memory.controllerContainerPos
             var cont = this.find(FIND_STRUCTURES, {
                 filter:
                     function (str) {
@@ -361,8 +360,8 @@ Room.prototype.roomManager = function roomManager() {
     }
 
     // Defining fillers containers
-    var spawnPos=this.memory.spawnPos
-    if (this.memory.fillerContainers == undefined && spawnPos!=undefined) {
+    var spawnPos = this.memory.spawnPos
+    if (this.memory.fillerContainers == undefined && spawnPos != undefined) {
         var fillerContainers = this.find(FIND_STRUCTURES, {
             filter: function (structure) {
                 return structure.structureType == STRUCTURE_CONTAINER &&
@@ -376,8 +375,8 @@ Room.prototype.roomManager = function roomManager() {
             for (let i = 0; i < fillerContainers.length; i++) {
                 this.memory.fillerContainers.push(fillerContainers[i].id)
             }
-            if (this.room.storage != undefined && this.memory.fillerContainers.length > 1) {
-                var closerContainer = this.room.storage.pos.findClosestByPath(fillerContainers)
+            if (this.storage != undefined && this.memory.fillerContainers.length > 1) {
+                var closerContainer = this.storage.pos.findClosestByPath(fillerContainers)
                 if (closerContainer.id != this.memory.fillerContainers[0]) {
                     var aux = this.memory.fillerContainers[0]
                     this.memory.fillerContainers[0] = this.memory.fillerContainers[1]

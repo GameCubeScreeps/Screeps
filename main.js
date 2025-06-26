@@ -36,6 +36,7 @@ module.exports.loop = function () {
     }
 
     Memory.mainRooms = []
+    global.heap.isSomeRoomPlanning=false;
 
     for (roomName in Game.rooms) {
 
@@ -65,7 +66,7 @@ module.exports.loop = function () {
 
     for (mainRoom of Memory.mainRooms) {
 
-      console.log("--------------- ", roomName, "---------------")
+      console.log("--------------- ", mainRoom, "---------------")
       
       var start=Game.cpu.getUsed()
 
