@@ -229,7 +229,7 @@ Room.prototype.roomManager = function roomManager() {
                 if (Game.time % 5 == 0) {
                     console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                     this.buildRoom(this.memory.variationToBuild)
-                    global.heap.isSomeRoomPlanning = true
+                    //global.heap.isSomeRoomPlanning = true
                 }
 
             }

@@ -1068,8 +1068,8 @@ Room.prototype.planSpawnPos = function planSpawnPos(type) {
         case C.CURRENT_SPAWNPOS:
             {
                 var spawn = this.find(FIND_MY_SPAWNS)
-                this.memory.spawnPos = spawn[0].pos
-                global.heap.rooms[this.name].baseVariations[type].spawnPos = spawn[0].pos
+                this.memory.spawnPos = new RoomPosition(spawn[0].pos.x,spawn[0].pos.y+2,this.name)
+                global.heap.rooms[this.name].baseVariations[type].spawnPos =  new RoomPosition(spawn[0].pos.x,spawn[0].pos.y+2,this.name)
                 seeds.push(spawn[0].pos)
             }
     }
@@ -1211,7 +1211,7 @@ Room.prototype.buildRoom = function buildRoom(type) {
             this.memory.fnalRoomPlan = this.memory.roomPlan
             this.memory.finalBuildingList = this.memory.buildingList
             this.memory.variationToBuild = type
-
+            console.log("setting best variation")
             //delete this.memory.roomPlan
             //delete this.memory.buildingList
         }

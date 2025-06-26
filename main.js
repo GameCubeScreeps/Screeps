@@ -1,5 +1,5 @@
 //defining global heap
-const heap = {}
+var heap = {}
 global.heap = heap;
 
 
