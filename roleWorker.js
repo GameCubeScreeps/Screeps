@@ -46,6 +46,7 @@ Creep.prototype.roleWorker = function roleWorker() {
         if (this.store.getUsedCapacity() == 0 //&& Game.rooms[this.memory.homeRoom].memory.energyBalance!=undefined && Game.rooms[this.memory.homeRoom].memory.energyBalance>C.ENERGY_BALANCER_UPGRADER_START
         ) {
             localHeap.task = C.TASK_COLLECT
+            this.memory.task=C.TASK_COLLECT
         }
 
 
@@ -55,9 +56,11 @@ Creep.prototype.roleWorker = function roleWorker() {
                 if (global.heap.rooms[this.memory.homeRoom].building == true
             /*&& this.room.controller.ticksToDowngrade > (CONTROLLER_DOWNGRADE[this.room.controller.level] * C.CONTROLLER_DOWNGRADE_LIMIT)*/) {
                     localHeap.task = C.TASK_BUILD
+                    this.memory.task=C.TASK_BUILD
                 }
                 else {
                     localHeap.task = C.TASK_UPGRADE
+                    this.memory.task=C.TASK_UPGRADE
                 }
             }
         }
@@ -74,11 +77,13 @@ Creep.prototype.roleWorker = function roleWorker() {
                 this.room.controller.ticksToDowngrade > (CONTROLLER_DOWNGRADE[this.room.controller.level] * C.CONTROLLER_DOWNGRADE_TOP_LIMIT)
             ) {
                 localHeap.task = C.TASK_BUILD
+                this.memory.task=C.TASK_BUILD
                 return;
 
             }
             if (this.store.getUsedCapacity() == 0) {
                 localHeap.task = undefined
+                this.memory.task='undefined_debugging'
             }
             if (!this.pos.isNearTo(this.room.controller)) {
                 this.moveTo(this.room.controller, { maxStuck: 10 })
@@ -119,6 +124,7 @@ Creep.prototype.roleWorker = function roleWorker() {
             if(this.store.getFreeCapacity(RESOURCE_ENERGY)==0)
             {
                 localHeap.task=undefined
+                this.memory.task='undefined_debugging'
                 return;
             }
             if (Game.getObjectById(this.memory.deposit) != null && Game.getObjectById(this.memory.deposit).store[RESOURCE_ENERGY] == 0 && Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
@@ -226,12 +232,14 @@ Creep.prototype.roleWorker = function roleWorker() {
                 this.room.controller.ticksToDowngrade < (CONTROLLER_DOWNGRADE[this.room.controller.level] * C.CONTROLLER_DOWNGRADE_BOTTOM_LIMIT)
             ) {
                 localHeap.task = C.TASK_UPGRADE
+                this.memory.task=C.TASK_UPGRADE
                 return;
 
             }
 
             if (global.heap.rooms[this.memory.homeRoom].building != true) {
                 localHeap.task = undefined
+                this.memory.task='undefined_debugging'
             }
             else {
                 var sites = []

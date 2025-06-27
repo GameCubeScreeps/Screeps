@@ -1140,6 +1140,7 @@ Room.prototype.buildRoom = function buildRoom(type) {
         this.memory.finishedPlanning = undefined
         this.memory.buildingStage = 0;
         stage = 0
+        console.log("############")
     }
     else {
         if (this.memory.finishedPlanning == true) {
