@@ -213,7 +213,7 @@ Room.prototype.createExtensionStamp = function createExtensionStamp(x, y, rcl) {
 
 
 
-Room.prototype.planExtensionStamp = function planExtensionStamp(roomCM, rcl, spawnPos) {
+Room.prototype.planExtensionStamp = function planExtensionStamp(roomCM, rcl, spawnPos,type) {
     var isSuccess = false;
     for (let i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
@@ -225,10 +225,25 @@ Room.prototype.planExtensionStamp = function planExtensionStamp(roomCM, rcl, spa
     }
     let distanceCM = this.diagonalDistanceTransform(roomCM, false);
 
+
     //Seeds - starting positions for floodfill (it have to be an array - something iterable)
     // extensions are builded as close as possible to storage and spawnPos
     var seeds = [];
 
+
+    if(global.heap.rooms[this.name].baseVariations[type].extensionsStampsPos!=undefined && 
+        global.heap.rooms[this.name].baseVariations[type].extensionsStampsPos.length>0
+    )
+    {
+        for(stampPos of global.heap.rooms[this.name].baseVariations[type].extensionsStampsPos)
+        {
+            seeds.push(stampPos)
+        }
+    }
+    else{
+        global.heap.rooms[this.name].baseVariations[type].extensionsStampsPos=[];
+
+    }
 
     seeds.push(this.memory.storagePos);
 
@@ -253,6 +268,8 @@ Room.prototype.planExtensionStamp = function planExtensionStamp(roomCM, rcl, spa
         }
     }
 
+    global.heap.rooms[this.name].baseVariations[type].extensionsStampsPos.push(new RoomPosition(posForStamp.x, posForStamp.y,this.name))
+    
     this.createExtensionStamp(posForStamp.x, posForStamp.y, rcl);
 
     for (let i = 0; i < 50; i++) {
@@ -1068,8 +1085,8 @@ Room.prototype.planSpawnPos = function planSpawnPos(type) {
         case C.CURRENT_SPAWNPOS:
             {
                 var spawn = this.find(FIND_MY_SPAWNS)
-                this.memory.spawnPos = new RoomPosition(spawn[0].pos.x,spawn[0].pos.y+2,this.name)
-                global.heap.rooms[this.name].baseVariations[type].spawnPos =  new RoomPosition(spawn[0].pos.x,spawn[0].pos.y+2,this.name)
+                this.memory.spawnPos = new RoomPosition(spawn[0].pos.x,spawn[0].pos.y,this.name)
+                global.heap.rooms[this.name].baseVariations[type].spawnPos =  new RoomPosition(spawn[0].pos.x,spawn[0].pos.y,this.name)
                 seeds.push(spawn[0].pos)
             }
     }
@@ -1103,7 +1120,7 @@ Room.prototype.planSpawnPos = function planSpawnPos(type) {
 
     console.log("setting spawnPos: ", minPos)
     if (minPos.x != 0 && minPos.y != 0) {
-        global.heap.rooms[this.name].baseVariations[type].spawnPos = new RoomPosition(minPos.x, minPos.y, this.name)
+        global.heap.rooms[this.name].baseVariations[type].spawnPos = new RoomPosition(minPos.x, minPos.y-2, this.name)
 
     }
     else {
@@ -1182,15 +1199,15 @@ Room.prototype.buildRoom = function buildRoom(type) {
 
 
         //plan_road_to_controller(spawn, roomCM);
-        this.planExtensionStamp(roomCM, 4, spawnPos);//18 
-        this.planExtensionStamp(roomCM, 5, spawnPos);//23
-        this.planExtensionStamp(roomCM, 6, spawnPos);//28
-        this.planExtensionStamp(roomCM, 6, spawnPos);//33
-        this.planExtensionStamp(roomCM, 7, spawnPos);//38
-        this.planExtensionStamp(roomCM, 7, spawnPos);//43
-        this.planExtensionStamp(roomCM, 7, spawnPos);//48
-        this.planExtensionStamp(roomCM, 8, spawnPos);//53
-        this.planExtensionStamp(roomCM, 8, spawnPos);//58
+        this.planExtensionStamp(roomCM, 4, spawnPos,type);//18 
+        this.planExtensionStamp(roomCM, 5, spawnPos,type);//23
+        this.planExtensionStamp(roomCM, 6, spawnPos,type);//28
+        this.planExtensionStamp(roomCM, 6, spawnPos,type);//33
+        this.planExtensionStamp(roomCM, 7, spawnPos,type);//38
+        this.planExtensionStamp(roomCM, 7, spawnPos,type);//43
+        this.planExtensionStamp(roomCM, 7, spawnPos,type);//48
+        this.planExtensionStamp(roomCM, 8, spawnPos,type);//53
+        this.planExtensionStamp(roomCM, 8, spawnPos,type);//58
         this.planTowersStamp(roomCM, spawnPos);
         this.planLabsStamp(roomCM);
 

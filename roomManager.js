@@ -135,6 +135,8 @@ Room.prototype.roomManager = function roomManager() {
         ////// START OF BUILDING ROOM MESS
 
         if (global.heap.isSomeRoomPlanning == false) {
+            //this.visualizeBase() // debugging
+
             global.heap.isSomeRoomPlanning = true; // assuring that only one room in a tick would go into room building
             if (this.memory.finishedPlanning != true) {
 
