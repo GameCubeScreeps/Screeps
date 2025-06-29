@@ -8,6 +8,8 @@ const roleWorker=require('roleWorker')
 const roleFiller=require('roleFiller')
 const roleRepairer=require('roleRepairer')
 const roleHauler=require('roleHauler')
+const roleReserver=require('roleReserver')
+const roleRampartRepairer=require('roleRampartRepairer')
 
 
 Room.prototype.creepsManager = function creepsManager() {
@@ -57,6 +59,13 @@ Room.prototype.creepsManager = function creepsManager() {
                 global.heap.rooms[this.name].haulersParts+=_.filter(creep.body, { type: CARRY }).length
                 creep.roleHauler()
                 continue
+            case C.ROLE_RESERVER:
+                creep.roleReserver()
+                break;
+            case C.ROLE_RAMPART_REPAIRER:
+                creep.roleRampartRepairer()
+                global.heap.rooms[this.name].rampartRepairersPower+=_.filter(creep.body, { type: WORK }).length
+                break;
         }
     }
 

@@ -15,6 +15,7 @@ const spawnFromQueues = require('spawnFromQueues')
 const roomManager = require('roomManager')
 const creepsManager = require('creepsManager')
 const visualize = require('visualize');
+const { USERNAME } = require('./constants');
 
 
 // This line monkey patches the global prototypes.
@@ -62,7 +63,7 @@ module.exports.loop = function () {
       break;
     }
 
-
+    console.log(C.USERNAME)
 
     for (mainRoom of Memory.mainRooms) {
 

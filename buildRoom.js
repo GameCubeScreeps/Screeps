@@ -1230,12 +1230,8 @@ Room.prototype.buildRoom = function buildRoom(type) {
             this.memory.finalBuildingList = this.memory.buildingList
             this.memory.variationToBuild = type
             console.log("setting best variation")
-            //delete this.memory.roomPlan
-            //delete this.memory.buildingList
         }
 
-        console.log("RoomPlan: ")
-        console.log(this.memory.roomPlan)
 
         global.heap.rooms[this.name].baseVariations[key].variationFinished = true
 
@@ -1260,16 +1256,13 @@ Room.prototype.buildRoom = function buildRoom(type) {
         // If finished scanning
         if (this.memory.roomsToScan != undefined && this.memory.roomsToScan.length == 0) {
             var spawnPos = global.heap.rooms[this.name].baseVariations[type].spawnPos
+
+            this.planRoadToTarget(roomCM1,this.controller.pos,2,1,spawnPos)
             for (src of this.memory.harvestingSources) {
-                //function planRoadToTarget(roomCM, target, rcl, myRange, start, spawnPos) 
-                console.log("src: ")
-                console.log(src.id)
-                console.log(Game.getObjectById(src.id))
                 this.planRoadToTarget(roomCM1, src.pos, 2, 1, spawnPos)
             }
 
             for (src of this.memory.keepersSources) {
-                //function planRoadToTarget(roomCM, target, rcl, myRange, start, spawnPos) 
                 this.planRoadToTarget(roomCM1, src.pos, 8, 1, spawnPos)
             }
             this.memory.plannedRoads = true

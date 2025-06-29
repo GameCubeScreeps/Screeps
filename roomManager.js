@@ -1,13 +1,14 @@
 // Every constant definied in separate file
 const C = require('constants');
 const buildRoom = require('buildRoom');
+const { TOWER_BOTTOM_LIMIT } = require('./constants');
 
 
 Room.prototype.roomManager = function roomManager() {
 
 
 
-
+    global.heap.rooms[this.name].state=[]
     global.heap.rooms[this.name].hostiles = []
     global.heap.rooms[this.name].allies = []
     global.heap.rooms[this.name].myWorkers = [];
@@ -21,21 +22,24 @@ Room.prototype.roomManager = function roomManager() {
         //Tracking creeps
         global.heap.rooms[this.name].fillers = 0
         global.heap.rooms[this.name].haulersParts = 0;
+        global.heap.rooms[this.name].rampartRepairersPower=0;
+
 
         //Tracking structures
         global.heap.rooms[this.name].construction = []
         this.memory.state = []
         this.memory.myStructures = []
 
-        this.memory.myExtensions = []
-        this.memory.myLabs = []
-        this.memory.myTowers = []
-        this.memory.myRamparts = []
-        this.memory.myNuker = undefined
-        this.memory.myLinks = []
-        this.memory.myFactory = undefined
-        this.memory.myExtractor = undefined
-        this.memory.myObserver = undefined
+        global.heap.rooms[this.name].myExtensions = []
+        global.heap.rooms[this.name].myLabs = []
+        global.heap.rooms[this.name].myTowers = []
+        global.heap.rooms[this.name].towersNeedRefill=false
+        global.heap.rooms[this.name].myRamparts = []
+        global.heap.rooms[this.name].myNuker = undefined
+        global.heap.rooms[this.name].myLinks = []
+        global.heap.rooms[this.name].myFactory = undefined
+        global.heap.rooms[this.name].myExtractor = undefined
+        global.heap.rooms[this.name].myObserver = undefined
 
         var constr = this.find(FIND_CONSTRUCTION_SITES)
         if (constr.length > 0) {
@@ -200,7 +204,6 @@ Room.prototype.roomManager = function roomManager() {
                         this.memory._inLoop = true
                         if (global.heap.rooms[this.name].baseVariations[key].variationFinished == false) {
                             this.visual.text(key, 25, 3)
-                            console.log(key)
                             this.buildRoom(key)
                             break;
                         }
@@ -213,7 +216,6 @@ Room.prototype.roomManager = function roomManager() {
             }
             else {
 
-                console.log("@@@@@@@@@@@@@@@@@@@@@@")
                 //final room plan will be in this.memory.finalRoomPlan
                 if (this.memory.roomPlan != undefined && this.memory.plannedRoads == true) {
                     //delete this.memory.roomPlan
@@ -222,20 +224,18 @@ Room.prototype.roomManager = function roomManager() {
                 if (this.memory.buildingList != undefined && this.memory.plannedRoads == true) {
                     //delete this.memory.buildingList
                 }
-                console.log(this.memory.variationToBuild)
                 if (this.memory.variationToBuild == undefined) {
                     this.memory.finishedPlanning = undefined
-                    console.log("Backing to planning room")
                 }
-                console.log(global.heap.isSomeRoomPlanning)
                 if (Game.time % 5 == 0) {
-                    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                     this.buildRoom(this.memory.variationToBuild)
                     //global.heap.isSomeRoomPlanning = true
                 }
 
             }
         }
+
+
 
 
 
@@ -294,29 +294,35 @@ Room.prototype.roomManager = function roomManager() {
             switch (type) {
 
                 case STRUCTURE_EXTENSION:
-                    this.memory.myExtensions.push(str.id);
+                    global.heap.rooms[this.name].myExtensions.push(str.id);
                     break;
                 case STRUCTURE_TOWER:
-                    this.memory.myTowers.push(str.id);
+                    global.heap.rooms[this.name].myTowers.push(str.id);
+                    if(str.store[RESOURCE_ENERGY]<TOWER_CAPACITY*TOWER_BOTTOM_LIMIT)
+                    {
+                        global.heap.rooms[this.name].towersNeedRefill=true
+                    }
                     break;
                 case STRUCTURE_LAB:
-                    this.memory.myLabs.push(str.id);
+                    global.heap.rooms[this.name].myLabs.push(str.id);
                     break;
                 case STRUCTURE_EXTRACTOR:
-                    this.memory.myExtractor = str.id;
+                    global.heap.rooms[this.name].myExtractor = str.id;
                     break;
                 case STRUCTURE_LINK:
-                    this.memory.myLinks.push(str.id);
+                    global.heap.rooms[this.name].myLinks.push(str.id);
                     break;
                 case STRUCTURE_NUKER:
-                    this.memory.myNuker = str.id
+                    global.heap.rooms[this.name].myNuker = str.id
                     break;
                 case STRUCTURE_FACTORY:
-                    this.memory.myFactory = str.id
+                    global.heap.rooms[this.name].myFactory = str.id
                     break;
                 case STRUCTURE_OBSERVER:
-                    this.memory.myObserver = str.id
+                    global.heap.rooms[this.name].myObserver = str.id
                     break;
+                case STRUCTURE_RAMPART:
+                    global.heap.rooms[this.name].myRamparts.push(str.id)
 
 
             }
@@ -338,6 +344,16 @@ Room.prototype.roomManager = function roomManager() {
             }
 
         }
+    }
+
+    if (Memory.mainRooms.includes(this.name)) {
+        global.heap.rooms[this.name].rampartsAmount = global.heap.rooms[this.name].myRamparts.length
+
+        global.heap.rooms[this.name].rampartsEnergyNeedPerTick = (global.heap.rooms[this.name].rampartsAmount * (RAMPART_DECAY_AMOUNT / REPAIR_POWER)) / RAMPART_DECAY_TIME
+
+        global.heap.rooms[this.name].requiredRampartsRepairersPower = global.heap.rooms[this.name].rampartsEnergyNeedPerTick * 2
+        console.log("Ramparts in: ", this.name, " require: ", global.heap.rooms[this.name].rampartsEnergyNeedPerTick, " energy to sustain")
+
     }
 
     // Upgraders container

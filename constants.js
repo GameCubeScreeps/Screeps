@@ -8,7 +8,7 @@ for (spawnName in Game.spawns) {
     break;
 }
 const USERNAME = global.heap.userName
-
+const SIGN_TEXT='What are you ? To define is to limit'
 //CPU/Benchmarking 
 const AVG_STEP=15000
 
@@ -21,6 +21,8 @@ const ROLE_SCOUT = 'scout'
 const ROLE_WORKER = 'worker'
 const ROLE_REPAIRER = 'repairer'
 const ROLE_HAULER = 'hauler'
+const ROLE_RESERVER='reserver'
+const ROLE_RAMPART_REPAIRER='rampart_repairer'
 
 
 //Creep constants
@@ -34,6 +36,7 @@ const TASK_COLLECT = 'collect'
 const TASK_FILL_UPGRADERS_CONTAIER='fill_upgraders_container'
 const TASK_FILL_EXTENSIONS='fill_extensions'
 const TASK_FILL_SPAWN='fill_spawn'
+const TASK_REPAIR_RAMPARTS='repair_ramparts'
 
 
 //Economy const
@@ -52,10 +55,13 @@ const CONTROLLER_DOWNGRADE_BOTTOM_LIMIT = 0.3 // below that percentage of downgr
 const CONTROLLER_DOWNGRADE_TOP_LIMIT=0.8
 const STORAGE_ENERGY_UPGRADE_LIMIT = 5000 // below that amount workers wouldn't take energy from storage
 const RAMPART_HITS_BOTTOM_LIMIT=5000
+const TOWER_BOTTOM_LIMIT=0.4
+const TOWER_UP_LIMIT=0.8
 
 // Room Visualization
 const OUTLINE_COLOR = 'black'
 const TEXT_COLOR = '#fc03b6'
+const FILL_COLOR='grey'
 
 // Room Layout Variations
 const SRC_1 = 'src_1'
@@ -89,6 +95,8 @@ module.exports = {
     ROLE_WORKER,
     ROLE_REPAIRER,
     ROLE_HAULER,
+    ROLE_RESERVER,
+    ROLE_RAMPART_REPAIRER,
 
     CREEP_MAX_BODYPARTS,
     HAULER_REQ_CARRY_PARTS,
@@ -115,9 +123,13 @@ module.exports = {
     CONTROLLER_DOWNGRADE_TOP_LIMIT,
     STORAGE_ENERGY_UPGRADE_LIMIT,
     RAMPART_HITS_BOTTOM_LIMIT,
+    TOWER_BOTTOM_LIMIT,
+    TOWER_UP_LIMIT,
 
     OUTLINE_COLOR,
     TEXT_COLOR,
+    FILL_COLOR,
+    
     SRC_1,
     SRC_2,
     SRC_1_2,

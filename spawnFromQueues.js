@@ -118,6 +118,26 @@ Room.prototype.spawnFromQueues = function spawnFromQueues() {
                     console.log("Hauler spawning result: ",result)
                     break;
                 }
+            case C.ROLE_RESERVER:
+                {
+                    var result = spawn.spawnCreep([MOVE,CLAIM], C.ROLE_RESERVER + '_' + this.name + Game.time, { memory: { role: C.ROLE_RESERVER,homeRoom: this.name,targetRoom: request.roomName } })
+                    if (result == OK) {
+                        global.heap.rooms[this.name].civilianQueue.shift()
+
+                    }
+                    console.log("Reserver spawning result: ",result)
+                    break;
+                }
+            case C.ROLE_RAMPART_REPAIRER:
+                {
+                    var result = spawn.spawnCreep(workerBody(energyCap), C.ROLE_RAMPART_REPAIRER + '_' + this.name + Game.time, { memory: { role: C.ROLE_RAMPART_REPAIRER, homeRoom: this.name } })
+                    if (result == OK) {
+                        global.heap.rooms[this.name].civilianQueue.shift()
+
+                    }
+                    console.log("worker spawning result: ",result)
+                    break;
+                }
 
         }
     }

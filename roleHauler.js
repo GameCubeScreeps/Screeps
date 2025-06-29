@@ -4,6 +4,7 @@
 //const { move_avoid_hostile } = require("./move_avoid_hostile");
 var sleep = require('creepSleep');
 const C=require('constants')
+const creepsTasks=require('creepsTasks')
 
 
 
@@ -89,8 +90,11 @@ Creep.prototype.roleHauler = function roleHauler(spawn) {//transfer energy grom 
                 }
             }
         }
-
-        if (this.memory.extensionsFull == false && this.memory.task==undefined) {
+        if(global.heap.rooms[this.name].towersNeedRefill==true)
+        {
+            this.memory.task=C.TASK_FILL_TOWERS
+        }
+        else if (this.memory.extensionsFull == false && this.memory.task==undefined) {
             this.memory.task = C.TASK_FILL_EXTENSIONS
         }
         else if (this.memory.task==undefined && this.room.memory.upgradersContainer != undefined && Game.getObjectById(this.room.memory.upgradersContainer) != null
@@ -109,6 +113,12 @@ Creep.prototype.roleHauler = function roleHauler(spawn) {//transfer energy grom 
         }
     }
 
+    if(this.memory.task==C.TASK_FILL_TOWERS)
+    {
+        this.taskFillTowers();
+        return
+    }
+    
     if (this.memory.task==C.TASK_COLLECT) // if is empty go to container
     {// go to container
         if(this.store.getFreeCapacity(RESOURCE_ENERGY)==0)

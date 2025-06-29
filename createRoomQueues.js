@@ -1,5 +1,6 @@
 // Every constant definied in separate file
 const C = require('constants');
+const { ROLE_RESERVER } = require('./constants');
 //defining local heap
 const localHeap = {}
 
@@ -29,8 +30,6 @@ class generalRoomRequest {
     }
 }
 
-//TODO
-//define: global.heap.rooms[].hostiles
 
 Room.prototype.createRoomQueues = function createRoomQueues() {
 
@@ -59,10 +58,8 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     //  Carriers / Harvesters
     var areCarriersSatisfied = true
     var areHarvestersSatisfied = true
-    //console.log(this.name, " have ",this.memory.harvestingSources.length," source")
     for (harvestingSource of this.memory.harvestingSources) {
 
-        //console.log(harvestingSource.id)
         //Skipping reserved by not "me"
         if (Game.rooms[harvestingSource.roomName] != undefined && Game.rooms[harvestingSource.roomName].controller.reservation != undefined
             && Game.rooms[harvestingSource.roomName].controller.reservation.username != global.heap.userName) {
@@ -70,7 +67,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
             continue;
         }
         //Skippig rooms containing hostileCreeps
-        if (global.heap.rooms[harvestingSource.roomName] != undefined && global.heap.rooms[harvestingSource.roomName].hostiles.length > 1 && harvestingSource.roomName != this.name) {
+        if (global.heap.rooms[harvestingSource.roomName] != undefined && global.heap.rooms[harvestingSource.roomName].hostiles.length > 0 && harvestingSource.roomName != this.name) {
             //console.log("Skipping room with hostiles")
             continue;
         }
@@ -119,21 +116,19 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
 
     }
 
-    for(harvestingRoom of this.memory.harvestingRooms)
-    {
-        if(harvestingRoom.repairerId==undefined && this.memory.roomsToScan.length==0)
-        {
-            global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(harvestingRoom.name,C.ROLE_REPAIRER))
+    for (harvestingRoom of this.memory.harvestingRooms) {
+        if (harvestingRoom.repairerId == undefined && this.memory.roomsToScan.length == 0) {
+            global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(harvestingRoom.name, C.ROLE_REPAIRER))
             console.log("adding repairer")
             break;
         }
     }
-        
-    
+
+
 
 
     // Workers below RCL4 - wthout storage
-    if (this.storage == undefined || this.controller.level<4) {
+    if (this.storage == undefined || this.controller.level < 4) {
         if (this.memory.energyBalance > C.ENERGY_BALANCER_WORKER_SPAWN) {
 
             global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_WORKER))
@@ -151,10 +146,8 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
         }
     }
 
-    if(this.storage!=undefined)
-    {
-        if(global.heap.rooms[this.name].haulersParts<C.HAULER_REQ_CARRY_PARTS)
-        {
+    if (this.storage != undefined) {
+        if (global.heap.rooms[this.name].haulersParts < C.HAULER_REQ_CARRY_PARTS) {
             global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_HAULER))
         }
     }
@@ -166,14 +159,40 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     // Soldiers should add themselves (their targetRoom) to global.heap.rooms[roomName].soldier
     for (room in this.memory.harvestingRooms) {
         if (global.heap.rooms[this.name].hostiles.length > 0) {
-            console.log("hostiles in: ",this.name," : ",global.heap.rooms[this.name].hostiles.length)
+            console.log("hostiles in: ", this.name, " : ", global.heap.rooms[this.name].hostiles.length)
             if (this.memory.isHarvestingRoom && global.heap.rooms[this.name].soldier == undefined) {
                 if (!global.heap.rooms[this.name].defensiveQueue.some(obj => obj.roomName === this.name)) {
-                    global.heap.rooms[this.name].defensiveQueue.push(new generalRoomRequest(this.name, C.ROLE_SOLDIER))
+                    global.heap.rooms[this.name].defensiveQueue.push(new generalRoomRequest(room.name, C.ROLE_SOLDIER))
                 }
             }
         }
     }
+
+
+    // Reservers
+    if (this.controller.level >= 3) {
+        for (room of this.memory.harvestingRooms) {
+            if(room.reserverId==undefined)
+            {
+                global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(room.name,C.ROLE_RESERVER))
+            }
+        }
+    }
+
+    //Rampart Repairers - civilian queue
+    if(global.heap.rooms[this.name].requiredRampartsRepairersPower>global.heap.rooms[this.name].rampartRepairersPower)
+    {
+        if(global.heap.rooms[this.name].state.includes(C.STATE_UNDER_ATTACK))
+        {//Add to defensive queue
+            global.heap.rooms[this.name].defensiveQueue.push(new generalRoomRequest(this.name,C.ROLE_RAMPART_REPAIRER))
+        }
+        else{//Add to civilian queue
+            global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name,C.ROLE_RAMPART_REPAIRER))
+            console.log("Adding rampart repairer")
+        }
+        
+    }
+
 
 
     //logging queues
