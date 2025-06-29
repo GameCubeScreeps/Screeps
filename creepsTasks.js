@@ -35,16 +35,18 @@ Creep.prototype.taskFillTowers = function taskFillTowers() {
 //TASK_REPAIR_RAMPARTS
 Creep.prototype.taskRepairRamparts = function taskRepairRamparts() {
     this.say("Rep")
-    if (this.memory.minRampartId != undefined && Game.getObjectById(this.memory.minRampartId) == null) {
+    if ((this.memory.minRampartId != undefined && Game.getObjectById(this.memory.minRampartId) == null)) {
         this.memory.minRampartId = undefined
         this.say("und")
     }
+
     if (this.memory.minRampartId == undefined) {
         var minRampartId = undefined
         var minRampartHits = Infinity
         var minimalRamparts = []// there can be more than one here
         for (r of global.heap.rooms[this.memory.homeRoom].myRamparts) {
-            if (Game.getObjectById(r) != null && Game.getObjectById(r).hits < minRampartHits) {
+            if (Game.getObjectById(r) != null && Game.getObjectById(r).hits < minRampartHits
+        && Game.getObjectById(r).ticksToDecay>30) {
                 minRampartHits = Game.getObjectById(r).hits
                 minRampartId = r
             }
@@ -56,9 +58,16 @@ Creep.prototype.taskRepairRamparts = function taskRepairRamparts() {
                 minimalRamparts.push(Game.getObjectById(r))
             }
         }
-        this.memory.minRampartId = this.pos.findClosestByPath(minimalRamparts)
+        if(this.pos.findClosestByPath(minimalRamparts)!=null)
+        {
+            this.say("def")
+            this.memory.minRampartId = this.pos.findClosestByPath(minimalRamparts).id
+        }
+        
     }
+    this.say(this.memory.minRampartId)
     if (this.memory.minRampartId != undefined) {
+        
         if (Game.getObjectById(this.memory.minRampartId) != null) {
             this.say("1")
             if (this.repair(Game.getObjectById(this.memory.minRampartId)) == ERR_NOT_IN_RANGE) {

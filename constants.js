@@ -57,6 +57,7 @@ const STORAGE_ENERGY_UPGRADE_LIMIT = 5000 // below that amount workers wouldn't 
 const RAMPART_HITS_BOTTOM_LIMIT=5000
 const TOWER_BOTTOM_LIMIT=0.4
 const TOWER_UP_LIMIT=0.8
+const RAMPART_DECAY_LIMIT=40
 
 // Room Visualization
 const OUTLINE_COLOR = 'black'
@@ -125,6 +126,7 @@ module.exports = {
     RAMPART_HITS_BOTTOM_LIMIT,
     TOWER_BOTTOM_LIMIT,
     TOWER_UP_LIMIT,
+    RAMPART_DECAY_LIMIT,
 
     OUTLINE_COLOR,
     TEXT_COLOR,
