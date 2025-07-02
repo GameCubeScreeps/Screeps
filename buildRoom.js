@@ -1131,13 +1131,14 @@ Room.prototype.planSpawnPos = function planSpawnPos(type) {
 }
 
 
-Room.prototype.buildRoom = function buildRoom(type) {
+Room.prototype.buildRoom = function buildRoom(type=C.CURRENT_SPAWNPOS) {
 
+    
 
     var stage = null
     console.log("type: ", type)
-    if (global.heap.rooms[this.name].baseVariations == undefined || global.heap.rooms[this.name].baseVariations[type] == undefined || global.heap.rooms[this.name].baseVariations[type].spawnPos == undefined) {
-        this.memory.finishedPlanning = undefined
+    if (global.heap.rooms[this.name].baseVariations[type].spawnPos == undefined) {
+        this.memory.finishedPlanning = false
         this.memory.buildingStage = 0;
         stage = 0
         console.log("############")
@@ -1240,13 +1241,12 @@ Room.prototype.buildRoom = function buildRoom(type) {
         var cpuAfter = Game.cpu.getUsed();
         this.memory.cpuSpentForStamps = cpuAfter - cpuBefore;
 
-
+        return;
 
     }
     else if (stage == 1) {
 
 
-        this.memory._inStage1 = true
         let roomCM1 = PathFinder.CostMatrix.deserialize(this.memory.roomCM);
 
         //this.planSourcesContainers();
@@ -1272,11 +1272,13 @@ Room.prototype.buildRoom = function buildRoom(type) {
         }
 
 
-
+        return
     }
     else if (stage == 2) {
         //build from lists and visualize roomPlan
         this.buildFromLists()
+
+        return
         // do not increment stage here
     }
 
