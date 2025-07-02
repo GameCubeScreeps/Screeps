@@ -1,6 +1,8 @@
 //const { boosting_driver } = require('boosting_driver');
 const C = require('constants')
 const Movement = require('screeps-movement');
+const creepsTasks=require('creepsTasks')
+
 
 /*Creep needs:
    Mandatory:
@@ -73,6 +75,9 @@ Creep.prototype.roleWorker = function roleWorker() {
 
         if (localHeap.task == C.TASK_UPGRADE) // if upgrading go upgrade
         {
+            this.taskUpgrade()
+            return;
+
             if (global.heap.rooms[this.memory.homeRoom].building == true &&
                 this.room.controller.ticksToDowngrade > (CONTROLLER_DOWNGRADE[this.room.controller.level] * C.CONTROLLER_DOWNGRADE_TOP_LIMIT)
             ) {
@@ -120,6 +125,9 @@ Creep.prototype.roleWorker = function roleWorker() {
 
         }
         else if (localHeap.task == C.TASK_COLLECT) {// go to deposits
+
+            this.taskCollect(localHeap)
+            return
 
             if(this.store.getFreeCapacity(RESOURCE_ENERGY)==0)
             {
@@ -227,7 +235,8 @@ Creep.prototype.roleWorker = function roleWorker() {
         }
         else if (localHeap.task == C.TASK_BUILD) {
 
-
+            this.taskBuild()
+            return;
             if (global.heap.rooms[this.memory.homeRoom].building == true &&
                 this.room.controller.ticksToDowngrade < (CONTROLLER_DOWNGRADE[this.room.controller.level] * C.CONTROLLER_DOWNGRADE_BOTTOM_LIMIT)
             ) {
@@ -242,6 +251,7 @@ Creep.prototype.roleWorker = function roleWorker() {
                 this.memory.task='undefined_debugging'
             }
             else {
+
                 var sites = []
                 var toFocus = null
                 for (c of global.heap.rooms[this.memory.homeRoom].construction) {
@@ -286,4 +296,4 @@ Creep.prototype.roleWorker = function roleWorker() {
 
     }
 
-};
+}

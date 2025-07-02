@@ -25,6 +25,11 @@ Room.prototype.visualize = function visualizeroomManager() {
     //progress/tick visualization
     if (Game.rooms[this.name].memory.progressSum != undefined && Game.rooms[this.name].memory.progressCounter != undefined) {
 
+        if(Game.time%C.AVG_STEP==0)
+        {
+            Game.rooms[this.name].memory.progressSum=0;
+            Game.rooms[this.name].memory.progressCounter=0
+        }
         Game.rooms[this.name].visual.text('⬆️' + (Math.round((Game.rooms[this.name].memory.progressSum / Game.rooms[this.name].memory.progressCounter) * 100) / 100) + "/t",
             Game.rooms[this.name].controller.pos.x + 1.5, Game.rooms[this.name].controller.pos.y + 1, { color: C.TEXT_COLOR })
 

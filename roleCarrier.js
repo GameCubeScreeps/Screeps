@@ -194,16 +194,13 @@ Creep.prototype.roleCarrier = function roleCarrier() {
 
                     var carrierCapacity = this.store.getCapacity()
                     var carrierUsedCapacity = this.store.getUsedCapacity()
-                    var spawnPos = Game.rooms[this.room.name].memory.spawnPos
                     var dropped_resource = undefined
-                    if (spawnPos != undefined) {
                         var dropped_resource = Game.rooms[this.memory.targetRoom].find(FIND_DROPPED_RESOURCES, {
                             filter: function (resource) {
                                 return resource.amount >= carrierCapacity - carrierUsedCapacity
-                                    && resource.pos.isNearTo(spawnPos.x, spawnPos.y) == false
                             }
                         });
-                    }
+                    
 
                     if (dropped_resource != undefined && dropped_resource != null && dropped_resource.length > 0) {
                         // var closest_resource = this.pos.findClosestByPath(dropped_resource);
@@ -270,7 +267,7 @@ Creep.prototype.roleCarrier = function roleCarrier() {
             }
 
             if (avoid.length > 0 && (Game.getObjectById(this.memory.maxContainer) != null && Game.getObjectById(this.memory.maxContainer).store.getUsedCapacity() < (this.store.getCapacity() - this.store.getUsedCapacity()) * 0.8 && Game.getObjectById(this.memory.maxContainer).store.getUsedCapacity() < 2000) == true) {
-                //creep.say(if_sleep)
+                
                 this.fleeFrom(avoid, 3);
             }
 

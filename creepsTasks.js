@@ -1,7 +1,6 @@
 const C = require('constants');
 
 
-
 //TODO:
 //Add avopiding hostile areas during STATE_UNDER_ATTACK
 
@@ -46,7 +45,7 @@ Creep.prototype.taskRepairRamparts = function taskRepairRamparts() {
         var minimalRamparts = []// there can be more than one here
         for (r of global.heap.rooms[this.memory.homeRoom].myRamparts) {
             if (Game.getObjectById(r) != null && Game.getObjectById(r).hits < minRampartHits
-        && Game.getObjectById(r).ticksToDecay>30) {
+                && Game.getObjectById(r).ticksToDecay > 30) {
                 minRampartHits = Game.getObjectById(r).hits
                 minRampartId = r
             }
@@ -58,16 +57,15 @@ Creep.prototype.taskRepairRamparts = function taskRepairRamparts() {
                 minimalRamparts.push(Game.getObjectById(r))
             }
         }
-        if(this.pos.findClosestByPath(minimalRamparts)!=null)
-        {
+        if (this.pos.findClosestByPath(minimalRamparts) != null) {
             this.say("def")
             this.memory.minRampartId = this.pos.findClosestByPath(minimalRamparts).id
         }
-        
+
     }
     this.say(this.memory.minRampartId)
     if (this.memory.minRampartId != undefined) {
-        
+
         if (Game.getObjectById(this.memory.minRampartId) != null) {
             this.say("1")
             if (this.repair(Game.getObjectById(this.memory.minRampartId)) == ERR_NOT_IN_RANGE) {
@@ -81,6 +79,7 @@ Creep.prototype.taskRepairRamparts = function taskRepairRamparts() {
 
 //TASK_COLLECT
 Creep.prototype.taskCollect = function taskCollect() {// go to deposits
+
 
     if (this.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
         localHeap.task = undefined
@@ -184,4 +183,114 @@ Creep.prototype.taskCollect = function taskCollect() {// go to deposits
             }
         }
     }
+}
+
+//TASK UPGRADE CONTROLLER
+Creep.prototype.taskUpgrade = function taskUpgrade() {
+    if (global.heap.rooms[this.memory.homeRoom].building == true &&
+        this.room.controller.ticksToDowngrade > (CONTROLLER_DOWNGRADE[this.room.controller.level] * C.CONTROLLER_DOWNGRADE_TOP_LIMIT)
+    ) {
+        localHeap.task = C.TASK_BUILD
+        this.memory.task = C.TASK_BUILD
+        return;
+
+    }
+    if (this.store.getUsedCapacity() == 0) {
+        localHeap.task = undefined
+        this.memory.task = 'undefined_debugging'
+    }
+    if (!this.pos.isNearTo(this.room.controller)) {
+        this.moveTo(this.room.controller, { maxStuck: 10 })
+    }
+    var upgradeResult = this.upgradeController(this.room.controller);
+    //this.moveTo(this.room.controller, { reusePath: 17,maxRooms:1 });
+    if (upgradeResult == ERR_NOT_IN_RANGE || upgradeResult == -9) {
+        this.moveTo(this.room.controller, { reusePath: 17, maxRooms: 1 });
+    }
+
+    //Sharing energy
+    if (this.store[RESOURCE_ENERGY] > 0 && global.heap.rooms[this.memory.homeRoom].myWorkers != undefined && global.heap.rooms[this.memory.homeRoom].myWorkers.length > 0) {
+        for (a of global.heap.rooms[this.memory.homeRoom].myWorkers) {
+            cr = Game.getObjectById(a)
+            if (cr == null) { continue; }
+
+            if (cr != null && cr.store[RESOURCE_ENERGY] < this.store[RESOURCE_ENERGY] &&
+                (cr.pos.getMyRangeTo(this.room.controller.pos) < this.pos.getMyRangeTo(this.room.controller.pos)
+                    || (Game.getObjectById(this.memory.deposit) != undefined && cr.pos.getMyRangeTo(Game.getObjectById(this.memory.deposit).pos) > this.pos.getMyRangeTo(Game.getObjectById(this.memory.deposit).pos))
+                )
+                && this.pos.getMyRangeTo(cr.pos) < 1.5) {
+
+                this.upgradeController(this.room.controller);
+                if (!this.pos.isNearTo(this.room.controller)) {
+                    this.transfer(cr, RESOURCE_ENERGY)
+                }
+
+
+                break;
+            }
+        }
+    }
+
+
+}
+
+//TASK BUILD
+Creep.prototype.taskBuild = function taskBuild() {
+
+
+    if (global.heap.rooms[this.memory.homeRoom].building == true &&
+        this.room.controller.ticksToDowngrade < (CONTROLLER_DOWNGRADE[this.room.controller.level] * C.CONTROLLER_DOWNGRADE_BOTTOM_LIMIT)
+    ) {
+        localHeap.task = C.TASK_UPGRADE
+        this.memory.task = C.TASK_UPGRADE
+        return;
+
+    }
+
+    if (global.heap.rooms[this.memory.homeRoom].building != true) {
+        localHeap.task = undefined
+        this.memory.task = 'undefined_debugging'
+    }
+    else {
+
+        var sites = []
+        var toFocus = null
+        for (c of global.heap.rooms[this.memory.homeRoom].construction) {
+            if (Game.getObjectById(c) != null) {
+                sites.push(Game.getObjectById(c))
+                var type = Game.getObjectById(c).structureType
+                if (type === STRUCTURE_SPAWN) {
+                    toFocus = Game.getObjectById(c)
+                    break
+                }
+                else if (toFocus == null && type === STRUCTURE_CONTAINER) {
+                    toFocus = Game.getObjectById(c)
+                    //break
+                }
+                else if (toFocus == null && type === STRUCTURE_EXTENSION) {
+                    toFocus = Game.getObjectById(c)
+                    //break;
+                }
+            }
+        }
+        if (toFocus != null) {
+            //this.say(this.build(toFocus))
+            if (this.build(toFocus) == ERR_NOT_IN_RANGE) {
+                this.moveTo(toFocus, { range: 2, maxRooms: 1 })
+            }
+        }
+        else if (sites.length > 0) {
+
+            var closest = this.pos.findClosestByRange(sites)
+            if (closest != null) {
+                if (this.build(closest) == ERR_NOT_IN_RANGE) {
+                    this.moveTo(closest, { range: 2, maxRooms: 1 })
+                }
+            }
+        }
+    }
+
+
+
+
 }

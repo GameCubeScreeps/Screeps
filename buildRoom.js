@@ -1137,11 +1137,12 @@ Room.prototype.buildRoom = function buildRoom(type=C.CURRENT_SPAWNPOS) {
 
     var stage = null
     console.log("type: ", type)
-    if (global.heap.rooms[this.name].baseVariations[type].spawnPos == undefined) {
+    if (global.heap.rooms[this.name].baseVariations==undefined ||global.heap.rooms[this.name].baseVariations[type]==undefined || global.heap.rooms[this.name].baseVariations[type].spawnPos == undefined) {
         this.memory.finishedPlanning = false
         this.memory.buildingStage = 0;
         stage = 0
         console.log("############")
+        return
     }
     else {
         if (this.memory.finishedPlanning == true) {

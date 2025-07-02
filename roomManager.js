@@ -19,6 +19,8 @@ Room.prototype.roomManager = function roomManager() {
 
     if (Memory.mainRooms.includes(this.name)) {
 
+
+        
         //Tracking creeps
         global.heap.rooms[this.name].fillers = 0
         global.heap.rooms[this.name].haulersParts = 0;
@@ -323,6 +325,13 @@ Room.prototype.roomManager = function roomManager() {
                     break;
                 case STRUCTURE_RAMPART:
                     global.heap.rooms[this.name].myRamparts.push(str.id)
+                case STRUCTURE_SPAWN:
+                    if(str.name.endsWith('1'))
+                    {
+                        this.memory.spawnPos=str.pos
+                    }
+                    break;
+                    
 
 
             }
