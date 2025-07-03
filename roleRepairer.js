@@ -7,7 +7,6 @@ localHeap={}
 
 Creep.prototype.roleRepairer = function roleRepairer() {
 
-
     for(harvestingRoom of Game.rooms[this.memory.homeRoom].memory.harvestingRooms)
     {
         if(harvestingRoom.name==this.memory.targetRoom)
@@ -19,98 +18,12 @@ Creep.prototype.roleRepairer = function roleRepairer() {
 
     if (this.room.name == this.memory.targetRoom) {
 
-        /*
-        if(this.memory.targetRoom==spawn.room.name && spawn.memory.state!=undefined && spawn.memory.state.includes("STATE_UNDER_ATTACK"))
-        {
-            this.say("rep")
-            this.roleRampartRepairer(this, spawn);
-            return;
-        }
-            */
-
-        /*
-        // FINDING ALL STRUCTURES
-        if (this.memory.all_structures_id != undefined && this.memory.all_structures_id.length > 0) {
-            for (let id of this.memory.all_structures_id) {
-                if (Game.getObjectById(id) == null) {
-                    this.memory.all_structures_id = undefined;
-                    break;
-                }
-            }
-        }
-        if (this.memory.all_structures_id == undefined) {
-            var all_structures_id = this.room.find(FIND_STRUCTURES, {
-                filter: function (object) {
-                    return object.structureType != STRUCTURE_RAMPART && object.ticksToDecay != undefined;
-                }
-            });
-
-            if (all_structures_id != undefined && all_structures_id.length > 0) {
-                this.memory.all_structures_id = []
-                for (let str of all_structures_id) {
-                    this.memory.all_structures_id.push(str.id)
-                }
-            }
-        }
 
 
-        //FINDING DAMAGED STRUCTURES
-        if (this.memory.all_structures_id != undefined && this.memory.all_structures_id.length > 0) {
-            if (global.heap.rooms[this.memory.targetRoom].damagedStructuresId != undefined) {
-                for (let str_id of global.heap.rooms[this.memory.targetRoom].damagedStructuresId) {
-                    if (Game.getObjectById(str_id) == null) {
-                        global.heap.rooms[this.memory.targetRoom].damagedStructuresId = undefined;
-                        break;
-                    }
-                }
-            }
-            if (global.heap.rooms[this.memory.targetRoom].damagedStructuresId == undefined && Game.time % 7 == 0) {
-                global.heap.rooms[this.memory.targetRoom].damagedStructuresId = [];
-                for (let str of this.memory.all_structures_id) {
-                    if ((Game.getObjectById(str).hits < Game.getObjectById(str).hitsMax * 0.7 && Game.getObjectById(str).structureType!=STRUCTURE_CONTAINER)
-                    || (Game.getObjectById(str).hits < Game.getObjectById(str).hitsMax*0.8 && Game.getObjectById(str).structureType==STRUCTURE_CONTAINER)) {
-                        global.heap.rooms[this.memory.targetRoom].damagedStructuresId.push(str)
-                    }
-                }
-            }
-        }
-        */
-
-        /*
-        //FINDING CONTAINERS
-        if (this.memory.containers != undefined) {
-            if (this.memory.containers.length == undefined || this.memory.containers.length == 0) { this.memory.containers = undefined }
-
-            for (containerId in this.memory.containers) {
-                if (Game.getObjectById(containerId) == null) {
-                    this.memory.containers = undefined
-                    break;
-                }
-            }
-        }
-        if (this.memory.containers == undefined && this.store[RESOURCE_ENERGY] == 0) {
-            var containers = this.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return structure.structureType === STRUCTURE_CONTAINER || structure.structureType === STRUCTURE_STORAGE;
-                }
-            });
-            this.memory.containers = [];
-            if (containers != undefined && containers.length > 0) {
-                for (container of containers) {
-                    this.memory.containers.push(container.id)
-                }
-
-            }
-        }
-    */
-
-
-
-
-        if (((global.heap.rooms[this.memory.targetRoom].damagedStructuresId != undefined && global.heap.rooms[this.memory.targetRoom].damagedStructuresId.length < 1) || global.heap.rooms[this.memory.targetRoom].damagedStructuresId==undefined) && this.name.startsWith('Builder') == false) {
+        if (((global.heap.rooms[this.memory.targetRoom].damagedStructuresId != undefined && global.heap.rooms[this.memory.targetRoom].damagedStructuresId.length < 1) || global.heap.rooms[this.memory.targetRoom].damagedStructuresId==undefined)) {
             //this.move(BOTTOM)
-            //this.say("b");
-            global.heap.rooms[this.memory.targetRoom].damagedStructuresId = undefined
+            this.say("b");
+            //global.heap.rooms[this.memory.targetRoom].damagedStructuresId = undefined
             this.roleWorker();
         }
         else if (global.heap.rooms[this.memory.targetRoom].damagedStructuresId != undefined && global.heap.rooms[this.memory.targetRoom].damagedStructuresId.length >= 1) {

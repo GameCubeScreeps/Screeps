@@ -96,12 +96,19 @@ Room.prototype.roomManager = function roomManager() {
         }
         else if (this.memory.harvestingSources.length > 0) {
 
+            this.memory.harvestingRooms=[]
+
             this.memory.harvestingSources.sort((a, b) => a.bodyPartsCost - b.bodyPartsCost)
 
             var sourcesAmount = 0;
             var bodyPartsSum = 0
             var counter = 0;
             for (s of this.memory.harvestingSources) {
+
+                if(this.memory.harvestingRooms.findIndex(room => room.name==s.roomName)==-1)
+                {
+                    this.memory.harvestingRooms.push({name: s.roomName, repairerId: undefined})
+                }
                 bodyPartsSum += s.bodyPartsCost
                 counter++;
                 if (bodyPartsSum >= (CREEP_LIFE_TIME / CREEP_SPAWN_TIME) * C.HARVESTING_BODYPARTS_FRACTION) {
@@ -119,9 +126,9 @@ Room.prototype.roomManager = function roomManager() {
             }
 
         }
-        if (this.memory.harvestingRooms == undefined) {
-            this.memory.harvestingRooms = []
-        }
+
+        
+            
 
         if (this.memory.keepersSources == undefined) {
             this.memory.keepersSources = []
