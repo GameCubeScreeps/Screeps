@@ -4,11 +4,20 @@ const buildRoom = require('buildRoom');
 const { TOWER_BOTTOM_LIMIT } = require('./constants');
 
 
+class Variation {
+    constructor(variationName, variationFinished, rampartsAmount, startPos) {
+        this.variationName = variationName
+        this.variationFinished = variationFinished;
+        this.rampartsAmount = rampartsAmount;
+        this.startPos = startPos;
+    }
+}
+
 Room.prototype.roomManager = function roomManager() {
 
 
 
-    global.heap.rooms[this.name].state=[]
+    global.heap.rooms[this.name].state = []
     global.heap.rooms[this.name].hostiles = []
     global.heap.rooms[this.name].allies = []
     global.heap.rooms[this.name].myWorkers = [];
@@ -20,11 +29,11 @@ Room.prototype.roomManager = function roomManager() {
     if (Memory.mainRooms.includes(this.name)) {
 
 
-        
+
         //Tracking creeps
         global.heap.rooms[this.name].fillers = 0
         global.heap.rooms[this.name].haulersParts = 0;
-        global.heap.rooms[this.name].rampartRepairersPower=0;
+        global.heap.rooms[this.name].rampartRepairersPower = 0;
 
 
         //Tracking structures
@@ -35,7 +44,7 @@ Room.prototype.roomManager = function roomManager() {
         global.heap.rooms[this.name].myExtensions = []
         global.heap.rooms[this.name].myLabs = []
         global.heap.rooms[this.name].myTowers = []
-        global.heap.rooms[this.name].towersNeedRefill=false
+        global.heap.rooms[this.name].towersNeedRefill = false
         global.heap.rooms[this.name].myRamparts = []
         global.heap.rooms[this.name].myNuker = undefined
         global.heap.rooms[this.name].myLinks = []
@@ -148,45 +157,45 @@ Room.prototype.roomManager = function roomManager() {
 
                 console.log("Entering roomPlaning")
 
-                if (global.heap.rooms[this.name].baseVariations == undefined) {
-                    global.heap.rooms[this.name].baseVariations = []
-                    //this.memory.global.heap.rooms[this.name].baseVariations=[C.LAYOUT[C.SRC_1],C.LAYOUT[C.SRC_2],C.LAYOUT[C.SRC_1_2],C.LAYOUT[C.CONTROLER],C.LAYOUT[C.SRC_1_CONTROLLER],C.LAYOUT[C.SRC_1_2_CONTROLLER]]
-                    global.heap.rooms[this.name].baseVariations[C.SRC_1] = {}
-                    global.heap.rooms[this.name].baseVariations[C.SRC_1].variationFinished = false;
-                    global.heap.rooms[this.name].baseVariations[C.SRC_1].rampartsAmount = 0;
-                    global.heap.rooms[this.name].baseVariations[C.SRC_1].startPos = 0;
-                    global.heap.rooms[this.name].baseVariations[C.SRC_2] = {}
-                    global.heap.rooms[this.name].baseVariations[C.SRC_2].variationFinished = false;
-                    global.heap.rooms[this.name].baseVariations[C.SRC_2].rampartsAmount = 0;
-                    global.heap.rooms[this.name].baseVariations[C.SRC_2].startPos = 0;
-                    global.heap.rooms[this.name].baseVariations[C.SRC_1_2] = {}
-                    global.heap.rooms[this.name].baseVariations[C.SRC_1_2].variationFinished = false;
-                    global.heap.rooms[this.name].baseVariations[C.SRC_1_2].rampartsAmount = 0;
-                    global.heap.rooms[this.name].baseVariations[C.SRC_1_2].startPos = 0;
-                    global.heap.rooms[this.name].baseVariations[C.CONTROLLER] = {}
-                    global.heap.rooms[this.name].baseVariations[C.CONTROLLER].variationFinished = false;
-                    global.heap.rooms[this.name].baseVariations[C.CONTROLLER].rampartsAmount = 0;
-                    global.heap.rooms[this.name].baseVariations[C.CONTROLLER].startPos = 0;
-                    global.heap.rooms[this.name].baseVariations[C.SRC_1_CONTROLLER] = {}
-                    global.heap.rooms[this.name].baseVariations[C.SRC_1_CONTROLLER].variationFinished = false;
-                    global.heap.rooms[this.name].baseVariations[C.SRC_1_CONTROLLER].rampartsAmount = 0;
-                    global.heap.rooms[this.name].baseVariations[C.SRC_1_CONTROLLER].startPos = 0;
-                    global.heap.rooms[this.name].baseVariations[C.SRC_2_CONTROLLER] = {}
-                    global.heap.rooms[this.name].baseVariations[C.SRC_2_CONTROLLER].variationFinished = false;
-                    global.heap.rooms[this.name].baseVariations[C.SRC_2_CONTROLLER].rampartsAmount = 0;
-                    global.heap.rooms[this.name].baseVariations[C.SRC_2_CONTROLLER].startPos = 0;
-                    global.heap.rooms[this.name].baseVariations[C.SRC_1_2_CONTROLLER] = {}
-                    global.heap.rooms[this.name].baseVariations[C.SRC_1_2_CONTROLLER].variationFinished = false;
-                    global.heap.rooms[this.name].baseVariations[C.SRC_1_2_CONTROLLER].rampartsAmount = 0;
-                    global.heap.rooms[this.name].baseVariations[C.SRC_1_2_CONTROLLER].startPos = 0;
+                if (this.memory.baseVariations == undefined) {
+                    this.memory.baseVariations = {}
+                    this.memory.baseVariations[C.SRC_1] = {}
+                    this.memory.baseVariations[C.SRC_1].variationFinished = false;
+                    this.memory.baseVariations[C.SRC_1].rampartsAmount = 0;
+                    this.memory.baseVariations[C.SRC_1].startPos = undefined
+                    this.memory.baseVariations[C.SRC_2] = {}
+                    this.memory.baseVariations[C.SRC_2].variationFinished = false;
+                    this.memory.baseVariations[C.SRC_2].rampartsAmount = 0;
+                    this.memory.baseVariations[C.SRC_2].startPos = undefined
+                    this.memory.baseVariations[C.SRC_1_2] = {}
+                    this.memory.baseVariations[C.SRC_1_2].variationFinished = false;
+                    this.memory.baseVariations[C.SRC_1_2].rampartsAmount = 0;
+                    this.memory.baseVariations[C.SRC_1_2].startPos = undefined
+                    this.memory.baseVariations[C.CONTROLLER] = {}
+                    this.memory.baseVariations[C.CONTROLLER].variationFinished = false;
+                    this.memory.baseVariations[C.CONTROLLER].rampartsAmount = 0;
+                    this.memory.baseVariations[C.CONTROLLER].startPos = undefined
+                    this.memory.baseVariations[C.SRC_1_CONTROLLER] = {}
+                    this.memory.baseVariations[C.SRC_1_CONTROLLER].variationFinished = false;
+                    this.memory.baseVariations[C.SRC_1_CONTROLLER].rampartsAmount = 0;
+                    this.memory.baseVariations[C.SRC_1_CONTROLLER].startPos = undefined
+                    this.memory.baseVariations[C.SRC_2_CONTROLLER] = {}
+                    this.memory.baseVariations[C.SRC_2_CONTROLLER].variationFinished = false;
+                    this.memory.baseVariations[C.SRC_2_CONTROLLER].rampartsAmount = 0;
+                    this.memory.baseVariations[C.SRC_2_CONTROLLER].startPos = undefined
+                    this.memory.baseVariations[C.SRC_1_2_CONTROLLER] = {}
+                    this.memory.baseVariations[C.SRC_1_2_CONTROLLER].variationFinished = false;
+                    this.memory.baseVariations[C.SRC_1_2_CONTROLLER].rampartsAmount = 0;
+                    this.memory.baseVariations[C.SRC_1_2_CONTROLLER].startPos = undefined
 
                     //if there is spawn in room use only one variation
                     if (this.find(FIND_MY_SPAWNS).length > 0) {
-                        global.heap.rooms[this.name].baseVariations = []
-                        global.heap.rooms[this.name].baseVariations[C.CURRENT_SPAWNPOS] = {}
-                        global.heap.rooms[this.name].baseVariations[C.CURRENT_SPAWNPOS].variationFinished = false;
-                        global.heap.rooms[this.name].baseVariations[C.CURRENT_SPAWNPOS].rampartsAmount = 0;
-                        global.heap.rooms[this.name].baseVariations[C.CURRENT_SPAWNPOS].startPos = 0;
+                        this.memory.baseVariations = {}
+                        this.memory.baseVariations[C.CURRENT_SPAWNPOS] = {}
+                        this.memory.baseVariations[C.CURRENT_SPAWNPOS].variationFinished = false;
+                        this.memory.baseVariations[C.CURRENT_SPAWNPOS].rampartsAmount = 0;
+                        this.memory.baseVariations[C.CURRENT_SPAWNPOS].startPos = undefined
+                        //this.memory.baseVariations.push(new Variation(C.CURRENT_SPAWNPOS,false,undefined,0))
                     }
 
 
@@ -201,10 +210,10 @@ Room.prototype.roomManager = function roomManager() {
                     this.memory._beforelooping = true
                     // loop through room variations
                     var finishedCounter = 0;
-                    for (key in global.heap.rooms[this.name].baseVariations) {
+                    for (key in this.memory.baseVariations) {
 
                         this.memory._inLoop = true
-                        if (global.heap.rooms[this.name].baseVariations[key].variationFinished == false) {
+                        if (this.memory.baseVariations[key].variationFinished == false) {
                             this.visual.text(key, 25, 3)
                             this.buildRoom(key)
                             break;
@@ -300,9 +309,8 @@ Room.prototype.roomManager = function roomManager() {
                     break;
                 case STRUCTURE_TOWER:
                     global.heap.rooms[this.name].myTowers.push(str.id);
-                    if(str.store[RESOURCE_ENERGY]<TOWER_CAPACITY*TOWER_BOTTOM_LIMIT)
-                    {
-                        global.heap.rooms[this.name].towersNeedRefill=true
+                    if (str.store[RESOURCE_ENERGY] < TOWER_CAPACITY * TOWER_BOTTOM_LIMIT) {
+                        global.heap.rooms[this.name].towersNeedRefill = true
                     }
                     break;
                 case STRUCTURE_LAB:
@@ -326,12 +334,11 @@ Room.prototype.roomManager = function roomManager() {
                 case STRUCTURE_RAMPART:
                     global.heap.rooms[this.name].myRamparts.push(str.id)
                 case STRUCTURE_SPAWN:
-                    if(str.name.endsWith('1'))
-                    {
-                        this.memory.spawnPos=str.pos
+                    if (str.name!=undefined && str.name.endsWith('1')) {
+                        this.memory.spawnPos = str.pos
                     }
                     break;
-                    
+
 
 
             }

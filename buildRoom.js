@@ -231,17 +231,17 @@ Room.prototype.planExtensionStamp = function planExtensionStamp(roomCM, rcl, spa
     var seeds = [];
 
 
-    if(global.heap.rooms[this.name].baseVariations[type].extensionsStampsPos!=undefined && 
-        global.heap.rooms[this.name].baseVariations[type].extensionsStampsPos.length>0
+    if(this.memory.baseVariations[type].extensionsStampsPos!=undefined && 
+        this.memory.baseVariations[type].extensionsStampsPos.length>0
     )
     {
-        for(stampPos of global.heap.rooms[this.name].baseVariations[type].extensionsStampsPos)
+        for(stampPos of this.memory.baseVariations[type].extensionsStampsPos)
         {
             seeds.push(stampPos)
         }
     }
     else{
-        global.heap.rooms[this.name].baseVariations[type].extensionsStampsPos=[];
+        this.memory.baseVariations[type].extensionsStampsPos=[];
 
     }
 
@@ -268,7 +268,7 @@ Room.prototype.planExtensionStamp = function planExtensionStamp(roomCM, rcl, spa
         }
     }
 
-    global.heap.rooms[this.name].baseVariations[type].extensionsStampsPos.push(new RoomPosition(posForStamp.x, posForStamp.y,this.name))
+    this.memory.baseVariations[type].extensionsStampsPos.push(new RoomPosition(posForStamp.x, posForStamp.y,this.name))
     
     this.createExtensionStamp(posForStamp.x, posForStamp.y, rcl);
 
@@ -736,7 +736,7 @@ Room.prototype.buildFromLists = function buildFromLists() {
 //Requires:
 // this.memory.buildingList
 // this.memory.roomPlan
-//global.heap.rooms[this.name].baseVariations[type]
+//this.memory.baseVariations[type]
 Room.prototype.planBorders = function planBorders(rcl, type) {
 
 
@@ -846,7 +846,7 @@ Room.prototype.planControllerRamparts = function planControllerRamparts() {
     var controller_ramparts = this.controller.pos.getNearbyPositions();
     for (let position of controller_ramparts) {
         this.memory.roomPlan[position.x][position.y] = STRUCTURE_RAMPART;
-        this.memory.buildingList.push(new buildingListElement(position.x, position.y, this.name, STRUCTURE_RAMPART, 4));
+        this.memory.buildingList.push(new buildingListElement(position.x, position.y, this.name, STRUCTURE_RAMPART, 3));
     }
 }
 
@@ -1086,7 +1086,7 @@ Room.prototype.planSpawnPos = function planSpawnPos(type) {
             {
                 var spawn = this.find(FIND_MY_SPAWNS)
                 this.memory.spawnPos = new RoomPosition(spawn[0].pos.x,spawn[0].pos.y,this.name)
-                global.heap.rooms[this.name].baseVariations[type].spawnPos =  new RoomPosition(spawn[0].pos.x,spawn[0].pos.y,this.name)
+                this.memory.baseVariations[type].spawnPos =  new RoomPosition(spawn[0].pos.x,spawn[0].pos.y,this.name)
                 seeds.push(spawn[0].pos)
             }
     }
@@ -1120,7 +1120,7 @@ Room.prototype.planSpawnPos = function planSpawnPos(type) {
 
     console.log("setting spawnPos: ", minPos)
     if (minPos.x != 0 && minPos.y != 0) {
-        global.heap.rooms[this.name].baseVariations[type].spawnPos = new RoomPosition(minPos.x, minPos.y-2, this.name)
+        this.memory.baseVariations[type].spawnPos = new RoomPosition(minPos.x, minPos.y-2, this.name)
 
     }
     else {
@@ -1137,12 +1137,11 @@ Room.prototype.buildRoom = function buildRoom(type=C.CURRENT_SPAWNPOS) {
 
     var stage = null
     console.log("type: ", type)
-    if (global.heap.rooms[this.name].baseVariations==undefined ||global.heap.rooms[this.name].baseVariations[type]==undefined || global.heap.rooms[this.name].baseVariations[type].spawnPos == undefined) {
+    if (this.memory.baseVariations==undefined ||this.memory.baseVariations[type]==undefined || this.memory.baseVariations[type].spawnPos == undefined) {
         this.memory.finishedPlanning = false
         this.memory.buildingStage = 0;
         stage = 0
         console.log("############")
-        return
     }
     else {
         if (this.memory.finishedPlanning == true) {
@@ -1187,8 +1186,8 @@ Room.prototype.buildRoom = function buildRoom(type=C.CURRENT_SPAWNPOS) {
         this.planSpawnPos(type);
 
         var spawnPos = undefined
-        if (global.heap.rooms[this.name].baseVariations[type] != undefined && global.heap.rooms[this.name].baseVariations[type].spawnPos != undefined) {
-            spawnPos = global.heap.rooms[this.name].baseVariations[type].spawnPos
+        if (this.memory.baseVariations[type] != undefined && this.memory.baseVariations[type].spawnPos != undefined) {
+            spawnPos = this.memory.baseVariations[type].spawnPos
         }
         else {
             console.log("no spawn pos in stage 0")
@@ -1218,7 +1217,7 @@ Room.prototype.buildRoom = function buildRoom(type=C.CURRENT_SPAWNPOS) {
 
         if (Game.shard.name != 'shard3') {
             this.planControllerRamparts();
-            var rampartsAmount = this.planBorders(3, type)
+            var rampartsAmount = this.planBorders(4, type)
         }
         else {
             var rampartsAmount = 1;
@@ -1235,7 +1234,7 @@ Room.prototype.buildRoom = function buildRoom(type=C.CURRENT_SPAWNPOS) {
         }
 
 
-        global.heap.rooms[this.name].baseVariations[key].variationFinished = true
+        this.memory.baseVariations[key].variationFinished = true
 
         this.memory.roomCM = roomCM.serialize();
         this.memory.buildingStage++;
@@ -1256,7 +1255,7 @@ Room.prototype.buildRoom = function buildRoom(type=C.CURRENT_SPAWNPOS) {
         //and plan roads here
         // If finished scanning
         if (this.memory.roomsToScan != undefined && this.memory.roomsToScan.length == 0) {
-            var spawnPos = global.heap.rooms[this.name].baseVariations[type].spawnPos
+            var spawnPos = this.memory.baseVariations[type].spawnPos
 
             this.planRoadToTarget(roomCM1,this.controller.pos,2,1,spawnPos)
             for (src of this.memory.harvestingSources) {
