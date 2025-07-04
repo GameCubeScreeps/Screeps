@@ -33,10 +33,8 @@ Creep.prototype.taskFillTowers = function taskFillTowers() {
 
 //TASK_REPAIR_RAMPARTS
 Creep.prototype.taskRepairRamparts = function taskRepairRamparts() {
-    this.say("Rep")
     if ((this.memory.minRampartId != undefined && Game.getObjectById(this.memory.minRampartId) == null)) {
         this.memory.minRampartId = undefined
-        this.say("und")
     }
 
     if (this.memory.minRampartId == undefined) {
@@ -58,18 +56,14 @@ Creep.prototype.taskRepairRamparts = function taskRepairRamparts() {
             }
         }
         if (this.pos.findClosestByPath(minimalRamparts) != null) {
-            this.say("def")
             this.memory.minRampartId = this.pos.findClosestByPath(minimalRamparts).id
         }
 
     }
-    this.say(this.memory.minRampartId)
     if (this.memory.minRampartId != undefined) {
 
         if (Game.getObjectById(this.memory.minRampartId) != null) {
-            this.say("1")
             if (this.repair(Game.getObjectById(this.memory.minRampartId)) == ERR_NOT_IN_RANGE) {
-                this.say("2")
                 this.moveTo(Game.getObjectById(this.memory.minRampartId), { reusePath: 11 })
             }
         }
@@ -238,7 +232,7 @@ Creep.prototype.taskUpgrade = function taskUpgrade() {
 Creep.prototype.taskBuild = function taskBuild() {
 
 
-    if (global.heap.rooms[this.memory.homeRoom].building == true &&
+    if (global.heap.rooms[this.room.name].building == true &&
         this.room.controller.ticksToDowngrade < (CONTROLLER_DOWNGRADE[this.room.controller.level] * C.CONTROLLER_DOWNGRADE_BOTTOM_LIMIT)
     ) {
         localHeap.task = C.TASK_UPGRADE
@@ -247,7 +241,7 @@ Creep.prototype.taskBuild = function taskBuild() {
 
     }
 
-    if (global.heap.rooms[this.memory.homeRoom].building != true) {
+    if (global.heap.rooms[this.room.name].building != true) {
         localHeap.task = undefined
         this.memory.task = 'undefined_debugging'
     }
@@ -255,7 +249,7 @@ Creep.prototype.taskBuild = function taskBuild() {
 
         var sites = []
         var toFocus = null
-        for (c of global.heap.rooms[this.memory.homeRoom].construction) {
+        for (c of global.heap.rooms[this.room.name].construction) {
             if (Game.getObjectById(c) != null) {
                 sites.push(Game.getObjectById(c))
                 var type = Game.getObjectById(c).structureType
@@ -274,7 +268,6 @@ Creep.prototype.taskBuild = function taskBuild() {
             }
         }
         if (toFocus != null) {
-            //this.say(this.build(toFocus))
             if (this.build(toFocus) == ERR_NOT_IN_RANGE) {
                 this.moveTo(toFocus, { range: 2, maxRooms: 1 })
             }

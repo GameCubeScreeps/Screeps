@@ -1135,7 +1135,7 @@ Room.prototype.buildRoom = function buildRoom(type=C.CURRENT_SPAWNPOS) {
 
     
 
-    var stage = null
+    var stage = 0
     console.log("type: ", type)
     if (this.memory.baseVariations==undefined ||this.memory.baseVariations[type]==undefined || this.memory.baseVariations[type].spawnPos == undefined) {
         this.memory.finishedPlanning = false
@@ -1162,6 +1162,7 @@ Room.prototype.buildRoom = function buildRoom(type=C.CURRENT_SPAWNPOS) {
 
     }
 
+
     if (stage == 0) {
 
         this.memory._inStage0 = true
@@ -1182,6 +1183,8 @@ Room.prototype.buildRoom = function buildRoom(type=C.CURRENT_SPAWNPOS) {
         this.memory.roomPlan = new Array(rows).fill(null).map(() => new Array(cols).fill(0));
         this.memory.buildingList = [];
         this.memory.roadBuildingList = [];
+
+
 
         this.planSpawnPos(type);
 
@@ -1240,7 +1243,6 @@ Room.prototype.buildRoom = function buildRoom(type=C.CURRENT_SPAWNPOS) {
         this.memory.buildingStage++;
         var cpuAfter = Game.cpu.getUsed();
         this.memory.cpuSpentForStamps = cpuAfter - cpuBefore;
-
         return;
 
     }
@@ -1265,6 +1267,9 @@ Room.prototype.buildRoom = function buildRoom(type=C.CURRENT_SPAWNPOS) {
             for (src of this.memory.keepersSources) {
                 this.planRoadToTarget(roomCM1, src.pos, 8, 1, spawnPos)
             }
+
+            this.planSourcesContainers()
+
             this.memory.plannedRoads = true
             this.memory.roomCM = roomCM1.serialize();
             this.memory.stage++;

@@ -115,14 +115,16 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
 
 
     }
-
-    for (harvestingRoom of this.memory.harvestingRooms) {
-        if (harvestingRoom.repairerId == undefined && this.memory.roomsToScan.length == 0) {
-            global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(harvestingRoom.name, C.ROLE_REPAIRER))
-            console.log("adding repairer")
-            break;
+    if (this.memory.harvestingRooms != undefined) {
+        for (harvestingRoom of this.memory.harvestingRooms) {
+            if (harvestingRoom.repairerId == undefined && this.memory.roomsToScan.length == 0) {
+                global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(harvestingRoom.name, C.ROLE_REPAIRER))
+                console.log("adding repairer")
+                break;
+            }
         }
     }
+
 
 
 
@@ -172,25 +174,22 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     // Reservers
     if (this.controller.level >= 3) {
         for (room of this.memory.harvestingRooms) {
-            if(room.reserverId==undefined)
-            {
-                global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(room.name,C.ROLE_RESERVER))
+            if (room.reserverId == undefined) {
+                global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(room.name, C.ROLE_RESERVER))
             }
         }
     }
 
     //Rampart Repairers - civilian queue
-    if(global.heap.rooms[this.name].requiredRampartsRepairersPower>global.heap.rooms[this.name].rampartRepairersPower)
-    {
-        if(global.heap.rooms[this.name].state.includes(C.STATE_UNDER_ATTACK))
-        {//Add to defensive queue
-            global.heap.rooms[this.name].defensiveQueue.push(new generalRoomRequest(this.name,C.ROLE_RAMPART_REPAIRER))
+    if (global.heap.rooms[this.name].requiredRampartsRepairersPower > global.heap.rooms[this.name].rampartRepairersPower) {
+        if (global.heap.rooms[this.name].state.includes(C.STATE_UNDER_ATTACK)) {//Add to defensive queue
+            global.heap.rooms[this.name].defensiveQueue.push(new generalRoomRequest(this.name, C.ROLE_RAMPART_REPAIRER))
         }
-        else{//Add to civilian queue
-            global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name,C.ROLE_RAMPART_REPAIRER))
+        else {//Add to civilian queue
+            global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_RAMPART_REPAIRER))
             console.log("Adding rampart repairer")
         }
-        
+
     }
 
 

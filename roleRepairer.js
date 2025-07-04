@@ -3,15 +3,13 @@ const Movement = require('screeps-movement');
 const C = require('constants')
 //const getMaxEnergyDeposit = require("getMaxEnergyDeposit");
 
-localHeap={}
+localHeap = {}
 
 Creep.prototype.roleRepairer = function roleRepairer() {
 
-    for(harvestingRoom of Game.rooms[this.memory.homeRoom].memory.harvestingRooms)
-    {
-        if(harvestingRoom.name==this.memory.targetRoom)
-        {
-            harvestingRoom.repairerId=this.id
+    for (harvestingRoom of Game.rooms[this.memory.homeRoom].memory.harvestingRooms) {
+        if (harvestingRoom.name == this.memory.targetRoom) {
+            harvestingRoom.repairerId = this.id
             break;
         }
     }
@@ -19,60 +17,47 @@ Creep.prototype.roleRepairer = function roleRepairer() {
     if (this.room.name == this.memory.targetRoom) {
 
 
-
-        if (((global.heap.rooms[this.memory.targetRoom].damagedStructuresId != undefined && global.heap.rooms[this.memory.targetRoom].damagedStructuresId.length < 1) || global.heap.rooms[this.memory.targetRoom].damagedStructuresId==undefined)) {
+        if (this.store[RESOURCE_ENERGY] == 0) {
+            this.taskCollect()
+        }
+        else if (((global.heap.rooms[this.memory.targetRoom].damagedStructuresId != undefined && global.heap.rooms[this.memory.targetRoom].damagedStructuresId.length < 1) || global.heap.rooms[this.memory.targetRoom].damagedStructuresId == undefined)) {
             //this.move(BOTTOM)
-            this.say("b");
-            //global.heap.rooms[this.memory.targetRoom].damagedStructuresId = undefined
-            this.roleWorker();
+            this.taskBuild()
         }
         else if (global.heap.rooms[this.memory.targetRoom].damagedStructuresId != undefined && global.heap.rooms[this.memory.targetRoom].damagedStructuresId.length >= 1) {
 
-           
-            localHeap.repairing = true;
-
-            if (localHeap.repairing && this.store[RESOURCE_ENERGY] == 0) {
-                localHeap.repairing = false;
-
-            }
-            //console.log("wolne miejsce: ",this.store.getFreeCapacity());
-            if (localHeap.repairing == false && this.store.getFreeCapacity() == 0) { // go repair
-                localHeap.repairing = true;
-            }
-
-            if (localHeap.repairing) {
-
-                if (global.heap.rooms[this.memory.targetRoom].damagedStructuresId != undefined && global.heap.rooms[this.memory.targetRoom].damagedStructuresId.length >0) {
-
-                    //var closest_target = this.pos.findClosestByRange(targets);
-
-                    if(localHeap.targetStructureId!=undefined && Game.getObjectById(localHeap.targetStructureId)==null)
-                    {
-                        localHeap.targetStructureId=undefined
-                    }
-
-                    if(localHeap.targetStructureId==undefined)
-                    {
-                        localHeap.targetStructureId=global.heap.rooms[this.memory.targetRoom].damagedStructuresId[0];//take first structure
-                    }
-
-                    if (localHeap.targetStructureId != undefined) {
-                        var targetStructure = Game.getObjectById(localHeap.targetStructureId)
-                        if (targetStructure != null && targetStructure.hits < targetStructure.hitsMax) {
-                            if (this.repair(targetStructure) == ERR_NOT_IN_RANGE) {
-                                this.moveTo(targetStructure, { visualizePathStyle: { stroke: 'red' }, reusePath: 17,maxRooms:1 });
-                                //move_avoid_hostile(this, closest_target.pos, 2, false);
-                            }
-                        }
-                        else {
-                            localHeap.targetStructureId = undefined;
-                            global.heap.rooms[this.memory.targetRoom].damagedStructuresId=undefined;
-                        }
-                    }
 
 
+            if (global.heap.rooms[this.memory.targetRoom].damagedStructuresId != undefined && global.heap.rooms[this.memory.targetRoom].damagedStructuresId.length > 0) {
+
+                //var closest_target = this.pos.findClosestByRange(targets);
+
+                if (localHeap.targetStructureId != undefined && Game.getObjectById(localHeap.targetStructureId) == null) {
+                    localHeap.targetStructureId = undefined
                 }
+
+                if (localHeap.targetStructureId == undefined) {
+                    localHeap.targetStructureId = global.heap.rooms[this.memory.targetRoom].damagedStructuresId[0];//take first structure
+                }
+
+                if (localHeap.targetStructureId != undefined) {
+                    var targetStructure = Game.getObjectById(localHeap.targetStructureId)
+                    if (targetStructure != null && targetStructure.hits < targetStructure.hitsMax) {
+                        if (this.repair(targetStructure) == ERR_NOT_IN_RANGE) {
+                            this.moveTo(targetStructure, { visualizePathStyle: { stroke: 'red' }, reusePath: 17, maxRooms: 1 });
+                            //move_avoid_hostile(this, closest_target.pos, 2, false);
+                        }
+                    }
+                    else {
+                        localHeap.targetStructureId = undefined;
+                        global.heap.rooms[this.memory.targetRoom].damagedStructuresId = undefined;
+                    }
+                }
+
+
+
             }
+            /*
             else if (this.store[RESOURCE_ENERGY] == 0 && Game.rooms[this.memory.targetRoom].memory.containers!=undefined && Game.rooms[this.memory.targetRoom].memory.containers.length > 0) {// go to deposits
                 var containers = [];
                 for (containerId of Game.rooms[this.memory.targetRoom].memory.containers) {
@@ -101,6 +86,7 @@ Creep.prototype.roleRepairer = function roleRepairer() {
                     }
                 }
             }
+            */
         }
 
     }

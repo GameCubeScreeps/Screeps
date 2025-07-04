@@ -23,6 +23,7 @@ Room.prototype.roomManager = function roomManager() {
     global.heap.rooms[this.name].myWorkers = [];
     global.heap.rooms[this.name].damagedStructuresId = []
     global.heap.rooms[this.name].containersId = []
+    global.heap.rooms[this.name].construction = []
 
     this.memory.repairerId = undefined
 
@@ -37,7 +38,6 @@ Room.prototype.roomManager = function roomManager() {
 
 
         //Tracking structures
-        global.heap.rooms[this.name].construction = []
         this.memory.state = []
         this.memory.myStructures = []
 
@@ -52,18 +52,7 @@ Room.prototype.roomManager = function roomManager() {
         global.heap.rooms[this.name].myExtractor = undefined
         global.heap.rooms[this.name].myObserver = undefined
 
-        var constr = this.find(FIND_CONSTRUCTION_SITES)
-        if (constr.length > 0) {
-            global.heap.rooms[this.name].building = true
-            for (c of constr) {
-                global.heap.rooms[this.name].construction.push(c.id)
-            }
-        }
-        else {
-            if (global.heap.rooms[this.name].building != undefined) {
-                delete global.heap.rooms[this.name].building
-            }
-        }
+        
 
         if (this.memory.energyBalance == undefined && (this.storage == undefined
             || this.controller.level < 4)
@@ -262,6 +251,20 @@ Room.prototype.roomManager = function roomManager() {
 
     this.memory.roads = []
     this.memory.containers = []
+
+    //finding construction sites
+    var constr = this.find(FIND_CONSTRUCTION_SITES)
+        if (constr.length > 0) {
+            global.heap.rooms[this.name].building = true
+            for (c of constr) {
+                global.heap.rooms[this.name].construction.push(c.id)
+            }
+        }
+        else {
+            if (global.heap.rooms[this.name].building != undefined) {
+                delete global.heap.rooms[this.name].building
+            }
+        }
 
 
     //Finding hostile Creeps

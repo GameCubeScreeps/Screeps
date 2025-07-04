@@ -68,6 +68,7 @@ Room.prototype.visualize = function visualizeroomManager() {
         var color = 'green'
     }
     this.visual.text('🔨', 38.5, 3.25)
+    this.visual.text(global.heap.rooms[this.name].construction.length,39.5,3.25)
     this.visual.rect(38, 2.5, 1, 1, { fill: color })
     this.visual.line(38, 2.5, 39, 2.5, { color: C.OUTLINE_COLOR })
     this.visual.line(38, 3.5, 39, 3.5, { color: C.OUTLINE_COLOR })
