@@ -5,11 +5,11 @@ const { TOWER_BOTTOM_LIMIT } = require('./constants');
 
 
 class Variation {
-    constructor(variationName, variationFinished, rampartsAmount, startPos) {
+    constructor(variationName, variationFinished, rampartsAmount, spawnPos) {
         this.variationName = variationName
         this.variationFinished = variationFinished;
         this.rampartsAmount = rampartsAmount;
-        this.startPos = startPos;
+        this.spawnPos = spawnPos;
     }
 }
 
@@ -29,7 +29,19 @@ Room.prototype.roomManager = function roomManager() {
 
     if (Memory.mainRooms.includes(this.name)) {
 
-
+        /*
+        // for Debugging
+        if(this.memory.buildingList!=undefined)
+        {
+            for(l of this.memory.buildingList)
+            {
+                if(l.structureType== STRUCTURE_CONTAINER)
+                {
+                    console.log(l.x," ",l.y," ",l.roomName," STRUCTURE_CONTAINER",l.minRCL)
+                }
+            }
+        }
+            */
 
         //Tracking creeps
         global.heap.rooms[this.name].fillers = 0
@@ -158,31 +170,31 @@ Room.prototype.roomManager = function roomManager() {
                     this.memory.baseVariations[C.SRC_1] = {}
                     this.memory.baseVariations[C.SRC_1].variationFinished = false;
                     this.memory.baseVariations[C.SRC_1].rampartsAmount = 0;
-                    this.memory.baseVariations[C.SRC_1].startPos = undefined
+                    this.memory.baseVariations[C.SRC_1].spawnPos = undefined
                     this.memory.baseVariations[C.SRC_2] = {}
                     this.memory.baseVariations[C.SRC_2].variationFinished = false;
                     this.memory.baseVariations[C.SRC_2].rampartsAmount = 0;
-                    this.memory.baseVariations[C.SRC_2].startPos = undefined
+                    this.memory.baseVariations[C.SRC_2].spawnPos = undefined
                     this.memory.baseVariations[C.SRC_1_2] = {}
                     this.memory.baseVariations[C.SRC_1_2].variationFinished = false;
                     this.memory.baseVariations[C.SRC_1_2].rampartsAmount = 0;
-                    this.memory.baseVariations[C.SRC_1_2].startPos = undefined
+                    this.memory.baseVariations[C.SRC_1_2].spawnPos = undefined
                     this.memory.baseVariations[C.CONTROLLER] = {}
                     this.memory.baseVariations[C.CONTROLLER].variationFinished = false;
                     this.memory.baseVariations[C.CONTROLLER].rampartsAmount = 0;
-                    this.memory.baseVariations[C.CONTROLLER].startPos = undefined
+                    this.memory.baseVariations[C.CONTROLLER].spawnPos = undefined
                     this.memory.baseVariations[C.SRC_1_CONTROLLER] = {}
                     this.memory.baseVariations[C.SRC_1_CONTROLLER].variationFinished = false;
                     this.memory.baseVariations[C.SRC_1_CONTROLLER].rampartsAmount = 0;
-                    this.memory.baseVariations[C.SRC_1_CONTROLLER].startPos = undefined
+                    this.memory.baseVariations[C.SRC_1_CONTROLLER].spawnPos = undefined
                     this.memory.baseVariations[C.SRC_2_CONTROLLER] = {}
                     this.memory.baseVariations[C.SRC_2_CONTROLLER].variationFinished = false;
                     this.memory.baseVariations[C.SRC_2_CONTROLLER].rampartsAmount = 0;
-                    this.memory.baseVariations[C.SRC_2_CONTROLLER].startPos = undefined
+                    this.memory.baseVariations[C.SRC_2_CONTROLLER].spawnPos = undefined
                     this.memory.baseVariations[C.SRC_1_2_CONTROLLER] = {}
                     this.memory.baseVariations[C.SRC_1_2_CONTROLLER].variationFinished = false;
                     this.memory.baseVariations[C.SRC_1_2_CONTROLLER].rampartsAmount = 0;
-                    this.memory.baseVariations[C.SRC_1_2_CONTROLLER].startPos = undefined
+                    this.memory.baseVariations[C.SRC_1_2_CONTROLLER].spawnPos = undefined
 
                     //if there is spawn in room use only one variation
                     if (this.find(FIND_MY_SPAWNS).length > 0) {
@@ -190,7 +202,7 @@ Room.prototype.roomManager = function roomManager() {
                         this.memory.baseVariations[C.CURRENT_SPAWNPOS] = {}
                         this.memory.baseVariations[C.CURRENT_SPAWNPOS].variationFinished = false;
                         this.memory.baseVariations[C.CURRENT_SPAWNPOS].rampartsAmount = 0;
-                        this.memory.baseVariations[C.CURRENT_SPAWNPOS].startPos = undefined
+                        this.memory.baseVariations[C.CURRENT_SPAWNPOS].spawnPos = undefined
                         //this.memory.baseVariations.push(new Variation(C.CURRENT_SPAWNPOS,false,undefined,0))
                     }
 
@@ -250,7 +262,6 @@ Room.prototype.roomManager = function roomManager() {
 
 
     this.memory.roads = []
-    this.memory.containers = []
 
     //finding construction sites
     var constr = this.find(FIND_CONSTRUCTION_SITES)
@@ -355,14 +366,15 @@ Room.prototype.roomManager = function roomManager() {
 
 
         }
-        else if (str.owner != undefined && Memory.allies.includes(str.owner.username)) {
+        else if (str.owner != undefined && Memory.allies.includes(str.owner.username) && false) {
             // What allied structures we need to know ??
         }
         else {
             const type = str.structureType
             switch (type) {
                 case STRUCTURE_CONTAINER:
-                    this.memory.containers.push(str.id);
+                    global.heap.rooms[this.name].containersId.push(str.id)
+                    //this.memory.containersId.push(str.id);
                     break;
                 case STRUCTURE_ROAD:
                     this.memory.roads.push(str.id);

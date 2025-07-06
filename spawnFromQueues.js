@@ -21,7 +21,7 @@ Room.prototype.spawnFromQueues = function spawnFromQueues() {
     }
 
     if (spawn == undefined) {
-        console.log("Spawn for: ", this.name, " is undefined")
+        //console.log("Spawn for: ", this.name, " is undefined")
         return -1;
     }
 
@@ -31,19 +31,19 @@ Room.prototype.spawnFromQueues = function spawnFromQueues() {
     }
     else if (global.heap.rooms[this.name].harvestingQueue.length > 0) {
 
-        console.log("Spawning from harvesting queue")
+        //console.log("Spawning from harvesting queue")
         var request = global.heap.rooms[this.name].harvestingQueue[0]
-        console.log("trying to spawn: ", request.type)
+        //console.log("trying to spawn: ", request.type)
         var type = request.type
-        //console.log("Type: ", type)
+        ////console.log("Type: ", type)
         var energyCap = Game.rooms[this.name].energyAvailable
 
         switch (type) {
             case C.ROLE_HARVESTER:
                 {
-                    //console.log("Spawning harvester: ")
-                    //console.log("Energy Cap: ", energyCap)
-                    //console.log("harvesterBody(energyCap): ", harvesterBody(energyCap))
+                    ////console.log("Spawning harvester: ")
+                    ////console.log("Energy Cap: ", energyCap)
+                    ////console.log("harvesterBody(energyCap): ", harvesterBody(energyCap))
                     var result = spawn.spawnCreep(harvesterBody(energyCap), C.ROLE_HARVESTER + '_' + this.name + Game.time, { memory: { role: C.ROLE_HARVESTER, homeRoom: this.name, targetRoom: request.sourceRoom, sourceId: request.sourceId } })
                     if (result == OK) {
                         global.heap.rooms[this.name].harvestingQueue.shift()
@@ -95,7 +95,7 @@ Room.prototype.spawnFromQueues = function spawnFromQueues() {
                         global.heap.rooms[this.name].civilianQueue.shift()
 
                     }
-                    console.log("worker spawning result: ",result)
+                    //console.log("worker spawning result: ",result)
                     break;
                 }
             case C.ROLE_REPAIRER:
@@ -105,7 +105,7 @@ Room.prototype.spawnFromQueues = function spawnFromQueues() {
                         global.heap.rooms[this.name].civilianQueue.shift()
 
                     }
-                    console.log("Repairer spawning result: ",result)
+                    //console.log("Repairer spawning result: ",result)
                     break;
                 }
             case C.ROLE_HAULER:
@@ -115,7 +115,7 @@ Room.prototype.spawnFromQueues = function spawnFromQueues() {
                         global.heap.rooms[this.name].civilianQueue.shift()
 
                     }
-                    console.log("Hauler spawning result: ",result)
+                    //console.log("Hauler spawning result: ",result)
                     break;
                 }
             case C.ROLE_RESERVER:
@@ -125,7 +125,7 @@ Room.prototype.spawnFromQueues = function spawnFromQueues() {
                         global.heap.rooms[this.name].civilianQueue.shift()
 
                     }
-                    console.log("Reserver spawning result: ",result)
+                    //console.log("Reserver spawning result: ",result)
                     break;
                 }
             case C.ROLE_RAMPART_REPAIRER:
@@ -135,7 +135,7 @@ Room.prototype.spawnFromQueues = function spawnFromQueues() {
                         global.heap.rooms[this.name].civilianQueue.shift()
 
                     }
-                    console.log("worker spawning result: ",result)
+                    //console.log("worker spawning result: ",result)
                     break;
                 }
 

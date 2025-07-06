@@ -900,29 +900,43 @@ Room.prototype.planControllerContainer = function planControllerContainer(roomCM
 Room.prototype.planSourcesContainers = function planSourcesContainers() {
 
 
-
+    this.memory._insSourceContainers=true
     this.memory.sourcesLinksPos = []
-    for (sourceId of this.memory.harvestingSources) {
+    for (src of this.memory.harvestingSources) {
 
-        var source = Game.getObjectById(sourceId.id)
-        if (source != undefined) {
-            var sourcePos = source.pos.getN_NearbyPositions(1);
-            const terrain = source.room.getTerrain();
-            for (let position of sourcePos) {
+        console.log(src)
+        //var source = Game.getObjectById(src.id)
+        var sourcePos=src.pos
+        if (sourcePos != undefined) {
+
+            var sourcePositions = new RoomPosition(sourcePos.x,sourcePos.y,src.roomName).getN_NearbyPositions(1);
+            if(Game.rooms[src.roomName]==undefined)
+            {
+                return -1
+            }
+            const terrain = Game.rooms[src.roomName].getTerrain();
+            console.log("SourcePositions: ",sourcePositions)
+            this.memory._sourcePositions=sourcePositions
+            for (let position of sourcePositions) {
+                console.log(position)
                 if (terrain.get(position.x, position.y) != TERRAIN_MASK_WALL) {
-                    if (source.room.name == this.name) {
+                    if (src.roomName == this.name) {
                         this.memory.roomPlan[position.x][position.y] = STRUCTURE_CONTAINER;
                     }
-
-                    this.memory.buildingList.push(new buildingListElement(position.x, position.y, source.room.name, STRUCTURE_CONTAINER, 2));
+                    this.memory._addingSourcesContainers=true
+                    console.log("Adding container at: ",position.x," ",position.y)
+                    this.memory.buildingList.push(new buildingListElement(position.x, position.y, src.roomName, STRUCTURE_CONTAINER, 2));
+                    this.memory.finalBuildingList.push(new buildingListElement(position.x, position.y, src.roomName, STRUCTURE_CONTAINER, 2));
                     break;
                 }
             }
 
-            var sourcePos = source.pos.getN_NearbyPositions(1);
-            if (source.room.name == this.name) {
-                for (let position of sourcePos) {
-                    var structuresOnPos = source.room.lookAt(position.x, position.y);
+
+            //Adding link in homeRoom
+            var sourcePositions = new RoomPosition(sourcePos.x,sourcePos.y,src.roomName).getN_NearbyPositions(1);
+            if (src.roomName == this.name) {
+                for (let position of sourcePositions) {
+                    var structuresOnPos = this.lookAt(position.x, position.y);
                     var isFree = true;
                     for (let str of structuresOnPos) {
                         if (/*str.structureType == STRUCTURE_CONTAINER || */ str.structureType == STRUCTURE_WALL || terrain.get(position.x, position.y) == TERRAIN_MASK_WALL
@@ -934,6 +948,7 @@ Room.prototype.planSourcesContainers = function planSourcesContainers() {
                     if (isFree) {
                         this.memory.roomPlan[position.x][position.y] = STRUCTURE_LINK;
                         this.memory.buildingList.push(new buildingListElement(position.x, position.y, this.name, STRUCTURE_LINK, 8));
+                        this.memory.finalBuildingList.push(new buildingListElement(position.x, position.y, this.name, STRUCTURE_LINK, 8));
                         this.memory.sourcesLinksPos.push(new RoomPosition(position.x, position.y, this.name))
                         break;
                     }
@@ -946,6 +961,8 @@ Room.prototype.planSourcesContainers = function planSourcesContainers() {
         }
 
     }
+
+    return 1
 }
 
 
@@ -1268,11 +1285,13 @@ Room.prototype.buildRoom = function buildRoom(type=C.CURRENT_SPAWNPOS) {
                 this.planRoadToTarget(roomCM1, src.pos, 8, 1, spawnPos)
             }
 
-            this.planSourcesContainers()
+            if(this.planSourcesContainers()!=-1)
+            {
+                this.memory.plannedRoads = true
+                this.memory.stage++;
+            }
 
-            this.memory.plannedRoads = true
             this.memory.roomCM = roomCM1.serialize();
-            this.memory.stage++;
 
         }
 

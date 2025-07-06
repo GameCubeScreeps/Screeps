@@ -7,12 +7,16 @@ localHeap = {}
 
 Creep.prototype.roleRepairer = function roleRepairer() {
 
-    for (harvestingRoom of Game.rooms[this.memory.homeRoom].memory.harvestingRooms) {
-        if (harvestingRoom.name == this.memory.targetRoom) {
-            harvestingRoom.repairerId = this.id
-            break;
+    if(Game.rooms[this.memory.homeRoom].memory.harvestingRooms!=undefined)
+    {
+        for (harvestingRoom of Game.rooms[this.memory.homeRoom].memory.harvestingRooms) {
+            if (harvestingRoom.name == this.memory.targetRoom) {
+                harvestingRoom.repairerId = this.id
+                break;
+            }
         }
     }
+    
 
     if (this.room.name == this.memory.targetRoom) {
 

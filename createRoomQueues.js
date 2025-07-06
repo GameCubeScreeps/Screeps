@@ -96,7 +96,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
                 break;
             }
         }
-        else if (this.memory.energyBalance <= 1.5) {
+        else if (this.memory.energyBalance <= 1.5 || true) {
             if (harvestingSource.carryPower < harvestingSource.harvestingPower) {
                 //Carriers
                 global.heap.rooms[this.name].harvestingQueue.push(new harvestingSourceRequestCarrier(harvestingSource.id, harvestingSource.roomName, harvestingSource.distance))
@@ -173,11 +173,14 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
 
     // Reservers
     if (this.controller.level >= 3) {
-        for (room of this.memory.harvestingRooms) {
-            if (room.reserverId == undefined) {
-                global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(room.name, C.ROLE_RESERVER))
+        if (this.memory.harvestingRooms != undefined) {
+            for (room of this.memory.harvestingRooms) {
+                if (room.reserverId == undefined) {
+                    global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(room.name, C.ROLE_RESERVER))
+                }
             }
         }
+
     }
 
     //Rampart Repairers - civilian queue
@@ -193,7 +196,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     }
 
 
-
+    /*
     //logging queues
     console.log("civilian queue")
     for (a of global.heap.rooms[this.name].civilianQueue) {
@@ -204,6 +207,6 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     for (a of global.heap.rooms[this.name].harvestingQueue) {
         console.log(a.type)
     }
-
+    */
 
 }

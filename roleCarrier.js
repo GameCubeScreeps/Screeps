@@ -310,13 +310,13 @@ Creep.prototype.roleCarrier = function roleCarrier() {
                         var workersAmount = global.heap.rooms[this.memory.homeRoom].myWorkers.length
                         this.memory.homeContainer = global.heap.rooms[this.memory.homeRoom].myWorkers[Math.random(workersAmount)]
                         if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
-                            Game.rooms[this.memory.homeRoom].memory.energyBalance += C.BALANCER_CARRIER_STEP
+                            //Game.rooms[this.memory.homeRoom].memory.energyBalance += C.BALANCER_CARRIER_STEP
                         }
 
                     }
                     else{
                         if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
-                            Game.rooms[this.memory.homeRoom].memory.energyBalance += 2*C.BALANCER_CARRIER_STEP
+                            //Game.rooms[this.memory.homeRoom].memory.energyBalance += 2*C.BALANCER_CARRIER_STEP
                         }
                         this.moveTo(new RoomPosition(spawnPos.x,spawnPos.y,this.memory.homeRoom),{reusePath: 20, range: 8})
                         
@@ -330,7 +330,11 @@ Creep.prototype.roleCarrier = function roleCarrier() {
             }
             if (this.memory.homeContainer != undefined && Game.getObjectById(this.memory.homeContainer) != null) {
 
+                //testing
+                //Game.rooms[this.memory.homeRoom].memory.energyBalance += C.BALANCER_CARRIER_STEP
+                //
                 //testing - it might be a bad idea - passing energy to workers
+                // here do nothing with energyBalancer - carrier would increase it and worker should decrease it there
                 if (Game.rooms[this.memory.homeRoom].memory.energyBalance > C.ENERGY_BALANCER_UPGRADER_START) {
                     for (w of global.heap.rooms[this.memory.homeRoom].myWorkers) {
                         var worker = Game.getObjectById(w)
@@ -375,11 +379,14 @@ Creep.prototype.roleCarrier = function roleCarrier() {
                 else {
                     for (let res in this.store) {
 
+                        //testing
+                        //Game.rooms[this.memory.homeRoom].memory.energyBalance += C.BALANCER_CARRIER_STEP
+                        //
                         var transferResut = this.transfer(Game.getObjectById(this.memory.homeContainer), res);
                         if (Game.getObjectById(this.memory.homeContainer) != null && Game.getObjectById(this.memory.homeContainer).store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
 
                             if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
-                                Game.rooms[this.memory.homeRoom].memory.energyBalance += C.BALANCER_CARRIER_STEP
+                                //Game.rooms[this.memory.homeRoom].memory.energyBalance += C.BALANCER_CARRIER_STEP
                             }
 
                             this.fleeFrom([Game.getObjectById(this.memory.homeContainer)], 3)
@@ -390,17 +397,19 @@ Creep.prototype.roleCarrier = function roleCarrier() {
                         if (transferResut == ERR_NOT_IN_RANGE) {
 
                             this.moveTo(Game.getObjectById(this.memory.homeContainer), { reusePath: 21, avoidSk: true, avoidCreeps: true });
-
+                            //testing
+                            //Game.rooms[this.memory.homeRoom].memory.energyBalance += C.BALANCER_CARRIER_STEP
+                            //
                             break;
                         }
                         else if (transferResut == ERR_FULL) {
 
                             this.memory.maxContainer = undefined;
                             if (Game.rooms[this.memory.homeRoom].memory.delivered_energy == undefined) {
-                                Game.rooms[this.memory.homeRoom].memory.delivered_energy = this.store[RESOURCE_ENERGY]
+                                Game.rooms[this.memory.homeRoom].memory.delivered_energy = Math.max(this.store[RESOURCE_ENERGY],Game.getObjectById(this.memory.homeContainer).store.getFreeCapacity(RESOURCE_ENERGY))
                             }
                             else if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
-                                Game.rooms[this.memory.homeRoom].memory.energyBalance += C.BALANCER_CARRIER_STEP
+                            Game.rooms[this.memory.homeRoom].memory.energyBalance+=Macth.max(this.store[RESOURCE_ENERGY],Game.getObjectById(this.memory.homeContainer).store.getFreeCapacity(RESOURCE_ENERGY))
                             }
                             
 
@@ -409,6 +418,7 @@ Creep.prototype.roleCarrier = function roleCarrier() {
                         }
                         else if (transferResut == OK) {
 
+                            Game.rooms[this.memory.homeRoom].memory.energyBalance += Math.min(this.store[RESOURCE_ENERGY],Game.getObjectById(this.memory.homeContainer).store.getFreeCapacity(RESOURCE_ENERGY))
                             this.memory.maxContainer = undefined;
                         }
                         /*

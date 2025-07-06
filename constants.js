@@ -40,16 +40,16 @@ const TASK_REPAIR_RAMPARTS='repair_ramparts'
 
 
 //Economy const
-const BALANCER_STEP = 0.01 // value by which workers and carriers change value of balancer
-const BALANCER_WORKER_STEP=0.03
-const BALANCER_CARRIER_STEP = 0.01
-const BALANCER_DECAY = 0.005 // natural decay towards 0 of balancer
-const BALANCER_HARVEST_LIMIT = -2.0 // harvesting limit of balancer - if that would go too high then it would take a lot of time to switch to using energy
-const BALANCER_USE_LIMIT = 2.0 // carrying balancer of balancer
+const BALANCER_STEP = 1// value by which workers and carriers change value of balancer
+const BALANCER_WORKER_STEP=3
+const BALANCER_CARRIER_STEP = 1
+const BALANCER_DECAY = 0.5 // natural decay towards 0 of balancer
+const BALANCER_HARVEST_LIMIT = 1000.0 // harvesting limit of balancer - if that would go too high then it would take a lot of time to switch to using energy
+const BALANCER_USE_LIMIT = 1000 // carrying balancer of balancer
 const UPGRADE_FACTOR = 10000
 const STORAGE_BALANCER_START = 50000
-const ENERGY_BALANCER_UPGRADER_START = 0.5
-const ENERGY_BALANCER_WORKER_SPAWN=1.5
+const ENERGY_BALANCER_UPGRADER_START = 500
+const ENERGY_BALANCER_WORKER_SPAWN=750
 const HARVESTING_BODYPARTS_FRACTION = 0.8 // percentage of body parts that we destinate to gather (harvest and carry) energy
 const CONTROLLER_DOWNGRADE_BOTTOM_LIMIT = 0.3 // below that percentage of downgrade workers will ignore construction sites
 const CONTROLLER_DOWNGRADE_TOP_LIMIT=0.8
