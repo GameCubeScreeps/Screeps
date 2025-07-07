@@ -44,11 +44,9 @@ Creep.prototype.roleWorker = function roleWorker() {
             return
         }
 
-        //this.say(localHeap.task)
 
         if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0
         ) {
-            //this.say("Cla")
             localHeap.task = C.TASK_COLLECT
             this.memory.task = C.TASK_COLLECT
         }
@@ -56,14 +54,12 @@ Creep.prototype.roleWorker = function roleWorker() {
             if (this.store.getUsedCapacity(RESOURCE_ENERGY) > 0 && global.heap.rooms[this.memory.homeRoom].building == true
                 && this.room.controller.ticksToDowngrade > (CONTROLLER_DOWNGRADE[this.room.controller.level]*C.CONTROLLER_DOWNGRADE_BOTTOM_LIMIT)) {
 
-                //this.say("B")
                 localHeap.task = C.TASK_BUILD
                 this.memory.task = C.TASK_BUILD
 
 
             }
             else {
-                //this.say("U")
                 localHeap.task = C.TASK_UPGRADE
                 this.memory.task = C.TASK_UPGRADE
             }
@@ -76,7 +72,6 @@ Creep.prototype.roleWorker = function roleWorker() {
 
         if (localHeap.task == C.TASK_UPGRADE) // if upgrading go upgrade
         {
-            //this.say("w1")
             if (this.taskUpgrade(localHeap) == -1) {
                 localHeap.task = undefined
             }
@@ -87,22 +82,15 @@ Creep.prototype.roleWorker = function roleWorker() {
         }
         else if (localHeap.task == C.TASK_COLLECT) {// go to deposits
 
-            this.say("w2")
             if (this.taskCollect(localHeap) == -1) {
-                //this.say("c->?")
                 localHeap.task = undefined
-                //this.say(localHeap.task)
             }
             return
         }
         else if (localHeap.task == C.TASK_BUILD) {
 
-            //this.say("w3")
             this.taskBuild(localHeap)
             return;
-
-
-
 
         }
 

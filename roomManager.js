@@ -76,16 +76,16 @@ Room.prototype.roomManager = function roomManager() {
                 delete this.memory.energyBalance
             }
             else {
-                if (this.memory.energyBalance < C.BALANCER_HARVEST_LIMIT) {
-                    this.memory.energyBalance = C.BALANCER_HARVEST_LIMIT;
+                if (this.memory.energyBalance < -C.BALANCER_HARVEST_LIMIT) {
+                    this.memory.energyBalance = -C.BALANCER_HARVEST_LIMIT;
                 }
                 else if (this.memory.energyBalance > C.BALANCER_USE_LIMIT) {
                     this.memory.energyBalance = C.BALANCER_USE_LIMIT
                 }
-                /* else */ if (this.memory.energyBalance > 0 /* &&  this.memory.energyBalance < C.BALANCER_HARVEST_LIMIT */) {
+                if (this.memory.energyBalance > 0 /* &&  this.memory.energyBalance < C.BALANCER_HARVEST_LIMIT */) {
                     this.memory.energyBalance -= C.BALANCER_DECAY
                 }
-                else if (this.memory.energyBalance < -2 /* &&  this.memory.energyBalance > C.BALANCER_USE_LIMIT*/) {
+                else if (this.memory.energyBalance < 0 /* &&  this.memory.energyBalance > C.BALANCER_USE_LIMIT*/) {
                     this.memory.energyBalance += C.BALANCER_DECAY
                 }
             }

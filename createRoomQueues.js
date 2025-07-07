@@ -83,7 +83,10 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
         if (this.storage != undefined) {
             if (harvestingSource.carryPower < harvestingSource.harvestingPower) {
                 //Carriers
-                global.heap.rooms[this.name].harvestingQueue.push(new harvestingSourceRequestCarrier(harvestingSource.id, harvestingSource.roomName, harvestingSource.distance))
+                if (harvestingSource.id != undefined && harvestingSource.roomName != undefined) {
+                    global.heap.rooms[this.name].harvestingQueue.push(new harvestingSourceRequestCarrier(harvestingSource.id, harvestingSource.roomName, harvestingSource.distance))
+
+                }
                 //console.log("Adding Carrier to queue")
                 areCarriersSatisfied = false
                 break;
@@ -96,13 +99,17 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
                 break;
             }
         }
-        else if (this.memory.energyBalance <= 1.5 || true) {
+        else //if (this.memory.energyBalance <= 1.5 || true)
+        {
             if (harvestingSource.carryPower < harvestingSource.harvestingPower) {
                 //Carriers
-                global.heap.rooms[this.name].harvestingQueue.push(new harvestingSourceRequestCarrier(harvestingSource.id, harvestingSource.roomName, harvestingSource.distance))
-                //console.log("Adding Carrier to queue")
-                areCarriersSatisfied = false
-                break;
+                if (harvestingSource.id != undefined && harvestingSource.roomName != undefined) {
+                    global.heap.rooms[this.name].harvestingQueue.push(new harvestingSourceRequestCarrier(harvestingSource.id, harvestingSource.roomName, harvestingSource.distance))
+                    //console.log("Adding Carrier to queue")
+                    areCarriersSatisfied = false
+                    break;
+
+                }
 
             }//Farmers
             else if (harvestingSource.harvestingPower < (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME) && harvestingSource.harvesters < harvestingSource.maxHarvesters) {
@@ -196,7 +203,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     }
 
 
-    /*
+
     //logging queues
     console.log("civilian queue")
     for (a of global.heap.rooms[this.name].civilianQueue) {
@@ -207,6 +214,6 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     for (a of global.heap.rooms[this.name].harvestingQueue) {
         console.log(a.type)
     }
-    */
+
 
 }

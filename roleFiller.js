@@ -133,11 +133,13 @@ Creep.prototype.roleFiller = function (spawn) {
                     if (Game.getObjectById(this.memory.myContainer) != null && Game.getObjectById(this.memory.myContainer).store[RESOURCE_ENERGY] > 0) {
                         ////this.say("with3");
                         this.withdraw(Game.getObjectById(this.memory.myContainer), RESOURCE_ENERGY);
+                        this.decreaseBalancer();
                     }
                     else {
                         ////this.say("with4");
                         ////this.say(Game.getObjectById(Game.rooms[this.memory.homeRoom].memory.filler_link).store[RESOURCE_ENERGY>0 )
                         this.withdraw(Game.getObjectById(this.memory.myContainer), RESOURCE_ENERGY);
+                        this.decreaseBalancer();
                     }
                 }
                 else {

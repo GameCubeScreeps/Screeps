@@ -72,6 +72,7 @@ Creep.prototype.taskRepairRamparts = function taskRepairRamparts() {
 }
 
 Creep.prototype.decreaseBalancer = function decreaseBalancer() {
+
     if (Game.getObjectById(this.memory.deposit) != null) {
         aux = Math.min(this.store.getFreeCapacity(RESOURCE_ENERGY), Game.getObjectById(this.memory.deposit).store[RESOURCE_ENERGY])
     }
@@ -81,7 +82,7 @@ Creep.prototype.decreaseBalancer = function decreaseBalancer() {
 
     if (aux == 0) {
         aux = this.store.getFreeCapacity(RESOURCE_ENERGY)
-    }
+    } this.say("Dec: " + aux)
     Game.rooms[this.memory.homeRoom].memory.energyBalance -= aux
 }
 
@@ -95,8 +96,7 @@ Creep.prototype.taskCollect = function taskCollect(localHeap) {// go to deposits
         this.memory.task = 'undefined_debugging_collect'
         return -1;
     }
-    if (Game.getObjectById(this.memory.deposit) != null && Game.getObjectById(this.memory.deposit).store[RESOURCE_ENERGY] == 0 && Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
-        //Game.rooms[this.memory.homeRoom].memory.energyBalance -= C.BALANCER_WORKER_STEP
+    if (Game.getObjectById(this.memory.deposit) != null && Game.getObjectById(this.memory.deposit).store[RESOURCE_ENERGY] == 0) {
 
         this.memory.deposit = undefined
     }
@@ -125,48 +125,30 @@ Creep.prototype.taskCollect = function taskCollect(localHeap) {// go to deposits
         else {
 
             var deposits = (this.room.storage != undefined) ? this.room.storage.id : []
-            /*
-            var deposits = this.room.find(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return structure.structureType === STRUCTURE_STORAGE &&
-                        structure.store[RESOURCE_ENERGY] > C.STORAGE_ENERGY_UPGRADE_LIMIT;
-                }
-            });
-            */
-            deposits=deposits.concat(global.heap.rooms[this.memory.homeRoom].containersId)
+
+            deposits = deposits.concat(global.heap.rooms[this.memory.homeRoom].containersId)
 
 
             if (this.room.controller == undefined) { this.suicide() }
             var auxDeposits = []
             for (d of deposits) {
-                console.log(d)
                 if (Game.getObjectById(d) != null) {
-                    console.log("adding: ", d, " ", Game.getObjectById(d).structureType)
                     auxDeposits.push(Game.getObjectById(d))
                 }
             }
-            console.log(deposits)
             var deposit = this.pos.findClosestByRange(auxDeposits);
-            console.log("target deposit: ",deposit)
             if (deposit != null) {
 
                 this.memory.deposit = deposit.id;
-            }
-            else {
-                if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
-                    Game.rooms[this.memory.homeRoom].memory.energyBalance -= C.BALANCER_WORKER_STEP
-
-                }
             }
         }
     }
 
     if (Game.getObjectById(this.memory.deposit) != null) {
-        this.say("c2")
+        //("c2")
         if ((this.room.controller.level >= 4 && this.room.storage != undefined && this.room.storage.store[RESOURCE_ENERGY] > C.STORAGE_ENERGY_UPGRADE_LIMIT)
 
-            || (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined && Game.rooms[this.memory.homeRoom].memory.energyBalance > C.ENERGY_BALANCER_UPGRADER_START))
-             {
+            || (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined && Game.rooms[this.memory.homeRoom].memory.energyBalance > C.ENERGY_BALANCER_UPGRADER_START)) {
             if (this.withdraw(Game.getObjectById(this.memory.deposit), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                 this.moveTo(Game.getObjectById(this.memory.deposit), { reusePath: 17, maxRooms: 1 });
                 //move_avoid_hostile(creep,Game.getObjectById(this.memory.deposit).pos,1);
@@ -179,12 +161,12 @@ Creep.prototype.taskCollect = function taskCollect(localHeap) {// go to deposits
         }
         else {
             this.memory.deposit = undefined
-            this.decreaseBalancer()
+            //this.decreaseBalancer()
 
         }
     }
     else { // collect dropped energy
-        this.say("ener")
+        //this.say("ener")
         const droppedEnergy = this.room.find(FIND_DROPPED_RESOURCES, {
             filter: resource => resource.resourceType == RESOURCE_ENERGY
         })
@@ -194,6 +176,9 @@ Creep.prototype.taskCollect = function taskCollect(localHeap) {// go to deposits
                 // Move to it
                 this.moveTo(closestDroppedEnergy, { reusePath: 17, maxRooms: 1 });
                 //move_avoid_hostile(creep,closestDroppedEnergy.pos);
+            }
+            else if (this.pickup(closestDroppedEnergy) == OK) {
+                this.decreaseBalancer();
             }
         }
     }
@@ -213,7 +198,7 @@ Creep.prototype.taskUpgrade = function taskUpgrade(localHeap) {
     }
 
     if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
-        this.say("U->C")
+        //this.say("U->C")
         localHeap.task = undefined
         this.memory.task = 'undefined_debugging_upgrade'
         return -1;
@@ -256,17 +241,16 @@ Creep.prototype.taskUpgrade = function taskUpgrade(localHeap) {
 //TASK BUILD
 Creep.prototype.taskBuild = function taskBuild(localHeap) {
 
-    this.say("0b")
+    //this.say("0b")
 
     if (global.heap.rooms[this.room.name].building != true) {
-        this.say('2b')
-        this.say("no building")
+        //this.say('2b')
+        //this.say("no building")
         localHeap.task = undefined
         this.memory.task = 'undefined_debugging_build'
         return -1
     }
     else {
-        this.say("3b")
         var sites = []
         var toFocus = null
         for (c of global.heap.rooms[this.room.name].construction) {
@@ -289,8 +273,9 @@ Creep.prototype.taskBuild = function taskBuild(localHeap) {
         }
         if (toFocus != null) {
             if (this.build(toFocus) == ERR_NOT_IN_RANGE) {
-                this.moveTo(toFocus, { range: 2, maxRooms: 1 })
+                this.moveTo(toFocus, { range: 1, maxRooms: 1 })
             }
+            this.moveTo(toFocus, { range: 1, maxRooms: 1 })
         }
         else if (sites.length > 0) {
 
@@ -299,8 +284,10 @@ Creep.prototype.taskBuild = function taskBuild(localHeap) {
                 if (this.build(closest) == ERR_NOT_IN_RANGE) {
                     this.moveTo(closest, { range: 2, maxRooms: 1 })
                 }
+                this.moveTo(closest, { range: 2, maxRooms: 1 })
             }
         }
+            
     }
 
 

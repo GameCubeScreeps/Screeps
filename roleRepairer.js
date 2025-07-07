@@ -22,11 +22,11 @@ Creep.prototype.roleRepairer = function roleRepairer() {
 
 
         if (this.store[RESOURCE_ENERGY] == 0) {
-            this.taskCollect()
+            this.taskCollect(localHeap)
         }
         else if (((global.heap.rooms[this.memory.targetRoom].damagedStructuresId != undefined && global.heap.rooms[this.memory.targetRoom].damagedStructuresId.length < 1) || global.heap.rooms[this.memory.targetRoom].damagedStructuresId == undefined)) {
             //this.move(BOTTOM)
-            this.taskBuild()
+            this.taskBuild(localHeap)
         }
         else if (global.heap.rooms[this.memory.targetRoom].damagedStructuresId != undefined && global.heap.rooms[this.memory.targetRoom].damagedStructuresId.length >= 1) {
 

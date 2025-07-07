@@ -25,6 +25,11 @@ Room.prototype.creepsManager = function creepsManager() {
     for (cr in Game.creeps) {
 
         var creep = Game.creeps[cr];
+        if(creep==undefined || creep.memory==undefined)
+        {
+            creep.suicide()
+            continue
+        }
 
         if (creep.ticksToLive > creep.memory.TimeToSleep) {
             //creep.say('💤')

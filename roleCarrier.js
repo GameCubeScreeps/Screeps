@@ -4,6 +4,24 @@ const C = require('constants');
 const Movement = require('screeps-movement');
 const sleep = require('creepSleep')
 
+
+Creep.prototype.increaseBalancer = function increaseBalancer() {
+    var aux = 0
+    if (Game.getObjectById(this.memory.homeContainer) != null) {
+        Math.min(this.store[RESOURCE_ENERGY], Game.getObjectById(this.memory.homeContainer).store.getFreeCapacity(RESOURCE_ENERGY))
+    }
+    if (aux == 0) {
+        aux = this.store[RESOURCE_ENERGY]
+    }
+    this.say("inc: " + aux)
+    if (Game.rooms[this.memory.homeRoom].memory.delivered_energy == undefined) {
+        Game.rooms[this.memory.homeRoom].memory.delivered_energy = aux
+    }
+    else if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
+        Game.rooms[this.memory.homeRoom].memory.energyBalance += aux
+    }
+}
+
 Creep.prototype.roleCarrier = function roleCarrier() {
 
     /*Creep needs:
@@ -195,12 +213,12 @@ Creep.prototype.roleCarrier = function roleCarrier() {
                     var carrierCapacity = this.store.getCapacity()
                     var carrierUsedCapacity = this.store.getUsedCapacity()
                     var dropped_resource = undefined
-                        var dropped_resource = Game.rooms[this.memory.targetRoom].find(FIND_DROPPED_RESOURCES, {
-                            filter: function (resource) {
-                                return resource.amount >= carrierCapacity - carrierUsedCapacity
-                            }
-                        });
-                    
+                    var dropped_resource = Game.rooms[this.memory.targetRoom].find(FIND_DROPPED_RESOURCES, {
+                        filter: function (resource) {
+                            return resource.amount >= carrierCapacity - carrierUsedCapacity
+                        }
+                    });
+
 
                     if (dropped_resource != undefined && dropped_resource != null && dropped_resource.length > 0) {
                         // var closest_resource = this.pos.findClosestByPath(dropped_resource);
@@ -267,7 +285,7 @@ Creep.prototype.roleCarrier = function roleCarrier() {
             }
 
             if (avoid.length > 0 && (Game.getObjectById(this.memory.maxContainer) != null && Game.getObjectById(this.memory.maxContainer).store.getUsedCapacity() < (this.store.getCapacity() - this.store.getUsedCapacity()) * 0.8 && Game.getObjectById(this.memory.maxContainer).store.getUsedCapacity() < 2000) == true) {
-                
+
                 this.fleeFrom(avoid, 3);
             }
 
@@ -300,41 +318,32 @@ Creep.prototype.roleCarrier = function roleCarrier() {
                     if (container != null) {
                         this.memory.homeContainer = container.id;
                     }
-                    else if (spawn.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                    else if (spawn != undefined && spawn.store != undefined && spawn.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
                         //target room do not have containers - store in spawn
                         this.memory.homeContainer = spawn.id;
                     }
                     else if (global.heap.rooms[this.memory.homeRoom].myWorkers != undefined && global.heap.rooms[this.memory.homeRoom].myWorkers.length > 0) {
 
                         // no free space in any structure - put energy into random worker
+                        this.increaseBalancer()
                         var workersAmount = global.heap.rooms[this.memory.homeRoom].myWorkers.length
                         this.memory.homeContainer = global.heap.rooms[this.memory.homeRoom].myWorkers[Math.random(workersAmount)]
-                        if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
-                            //Game.rooms[this.memory.homeRoom].memory.energyBalance += C.BALANCER_CARRIER_STEP
-                        }
 
                     }
-                    else{
-                        if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
-                            //Game.rooms[this.memory.homeRoom].memory.energyBalance += 2*C.BALANCER_CARRIER_STEP
-                        }
-                        this.moveTo(new RoomPosition(spawnPos.x,spawnPos.y,this.memory.homeRoom),{reusePath: 20, range: 8})
-                        
+                    else {
+                        this.moveTo(new RoomPosition(spawnPos.x, spawnPos.y, this.memory.homeRoom), { reusePath: 20, range: 8 })
+
                     }
                 }
-                else{
-                    this.moveTo(new RoomPosition(25,25,this.memory.homeRoom),{reusePath: 20, range: 8})
+                else {
+                    this.moveTo(new RoomPosition(25, 25, this.memory.homeRoom), { reusePath: 20, range: 8 })
                 }
 
                 //}
             }
             if (this.memory.homeContainer != undefined && Game.getObjectById(this.memory.homeContainer) != null) {
 
-                //testing
-                //Game.rooms[this.memory.homeRoom].memory.energyBalance += C.BALANCER_CARRIER_STEP
-                //
-                //testing - it might be a bad idea - passing energy to workers
-                // here do nothing with energyBalancer - carrier would increase it and worker should decrease it there
+                //Passing energy to workers
                 if (Game.rooms[this.memory.homeRoom].memory.energyBalance > C.ENERGY_BALANCER_UPGRADER_START) {
                     for (w of global.heap.rooms[this.memory.homeRoom].myWorkers) {
                         var worker = Game.getObjectById(w)
@@ -349,15 +358,8 @@ Creep.prototype.roleCarrier = function roleCarrier() {
                     }
                 }
 
-
-
-
-
-                ///
-
                 if (Game.getObjectById(this.memory.homeContainer).structureType == STRUCTURE_STORAGE) {
                     for (let res in this.store) {
-                        var amount = this.store[RESOURCE_ENERGY]
                         var transferResut = this.transfer(Game.getObjectById(this.memory.homeContainer), res);
                         if (transferResut == ERR_NOT_IN_RANGE) {
                             this.moveTo(Game.getObjectById(this.memory.homeContainer), { reusePath: 21, avoidSk: true, avoidCreeps: true });
@@ -365,60 +367,42 @@ Creep.prototype.roleCarrier = function roleCarrier() {
                         }
                         else if (transferResut == OK) {
 
-                            /*
-                            if (Game.rooms[this.memory.homeRoom].memory.delivered_energy == undefined) {
-                                Game.rooms[this.memory.homeRoom].memory.delivered_energy = this.store[RESOURCE_ENERGY]
-                            }
-                            else {
-                                Game.rooms[this.memory.homeRoom].memory.delivered_energy += this.store[RESOURCE_ENERGY]
-                            }*/
-                            this.memory.maxContainer = undefined;
+
+                            //this.memory.maxContainer = undefined;
                         }
                     }
                 }
                 else {
                     for (let res in this.store) {
 
-                        //testing
-                        //Game.rooms[this.memory.homeRoom].memory.energyBalance += C.BALANCER_CARRIER_STEP
-                        //
                         var transferResut = this.transfer(Game.getObjectById(this.memory.homeContainer), res);
+                        this.say(transferResut)
                         if (Game.getObjectById(this.memory.homeContainer) != null && Game.getObjectById(this.memory.homeContainer).store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
 
-                            if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
-                                //Game.rooms[this.memory.homeRoom].memory.energyBalance += C.BALANCER_CARRIER_STEP
-                            }
 
                             this.fleeFrom([Game.getObjectById(this.memory.homeContainer)], 3)
-                            //this.drop(RESOURCE_ENERGY)
                             this.memory.homeContainer = undefined
                             break;
                         }
                         if (transferResut == ERR_NOT_IN_RANGE) {
 
                             this.moveTo(Game.getObjectById(this.memory.homeContainer), { reusePath: 21, avoidSk: true, avoidCreeps: true });
-                            //testing
-                            //Game.rooms[this.memory.homeRoom].memory.energyBalance += C.BALANCER_CARRIER_STEP
-                            //
+
                             break;
                         }
                         else if (transferResut == ERR_FULL) {
 
+                            this.increaseBalancer()
                             this.memory.maxContainer = undefined;
-                            if (Game.rooms[this.memory.homeRoom].memory.delivered_energy == undefined) {
-                                Game.rooms[this.memory.homeRoom].memory.delivered_energy = Math.max(this.store[RESOURCE_ENERGY],Game.getObjectById(this.memory.homeContainer).store.getFreeCapacity(RESOURCE_ENERGY))
-                            }
-                            else if (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined) {
-                            Game.rooms[this.memory.homeRoom].memory.energyBalance+=Macth.max(this.store[RESOURCE_ENERGY],Game.getObjectById(this.memory.homeContainer).store.getFreeCapacity(RESOURCE_ENERGY))
-                            }
-                            
+
+                            break;
 
                             //this.drop(RESOURCE_ENERGY)
 
                         }
                         else if (transferResut == OK) {
 
-                            Game.rooms[this.memory.homeRoom].memory.energyBalance += Math.min(this.store[RESOURCE_ENERGY],Game.getObjectById(this.memory.homeContainer).store.getFreeCapacity(RESOURCE_ENERGY))
+                            this.increaseBalancer()
                             this.memory.maxContainer = undefined;
                         }
                         /*
