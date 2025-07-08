@@ -160,6 +160,7 @@ Creep.prototype.taskCollect = function taskCollect(localHeap) {// go to deposits
             }
         }
         else {
+            this.fleeFrom(Game.getObjectById(this.memory.deposit),{range: 5})
             this.memory.deposit = undefined
             //this.decreaseBalancer()
 

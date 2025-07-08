@@ -73,6 +73,8 @@ module.exports.loop = function () {
 
       Game.rooms[mainRoom].creepsManager()
 
+      console.log("restoringDowngrade: ",global.heap.rooms[mainRoom].restoringDowngrade)
+
       Game.rooms[mainRoom].createRoomQueues()
 
       Game.rooms[mainRoom].spawnFromQueues()

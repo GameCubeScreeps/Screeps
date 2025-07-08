@@ -52,14 +52,18 @@ Creep.prototype.roleWorker = function roleWorker() {
         }
         else {
             if (this.store.getUsedCapacity(RESOURCE_ENERGY) > 0 && global.heap.rooms[this.memory.homeRoom].building == true
-                && this.room.controller.ticksToDowngrade > (CONTROLLER_DOWNGRADE[this.room.controller.level]*C.CONTROLLER_DOWNGRADE_BOTTOM_LIMIT)) {
-
+                && this.room.controller.ticksToDowngrade > (CONTROLLER_DOWNGRADE[this.room.controller.level]*C.CONTROLLER_DOWNGRADE_BOTTOM_LIMIT
+                    && global.heap.rooms[this.room.name].restoringDowngrade!=undefined
+                )
+            ) {
+                
                 localHeap.task = C.TASK_BUILD
                 this.memory.task = C.TASK_BUILD
 
 
             }
             else {
+                global.heap.rooms[this.room.name].restoringDowngrade=this.id
                 localHeap.task = C.TASK_UPGRADE
                 this.memory.task = C.TASK_UPGRADE
             }

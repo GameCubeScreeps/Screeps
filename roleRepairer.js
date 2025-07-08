@@ -58,11 +58,10 @@ Creep.prototype.roleRepairer = function roleRepairer() {
                         localHeap.targetStructureId = target.id
                     }
                 }
-                this.say(localHeap.pos)
 
                 if (localHeap.targetStructureId != undefined) {
                     var targetStructure = Game.getObjectById(localHeap.targetStructureId)
-                    this.say(targetStructure.pos)
+                    this.say(targetStructure.pos.roomName)
                     if (targetStructure != null) {
                         if (this.repair(targetStructure) == ERR_NOT_IN_RANGE) {
                             this.moveTo(targetStructure, {  reusePath: 17, maxRooms: 1 });
