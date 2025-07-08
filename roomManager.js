@@ -29,19 +29,7 @@ Room.prototype.roomManager = function roomManager() {
 
     if (Memory.mainRooms.includes(this.name)) {
 
-        /*
-        // for Debugging
-        if(this.memory.buildingList!=undefined)
-        {
-            for(l of this.memory.buildingList)
-            {
-                if(l.structureType== STRUCTURE_CONTAINER)
-                {
-                    console.log(l.x," ",l.y," ",l.roomName," STRUCTURE_CONTAINER",l.minRCL)
-                }
-            }
-        }
-            */
+        
 
         //Tracking creeps
         global.heap.rooms[this.name].fillers = 0
@@ -64,7 +52,7 @@ Room.prototype.roomManager = function roomManager() {
         global.heap.rooms[this.name].myExtractor = undefined
         global.heap.rooms[this.name].myObserver = undefined
 
-        
+
 
         if (this.memory.energyBalance == undefined && (this.storage == undefined
             || this.controller.level < 4)
@@ -97,7 +85,7 @@ Room.prototype.roomManager = function roomManager() {
         }
         else if (this.memory.harvestingSources.length > 0) {
 
-            this.memory.harvestingRooms=[]
+            this.memory.harvestingRooms = []
 
             this.memory.harvestingSources.sort((a, b) => a.bodyPartsCost - b.bodyPartsCost)
 
@@ -106,9 +94,8 @@ Room.prototype.roomManager = function roomManager() {
             var counter = 0;
             for (s of this.memory.harvestingSources) {
 
-                if(this.memory.harvestingRooms.findIndex(room => room.name==s.roomName)==-1)
-                {
-                    this.memory.harvestingRooms.push({name: s.roomName, repairerId: undefined})
+                if (this.memory.harvestingRooms.findIndex(room => room.name == s.roomName) == -1) {
+                    this.memory.harvestingRooms.push({ name: s.roomName, repairerId: undefined })
                 }
                 bodyPartsSum += s.bodyPartsCost
                 counter++;
@@ -128,8 +115,8 @@ Room.prototype.roomManager = function roomManager() {
 
         }
 
-        
-            
+
+
 
         if (this.memory.keepersSources == undefined) {
             this.memory.keepersSources = []
@@ -265,17 +252,17 @@ Room.prototype.roomManager = function roomManager() {
 
     //finding construction sites
     var constr = this.find(FIND_CONSTRUCTION_SITES)
-        if (constr.length > 0) {
-            global.heap.rooms[this.name].building = true
-            for (c of constr) {
-                global.heap.rooms[this.name].construction.push(c.id)
-            }
+    if (constr.length > 0) {
+        global.heap.rooms[this.name].building = true
+        for (c of constr) {
+            global.heap.rooms[this.name].construction.push(c.id)
         }
-        else {
-            if (global.heap.rooms[this.name].building != undefined) {
-                delete global.heap.rooms[this.name].building
-            }
+    }
+    else {
+        if (global.heap.rooms[this.name].building != undefined) {
+            delete global.heap.rooms[this.name].building
         }
+    }
 
 
     //Finding hostile Creeps
@@ -307,18 +294,21 @@ Room.prototype.roomManager = function roomManager() {
     }
 
 
-    //Finding structures - single Room.Find then filtering and saving id to this.memory 
+    //Finding structures - single Room.Find then filtering and saving id to heap
     var structures = this.find(FIND_STRUCTURES)
     for (str of structures) {
 
         const type = str.structureType
 
-        if (type != STRUCTURE_RAMPART && STRUCTURE_WALL && str.hits < str.hitsMax) {
+        if (type != STRUCTURE_RAMPART && type != STRUCTURE_WALL && str.hits < str.hitsMax) {
             global.heap.rooms[this.name].damagedStructuresId.push(str.id)
         }
-        else if (str.hits < C.RAMPART_HITS_BOTTOM_LIMIT) {
+        /*
+        else if ((type == STRUCTURE_RAMPART || type == STRUCTURE_WALL) && str.hits < C.RAMPART_HITS_BOTTOM_LIMIT) {
             global.heap.rooms[this.name].damagedStructuresId.push(str.id)
         }
+            */
+
 
         if (str.my) {
             this.memory.myStructures.push(str.id)
@@ -355,7 +345,7 @@ Room.prototype.roomManager = function roomManager() {
                 case STRUCTURE_RAMPART:
                     global.heap.rooms[this.name].myRamparts.push(str.id)
                 case STRUCTURE_SPAWN:
-                    if (str.name!=undefined && str.name.endsWith('1')) {
+                    if (str.name != undefined && str.name.endsWith('1')) {
                         this.memory.spawnPos = str.pos
                     }
                     break;

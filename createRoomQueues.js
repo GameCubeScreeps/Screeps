@@ -182,7 +182,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     if (this.controller.level >= 3) {
         if (this.memory.harvestingRooms != undefined) {
             for (room of this.memory.harvestingRooms) {
-                if (room.reserverId == undefined) {
+                if (room.reserverId == undefined && room.name!=this.name) {
                     global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(room.name, C.ROLE_RESERVER))
                 }
             }

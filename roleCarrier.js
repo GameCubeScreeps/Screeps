@@ -13,7 +13,6 @@ Creep.prototype.increaseBalancer = function increaseBalancer() {
     if (aux == 0) {
         aux = this.store[RESOURCE_ENERGY]
     }
-    this.say("inc: " + aux)
     if (Game.rooms[this.memory.homeRoom].memory.delivered_energy == undefined) {
         Game.rooms[this.memory.homeRoom].memory.delivered_energy = aux
     }
@@ -376,7 +375,6 @@ Creep.prototype.roleCarrier = function roleCarrier() {
                     for (let res in this.store) {
 
                         var transferResut = this.transfer(Game.getObjectById(this.memory.homeContainer), res);
-                        this.say(transferResut)
                         if (Game.getObjectById(this.memory.homeContainer) != null && Game.getObjectById(this.memory.homeContainer).store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
 
 
