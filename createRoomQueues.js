@@ -55,6 +55,9 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     }
 
     if (this.storage != undefined) {
+        console.log(global.heap.rooms[this.name].haulersParts,"<",C.HAULER_REQ_CARRY_PARTS, "=",
+            global.heap.rooms[this.name].haulersParts < C.HAULER_REQ_CARRY_PARTS
+        )
         if (global.heap.rooms[this.name].haulersParts < C.HAULER_REQ_CARRY_PARTS) {
             global.heap.rooms[this.name].harvestingQueue.push(new generalRoomRequest(this.name, C.ROLE_HAULER))
         }
@@ -152,11 +155,11 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     }
     else {//Workers above and on RCL4
         if (this.storage.store[RESOURCE_ENERGY] < C.STORAGE_BALANCER_START) {
-            if (global.heap.rooms[this.name].upgradersParts < 1) {
+            if (global.heap.rooms[this.name].workersParts < 1) {
                 global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_WORKER))
             }
         }
-        else if (global.heap.rooms[this.name].upgradersParts < this.storage.store[RESOURCE_ENERGY] / C.UPGRADE_FACTOR) {
+        else if (global.heap.rooms[this.name].workersParts < this.storage.store[RESOURCE_ENERGY] / C.UPGRADE_FACTOR) {
             global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_WORKER))
         }
     }

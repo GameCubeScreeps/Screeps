@@ -32,7 +32,9 @@ Room.prototype.creepsManager = function creepsManager() {
             continue
         }
 
-        if (creep.ticksToLive > creep.memory.TimeToSleep) {
+        if (creep.ticksToLive > creep.memory.TimeToSleep
+            || creep.memory.homeRoom!=this.name
+        ) {
             //creep.say('💤')
             continue;
         }

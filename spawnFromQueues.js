@@ -71,6 +71,11 @@ Room.prototype.spawnFromQueues = function spawnFromQueues() {
                         body = [MOVE, CARRY, CARRY, CARRY, CARRY]
                     }
                     var result = spawn.spawnCreep(body, C.ROLE_FILLER + '_' + this.name + Game.time, { memory: { role: C.ROLE_FILLER, homeRoom: this.name, spanwId: this.id } })
+                    if (result == OK) {
+                        global.heap.rooms[this.name].harvestingQueue.shift()
+
+                    }
+                    break;
                 }
             case C.ROLE_HAULER:
                 {

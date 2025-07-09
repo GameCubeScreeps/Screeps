@@ -11,12 +11,12 @@ Creep.prototype.taskFillTowers = function taskFillTowers() {
 
     if (this.memory.targetTower == undefined) {
         var towersBelowLimit = [];
-        for (t of global.heap.rooms[this.memory.homeRoom].myTowers) {
+        for (t of global.heap.rooms[this.memory.homeRoom].myTowersId) {
             if (Game.getObjectById(t) != null && Game.getObjectById(t).store[RESOURCE_ENERGY] < TOWER_CAPACITY * C.TOWER_BOTTOM_LIMIT) {
                 towersBelowLimit.push(Game.getObjectById(t))
             }
         }
-        var targetTower = this.pos.findClosestByPath(towersBelowLimit)
+        var targetTower = this.pos.findClosestByRange(towersBelowLimit)
         if (targetTower != null) {
             this.memory.targetTower = targetTower.id
         }
@@ -55,8 +55,8 @@ Creep.prototype.taskRepairRamparts = function taskRepairRamparts() {
                 minimalRamparts.push(Game.getObjectById(r))
             }
         }
-        if (this.pos.findClosestByPath(minimalRamparts) != null) {
-            this.memory.minRampartId = this.pos.findClosestByPath(minimalRamparts).id
+        if (this.pos.findClosestByRange(minimalRamparts) != null) {
+            this.memory.minRampartId = this.pos.findClosestByRange(minimalRamparts).id
         }
 
     }
@@ -273,7 +273,7 @@ Creep.prototype.taskBuild = function taskBuild(localHeap) {
                     aux.push(Game.getObjectById(c))
                 }
             }
-            toFocus = this.pos.findClosestByPath(aux)
+            toFocus = this.pos.findClosestByRange(aux)
         }
         else { // workers should prioritize by type
             for (c of global.heap.rooms[this.room.name].construction) {

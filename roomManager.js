@@ -1,7 +1,7 @@
 // Every constant definied in separate file
 const C = require('constants');
 const buildRoom = require('buildRoom');
-const { TOWER_BOTTOM_LIMIT } = require('./constants');
+const operateTowers=require('operateTowers')
 
 
 class Variation {
@@ -33,7 +33,6 @@ Room.prototype.roomManager = function roomManager() {
 
         //Tracking creeps
         global.heap.rooms[this.name].fillers = 0
-        global.heap.rooms[this.name].haulersParts = 0;
         global.heap.rooms[this.name].rampartRepairersPower = 0;
 
 
@@ -43,7 +42,7 @@ Room.prototype.roomManager = function roomManager() {
 
         global.heap.rooms[this.name].myExtensions = []
         global.heap.rooms[this.name].myLabs = []
-        global.heap.rooms[this.name].myTowers = []
+        global.heap.rooms[this.name].myTowersId = []
         global.heap.rooms[this.name].towersNeedRefill = false
         global.heap.rooms[this.name].myRamparts = []
         global.heap.rooms[this.name].myNuker = undefined
@@ -319,8 +318,8 @@ Room.prototype.roomManager = function roomManager() {
                     global.heap.rooms[this.name].myExtensions.push(str.id);
                     break;
                 case STRUCTURE_TOWER:
-                    global.heap.rooms[this.name].myTowers.push(str.id);
-                    if (str.store[RESOURCE_ENERGY] < TOWER_CAPACITY * TOWER_BOTTOM_LIMIT) {
+                    global.heap.rooms[this.name].myTowersId.push(str.id);
+                    if (str.store[RESOURCE_ENERGY] < TOWER_CAPACITY * C.TOWER_BOTTOM_LIMIT) {
                         global.heap.rooms[this.name].towersNeedRefill = true
                     }
                     break;
@@ -444,6 +443,7 @@ Room.prototype.roomManager = function roomManager() {
         global.heap.rooms[this.name].myWorkers.push(w.id)
     }
 
+    this.operateTowers()
 
 
 }
