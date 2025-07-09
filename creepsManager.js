@@ -15,6 +15,7 @@ const roleRampartRepairer=require('roleRampartRepairer')
 Room.prototype.creepsManager = function creepsManager() {
 
     global.heap.rooms[this.name].haveScout = false
+    global.heap.rooms[this.name].haulersParts=0;
 
     for (var cr in Memory.creeps) {  //clearing data about dead creeps
         if (!Game.creeps[cr]) {

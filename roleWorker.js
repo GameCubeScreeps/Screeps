@@ -53,7 +53,6 @@ Creep.prototype.roleWorker = function roleWorker() {
         else {
             if (this.store.getUsedCapacity(RESOURCE_ENERGY) > 0 && global.heap.rooms[this.memory.homeRoom].building == true
                 && this.room.controller.ticksToDowngrade > (CONTROLLER_DOWNGRADE[this.room.controller.level]*C.CONTROLLER_DOWNGRADE_BOTTOM_LIMIT
-                    && global.heap.rooms[this.room.name].restoringDowngrade!=undefined
                 )
             ) {
                 

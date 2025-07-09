@@ -41,7 +41,8 @@ Creep.prototype.roleRepairer = function roleRepairer() {
                 }
 
                 if (localHeap.targetStructureId != undefined && Game.getObjectById(localHeap.targetStructureId) != null
-                    && Game.getObjectById(localHeap.targetStructureId).hits == Game.getObjectById(localHeap.targetStructureId).hitsMax) {
+                    && (Game.getObjectById(localHeap.targetStructureId).hits == Game.getObjectById(localHeap.targetStructureId).hitsMax
+                || Game.getObjectById(localHeap.targetStructureId).room.name!=this.memory.targetRoom)) {
                     localHeap.targetStructureId = undefined
                 }
 
@@ -61,7 +62,7 @@ Creep.prototype.roleRepairer = function roleRepairer() {
 
                 if (localHeap.targetStructureId != undefined) {
                     var targetStructure = Game.getObjectById(localHeap.targetStructureId)
-                    this.say(targetStructure.pos.roomName)
+                    this.say(targetStructure.room.name)
                     if (targetStructure != null) {
                         if (this.repair(targetStructure) == ERR_NOT_IN_RANGE) {
                             this.moveTo(targetStructure, {  reusePath: 17, maxRooms: 1 });

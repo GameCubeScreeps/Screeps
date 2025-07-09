@@ -27,7 +27,7 @@ const ROLE_RAMPART_REPAIRER='rampart_repairer'
 
 //Creep constants
 const CREEP_MAX_BODYPARTS = 50; // maximum creep body length - couldn't find in API
-const HAULER_REQ_CARRY_PARTS=3;
+const HAULER_REQ_CARRY_PARTS=4;
 
 //Creeps tasks
 const TASK_UPGRADE = 'upgrade'

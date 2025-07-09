@@ -90,7 +90,7 @@ Creep.prototype.roleHauler = function roleHauler(spawn) {//transfer energy grom 
                 }
             }
         }
-        if(global.heap.rooms[this.name].towersNeedRefill==true)
+        if(global.heap.rooms[this.memory.homeRoom].towersNeedRefill==true)
         {
             this.memory.task=C.TASK_FILL_TOWERS
         }
@@ -109,7 +109,7 @@ Creep.prototype.roleHauler = function roleHauler(spawn) {//transfer energy grom 
         }
         else {
             spawnPos=Game.rooms[this.memory.homeRoom].memory.spawnPos
-            this.fleeFrom({ spawnPos }, 6)
+            //this.fleeFrom({ spawnPos }, 6)
         }
     }
 
@@ -224,7 +224,7 @@ Creep.prototype.roleHauler = function roleHauler(spawn) {//transfer energy grom 
                     avoid.push(this.room.storage)
                 }
                 if (avoid.length > 0) {
-                    this.fleeFrom(avoid, 3);
+                    //this.fleeFrom(avoid, 3);
                 }
                 else {
                     this.sleep(20);
@@ -296,7 +296,7 @@ Creep.prototype.roleHauler = function roleHauler(spawn) {//transfer energy grom 
                     avoid.push(this.room.storage)
                 }
                 if (avoid.length > 0) {
-                    this.fleeFrom(avoid, 3);
+                    //this.fleeFrom(avoid, 3);
                 }
                 else {
                     this.sleep(20);

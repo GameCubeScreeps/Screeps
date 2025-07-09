@@ -5,6 +5,7 @@ const harvesterBody = require('harvesterBody')
 const carrierBody = require('carrierBody')
 const workerBody = require('workerBody')
 const { result } = require('lodash');
+const repairerBody = require('repairerBody');
 
 
 
@@ -71,6 +72,17 @@ Room.prototype.spawnFromQueues = function spawnFromQueues() {
                     }
                     var result = spawn.spawnCreep(body, C.ROLE_FILLER + '_' + this.name + Game.time, { memory: { role: C.ROLE_FILLER, homeRoom: this.name, spanwId: this.id } })
                 }
+            case C.ROLE_HAULER:
+                {
+                    var result = spawn.spawnCreep(carrierBody(energyCap), C.ROLE_HAULER + '_' + this.name + Game.time, { memory: { role: C.ROLE_HAULER, homeRoom: this.name } })
+                    console.log("trying to spawn hauler")
+                    if (result == OK) {
+                        global.heap.rooms[this.name].civilianQueue.shift()
+
+                    }
+                    //console.log("Hauler spawning result: ",result)
+                    break;
+                }
         }
 
     }
@@ -100,7 +112,7 @@ Room.prototype.spawnFromQueues = function spawnFromQueues() {
                 }
             case C.ROLE_REPAIRER:
                 {
-                    var result = spawn.spawnCreep(workerBody(energyCap), C.ROLE_REPAIRER + '_' + this.name + Game.time, { memory: { role: C.ROLE_REPAIRER, targetRoom: request.roomName ,homeRoom: this.name } })
+                    var result = spawn.spawnCreep(repairerBody(energyCap), C.ROLE_REPAIRER + '_' + this.name + Game.time, { memory: { role: C.ROLE_REPAIRER, targetRoom: request.roomName, homeRoom: this.name } })
                     if (result == OK) {
                         global.heap.rooms[this.name].civilianQueue.shift()
 
@@ -108,19 +120,9 @@ Room.prototype.spawnFromQueues = function spawnFromQueues() {
                     //console.log("Repairer spawning result: ",result)
                     break;
                 }
-            case C.ROLE_HAULER:
-                {
-                    var result = spawn.spawnCreep(carrierBody(energyCap), C.ROLE_HAULER + '_' + this.name + Game.time, { memory: { role: C.ROLE_HAULER,homeRoom: this.name } })
-                    if (result == OK) {
-                        global.heap.rooms[this.name].civilianQueue.shift()
-
-                    }
-                    //console.log("Hauler spawning result: ",result)
-                    break;
-                }
             case C.ROLE_RESERVER:
                 {
-                    var result = spawn.spawnCreep([MOVE,CLAIM], C.ROLE_RESERVER + '_' + this.name + Game.time, { memory: { role: C.ROLE_RESERVER,homeRoom: this.name,targetRoom: request.roomName } })
+                    var result = spawn.spawnCreep([MOVE, CLAIM], C.ROLE_RESERVER + '_' + this.name + Game.time, { memory: { role: C.ROLE_RESERVER, homeRoom: this.name, targetRoom: request.roomName } })
                     if (result == OK) {
                         global.heap.rooms[this.name].civilianQueue.shift()
 

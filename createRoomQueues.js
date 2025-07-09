@@ -54,6 +54,12 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
         }
     }
 
+    if (this.storage != undefined) {
+        if (global.heap.rooms[this.name].haulersParts < C.HAULER_REQ_CARRY_PARTS) {
+            global.heap.rooms[this.name].harvestingQueue.push(new generalRoomRequest(this.name, C.ROLE_HAULER))
+        }
+    }
+
 
     //  Carriers / Harvesters
     var areCarriersSatisfied = true
@@ -138,7 +144,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
 
     // Workers below RCL4 - wthout storage
     if (this.storage == undefined || this.controller.level < 4) {
-        if (this.memory.energyBalance > C.ENERGY_BALANCER_WORKER_SPAWN) {
+        if (this.memory.energyBalance > C.ENERGY_BALANCER_WORKER_SPAWN && Game.time%5==0) {
 
             global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_WORKER))
 
@@ -155,11 +161,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
         }
     }
 
-    if (this.storage != undefined) {
-        if (global.heap.rooms[this.name].haulersParts < C.HAULER_REQ_CARRY_PARTS) {
-            global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_HAULER))
-        }
-    }
+    
 
     global.heap.rooms[this.name].areHarvestingNeedsSatisfied = areHarvestersSatisfied && areCarriersSatisfied
 

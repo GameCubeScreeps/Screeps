@@ -1300,7 +1300,11 @@ Room.prototype.buildRoom = function buildRoom(type=C.CURRENT_SPAWNPOS) {
     }
     else if (stage == 2) {
         //build from lists and visualize roomPlan
-        this.buildFromLists()
+        if(Game.time%11==0)
+        {
+            this.buildFromLists()
+        }
+        
 
         return
         // do not increment stage here
