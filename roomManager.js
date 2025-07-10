@@ -29,7 +29,15 @@ Room.prototype.roomManager = function roomManager() {
 
     if (Memory.mainRooms.includes(this.name)) {
 
-        
+        //spawnID
+        if((this.memory.spawnId!=undefined && Game.getObjectById(this.memory.spawnId)==null)|| this.memory.spawnId==undefined)
+        {
+            var sp=this.find(FIND_MY_SPAWNS)
+            if(sp.length>0)
+            {
+                this.memory.spawnId=sp[0].id
+            }
+        }
 
         //Tracking creeps
         global.heap.rooms[this.name].fillers = 0

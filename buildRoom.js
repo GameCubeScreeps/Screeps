@@ -1300,9 +1300,17 @@ Room.prototype.buildRoom = function buildRoom(type=C.CURRENT_SPAWNPOS) {
     }
     else if (stage == 2) {
         //build from lists and visualize roomPlan
-        if(Game.time%45==0)
+        if(Game.time%123==0)
         {
             this.buildFromLists()
+            if(this.memory.roomCM!=undefined)
+            {
+                delete this.memory.roomCM
+            }
+            if(this.memory.roomPlan!=undefined)
+            {
+                delete this.memory.roomPlan
+            }
         }
         
 

@@ -23,20 +23,6 @@ Creep.prototype.increaseBalancer = function increaseBalancer() {
 
 Creep.prototype.roleCarrier = function roleCarrier() {
 
-    /*Creep needs:
-   Mandatory:
-   Creep.memory.targetRoom - roomName in which is his source
-   Creep.memory.sourceId - id of source from which collect 
-    
-   
-
-    Will Calculate in its own:
-    this.memory.targetRoomContainers - containers in targetRoom
-    this.memory.closestHomeContainer - container or storage in homeRoom
-
-    Creep.memory.spawnId - id of homeRoom spawn
-
-   */
 
     if (this.memory.boostingList == undefined) {
         //this.memory.boostingList = ["KH", "KH2O", "XKH2O"];//boost types that creep accepts
@@ -56,26 +42,13 @@ Creep.prototype.roleCarrier = function roleCarrier() {
             }
         }
 
-        if (this.memory.spawnId != undefined && Game.getObjectById(this.memory.spawnId) == null) {
-            this.memory.spawnId = undefined
-        }
-
+    
         var spawn = null;
-        if (this.memory.spawnId != undefined && Game.getObjectById(this.memory.spawnId) != null) {
-            spawn = Game.getObjectById(this.memory.spawnId)
+        if (Game.rooms[this.memory.homeRoom].memory.spawnId != undefined && Game.getObjectById(Game.rooms[this.memory.homeRoom].memory.spawnId) != null) {
+            spawn = Game.getObjectById(Game.rooms[this.memory.homeRoom].memory.spawnId)
         }
 
 
-        if (this.memory.spawnId == undefined) {
-            spawn = Game.rooms[this.memory.homeRoom].find(FIND_MY_STRUCTURES, {
-                filter: function (str) {
-                    return str.structureType === STRUCTURE_SPAWN && str.name.endsWith('1')
-                }
-            })
-            if (spawn.length > 0) {
-                this.memory.spawnId = spawn[0].id
-            }
-        }
 
 
         if (this.memory.targetRoomContainers != undefined && this.memory.targetRoomContainers.length > 0) {
@@ -104,6 +77,10 @@ Creep.prototype.roleCarrier = function roleCarrier() {
             if (this.memory.targetRoom == this.memory.homeRoom) {
                 //if creep.target_room is creep.home_room
                 var spawnPos = Game.rooms[this.room.name].memory.spawnPos
+
+                if(this.memory._findHomeContainers!=undefined){this.memory._findHomeContainers++}
+                    else{this.memory._findHomeContainers=1}
+
                 var containers = this.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return structure.structureType === STRUCTURE_CONTAINER
@@ -121,6 +98,10 @@ Creep.prototype.roleCarrier = function roleCarrier() {
             else {
                 //get containers of target_room
                 if (Game.rooms[this.memory.targetRoom] != undefined) {
+
+                    if(this.memory._findTargetContainers!=undefined){this.memory._findTargetContainers++}
+                    else{this.memory._findTargetContainers=1}
+
                     var containers = Game.rooms[this.memory.targetRoom].find(FIND_STRUCTURES, {
                         filter: (structure) => {
                             return structure.structureType === STRUCTURE_CONTAINER;
@@ -212,6 +193,10 @@ Creep.prototype.roleCarrier = function roleCarrier() {
                     var carrierCapacity = this.store.getCapacity()
                     var carrierUsedCapacity = this.store.getUsedCapacity()
                     var dropped_resource = undefined
+
+                    if(this.memory._findResources!=undefined){this.memory._findResources++}
+                    else{this.memory._findResources=1}
+
                     var dropped_resource = Game.rooms[this.memory.targetRoom].find(FIND_DROPPED_RESOURCES, {
                         filter: function (resource) {
                             return resource.amount >= carrierCapacity - carrierUsedCapacity
@@ -305,6 +290,8 @@ Creep.prototype.roleCarrier = function roleCarrier() {
                 var spawnPos = Game.rooms[this.room.name].memory.spawnPos
                 //find containers that are fillers containers or controller container
                 if (spawnPos != undefined) {
+                    if(this.memory._findByRange!=undefined){this.memory._findByRange++}
+                    else{this.memory._findByRange=1}
                     var container = this.pos.findClosestByRange(FIND_STRUCTURES, {
                         filter: (structure) => {
                             return structure.store != undefined && structure.store.getCapacity() - structure.store.getUsedCapacity() > 0
