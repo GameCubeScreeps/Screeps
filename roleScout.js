@@ -19,13 +19,14 @@ class FarmingRoom {
 }
 
 class FarmingSource {
-    constructor(id, name, harvesting_power, carry_power, distance, maxHarvesters) {
+    constructor(id, name, harvesting_power, carry_power, distance, maxHarvesters,pos) {
         this.id = id;
         this.roomName = name;
         this.harvestingPower = harvesting_power;
         this.carryPower = carry_power;
         this.distance = distance;
         this.maxHarvesters = maxHarvesters;
+        this.pos=pos
         this.harvesters = 0;
         var bodyPartsCost = 27;//parts for harvesters (max farmer is made off 12 bodyparts);
         bodyPartsCost += 14;//maxRepairer
@@ -66,13 +67,14 @@ class KeeperRoom {
 }
 
 class KeepersSource {
-    constructor(id, name, harvestingPower, carryPower, distance, maxHarvesters) {
+    constructor(id, name, harvestingPower, carryPower, distance, maxHarvesters,pos) {
         this.id = id;
         this.name = name;
         this.harvestingPower = harvestingPower;
         this.carryPower = carryPower;
         this.distance = distance;
         this.maxHarvesters = maxHarvesters;
+        this.pos=pos
         this.harvesters = 0;
         this.sourcesNum = 1;
         var sourcesNum = 1;
@@ -210,7 +212,7 @@ Creep.prototype.roleScout = function roleScout(homeSpawn) {
 
                     avgDistance += ret.path.length;
 
-                    var newKeeperSource = new KeepersSource(sources[i].id, this.room.name, 0, 0, ret.path.length, src.pos.getOpenPositions().length)
+                    var newKeeperSource = new KeepersSource(sources[i].id, this.room.name, 0, 0, ret.path.length, src.pos.getOpenPositions().length,src.pos)
 
                     // check if this source is already scanned or in other use
                     var alreadyUsed = false;
@@ -263,7 +265,7 @@ Creep.prototype.roleScout = function roleScout(homeSpawn) {
 
                     avgDistance += ret.path.length;
 
-                    var new_farming_source = new FarmingSource(src.id, this.room.name, 0, 0, ret.path.length, Math.max(1, src.pos.getOpenPositions().length))
+                    var new_farming_source = new FarmingSource(src.id, this.room.name, 0, 0, ret.path.length, Math.max(1, src.pos.getOpenPositions().length),src.pos)
 
                     var alreadyUsed = false
                     //If other player is reserving room (if player is enemy - we will try to harvest there)
