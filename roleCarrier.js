@@ -128,7 +128,7 @@ Creep.prototype.roleCarrier = function roleCarrier() {
             ) {
                 const destination = new RoomPosition(25, 25, this.memory.targetRoom);
                 //this.moveTo(destination, { reusePath: 25, avoidCreeps: true });
-                this.travelTo(destination)
+                this.travelTo(destination,{range: 22})
             }
             if (this.memory.targetRoomContainers != undefined && this.memory.targetRoomContainers.length > 0) {// find max_container and take resources from it or go sleep
 
@@ -328,7 +328,7 @@ Creep.prototype.roleCarrier = function roleCarrier() {
                 }
                 else {
                     //this.moveTo(new RoomPosition(25, 25, this.memory.homeRoom), { reusePath: 20, range: 8 })
-                    this.travelTo(new RoomPosition(25, 25, this.memory.homeRoom))
+                    this.travelTo(new RoomPosition(25, 25, this.memory.homeRoom),{range: 22})
                 }
 
                 //}
