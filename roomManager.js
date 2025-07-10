@@ -209,12 +209,10 @@ Room.prototype.roomManager = function roomManager() {
                 }
                 else {
 
-                    this.memory._beforelooping = true
                     // loop through room variations
                     var finishedCounter = 0;
                     for (key in this.memory.baseVariations) {
 
-                        this.memory._inLoop = true
                         if (this.memory.baseVariations[key].variationFinished == false) {
                             this.visual.text(key, 25, 3)
                             this.buildRoom(key)
@@ -223,7 +221,6 @@ Room.prototype.roomManager = function roomManager() {
                         this.memory.finishedPlanning = true
                         finishedCounter++;
                     }
-                    this.memory._afterLoop = true
 
                 }
             }
@@ -387,7 +384,6 @@ Room.prototype.roomManager = function roomManager() {
         global.heap.rooms[this.name].rampartsEnergyNeedPerTick = (global.heap.rooms[this.name].rampartsAmount * (RAMPART_DECAY_AMOUNT / REPAIR_POWER)) / RAMPART_DECAY_TIME
 
         global.heap.rooms[this.name].requiredRampartsRepairersPower = global.heap.rooms[this.name].rampartsEnergyNeedPerTick * 2
-        console.log("Ramparts in: ", this.name, " require: ", global.heap.rooms[this.name].rampartsEnergyNeedPerTick, " energy to sustain")
 
     }
 

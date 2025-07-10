@@ -900,7 +900,6 @@ Room.prototype.planControllerContainer = function planControllerContainer(roomCM
 Room.prototype.planSourcesContainers = function planSourcesContainers() {
 
 
-    this.memory._insSourceContainers=true
     this.memory.sourcesLinksPos = []
     for (src of this.memory.harvestingSources) {
 
@@ -915,16 +914,12 @@ Room.prototype.planSourcesContainers = function planSourcesContainers() {
                 return -1
             }
             const terrain = Game.rooms[src.roomName].getTerrain();
-            console.log("SourcePositions: ",sourcePositions)
-            this.memory._sourcePositions=sourcePositions
             for (let position of sourcePositions) {
                 console.log(position)
                 if (terrain.get(position.x, position.y) != TERRAIN_MASK_WALL) {
                     if (src.roomName == this.name) {
                         this.memory.roomPlan[position.x][position.y] = STRUCTURE_CONTAINER;
                     }
-                    this.memory._addingSourcesContainers=true
-                    console.log("Adding container at: ",position.x," ",position.y)
                     this.memory.buildingList.push(new buildingListElement(position.x, position.y, src.roomName, STRUCTURE_CONTAINER, 2));
                     this.memory.finalBuildingList.push(new buildingListElement(position.x, position.y, src.roomName, STRUCTURE_CONTAINER, 2));
                     break;
@@ -1182,7 +1177,6 @@ Room.prototype.buildRoom = function buildRoom(type=C.CURRENT_SPAWNPOS) {
 
     if (stage == 0) {
 
-        this.memory._inStage0 = true
         // Declaring variables for use in later stages
         var cpuBefore = Game.cpu.getUsed()
         let roomCM = new PathFinder.CostMatrix;
@@ -1244,7 +1238,6 @@ Room.prototype.buildRoom = function buildRoom(type=C.CURRENT_SPAWNPOS) {
         }
 
 
-        this.memory._rampartsAmount = rampartsAmount
         if (rampartsAmount < this.memory.minRampartsAmount) {
             this.memory.minRampartsAmount = rampartsAmount
             this.memory.fnalRoomPlan = this.memory.roomPlan
