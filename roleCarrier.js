@@ -321,8 +321,9 @@ Creep.prototype.roleCarrier = function roleCarrier() {
 
                     }
                     else {
-                        //this.moveTo(new RoomPosition(spawnPos.x, spawnPos.y, this.memory.homeRoom), { reusePath: 20, range: 8 })
-                        this.travelTo(new RoomPosition(spawnPos.x, spawnPos.y, this.memory.homeRoom))
+                        a=Math.floor(Math.random() * (8 - 1 + 1)) + 1
+                        this.say(a)
+                        this.move(a)//Random number in range <1:8>
 
                     }
                 }
