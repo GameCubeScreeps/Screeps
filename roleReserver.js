@@ -25,12 +25,12 @@ Creep.prototype.roleReserver = function roleReserver() {
                         this.signController(this.room.controller, signText)
                     }
                     if (this.reserveController(this.room.controller) == ERR_NOT_IN_RANGE) {
-                        this.moveTo(this.room.controller, { reusePath: 11, range: 1 });
+                        this.travelTo(this.room.controller, { reusePath: 11, range: 1 });
                     }
                 }
                 else {
                     if (!this.pos.isNearTo(this.room.controller.pos)) {
-                        this.moveTo(this.room.controller, { reusePath: 15, maxRooms: 1 })
+                        this.travelTo(this.room.controller, { reusePath: 15, maxRooms: 1 })
                     }
                     else  {
 
@@ -43,7 +43,7 @@ Creep.prototype.roleReserver = function roleReserver() {
                     if (this.room.controller.reservation != undefined && this.room.controller.reservation.username != undefined
                         && this.room.controller.reservation.username == 'Invader') {
                         if (this.attackController(this.room.controller) == ERR_NOT_IN_RANGE) {
-                            this.moveTo(this.room.controller, { reusePath: 19 });
+                            this.travelTo(this.room.controller, { reusePath: 19 });
                         }
 
                     }
@@ -55,10 +55,10 @@ Creep.prototype.roleReserver = function roleReserver() {
         }
         else { // not in target room - go claim
             if (Game.rooms[this.memory.targetRoom] != undefined) {
-                this.moveTo(Game.rooms[this.memory.targetRoom].controller, { reusePath: 12 });
+                this.travelTo(Game.rooms[this.memory.targetRoom].controller, { reusePath: 12 });
             }
             else {
-                this.moveTo(new RoomPosition(25,25,this.memory.targetRoom), {range: 21, reusePath: 19 });
+                this.travelTo(new RoomPosition(25,25,this.memory.targetRoom), {range: 21, reusePath: 19 });
 
             }
 
