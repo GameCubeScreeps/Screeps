@@ -291,7 +291,7 @@ Room.prototype.createManagerStamp = function createManagerStamp(x, y) {
 
     this.memory.roomPlan[x - 1][y - 1] = STRUCTURE_LINK;
     this.memory.buildingList.push(new buildingListElement(x - 1, y - 1, this.name, STRUCTURE_LINK, 5));
-    this.memorymanager_link_pos = new RoomPosition(x - 1, y - 1, this.name);
+    this.memory.managerLinkPos = new RoomPosition(x - 1, y - 1, this.name);
     this.memory.roomPlan[x - 1][y] = STRUCTURE_NUKER;
     this.memory.buildingList.push(new buildingListElement(x - 1, y, this.name, STRUCTURE_NUKER, 8));
     this.memory.roomPlan[x - 1][y + 1] = STRUCTURE_TERMINAL;
