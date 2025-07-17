@@ -202,7 +202,7 @@ Creep.prototype.roleHauler = function roleHauler(spawn) {//transfer energy grom 
             //this.memory.cIdMax=-1;
             //var withdraw_amount = Math.min(this.store[RESOURCE_ENERGY].getFreeCapacity, Game.getObjectById(this.memory.cIdMax).store[RESOURCE_ENERGY]);
             if (this.withdraw(Game.getObjectById(this.memory.cIdMax), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {// if creep have no energy go to container and withdraw energy
-                this.moveTo(Game.getObjectById(this.memory.cIdMax));
+                this.travelTo(Game.getObjectById(this.memory.cIdMax));
                 //this.say("M");
                 //move_avoid_hostile(creep, Game.getObjectById(this.memory.cIdMax).pos, 1, false);
             }
@@ -245,7 +245,7 @@ Creep.prototype.roleHauler = function roleHauler(spawn) {//transfer energy grom 
             return;
         }
         if (this.transfer(Game.getObjectById(this.memory.containerToFill), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-            this.moveTo(Game.getObjectById(this.memory.containerToFill), { reusePath: 10, avoidCreeps: false })
+            this.travelTo(Game.getObjectById(this.memory.containerToFill), { reusePath: 10, avoidCreeps: false })
         }
     }
 
@@ -256,7 +256,7 @@ Creep.prototype.roleHauler = function roleHauler(spawn) {//transfer energy grom 
             return;
         }
         if (this.transfer(Game.getObjectById(this.memory.containerToFill), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-            this.moveTo(Game.getObjectById(this.memory.containerToFill), { reusePath: 10, avoidCreeps: false })
+            this.travelTo(Game.getObjectById(this.memory.containerToFill), { reusePath: 10, avoidCreeps: false })
         }
     }
 
@@ -278,7 +278,7 @@ Creep.prototype.roleHauler = function roleHauler(spawn) {//transfer energy grom 
             var closestExtension = this.pos.findClosestByRange(extensions);
             if (closestExtension) {
                 if (this.transfer(closestExtension, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {// if creep have some energy go to extension and fill with energy
-                    this.moveTo(closestExtension, { reusePath: 11 });
+                    this.travelTo(closestExtension, { reusePath: 11 });
                     //move_avoid_hostile(creep, closestExtension.pos, 1, false);
                 }
             }
@@ -333,7 +333,7 @@ Creep.prototype.roleHauler = function roleHauler(spawn) {//transfer energy grom 
         if(spawn!=null)
         {
             if (this.transfer(spawn, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-            this.moveTo(spawn, { reusePath: 10, avoidCreeps: false })
+            this.travelTo(spawn, { reusePath: 10, avoidCreeps: false })
         }
         if(spawn.store.getFreeCapacity(RESOURCE_ENERGY)==0)
         {

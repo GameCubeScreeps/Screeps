@@ -65,7 +65,7 @@ Creep.prototype.roleRepairer = function roleRepairer() {
                     this.say(targetStructure.room.name)
                     if (targetStructure != null) {
                         if (this.repair(targetStructure) == ERR_NOT_IN_RANGE) {
-                            this.moveTo(targetStructure, {  reusePath: 17, maxRooms: 1 });
+                            this.travelTo(targetStructure, {  reusePath: 17, maxRooms: 1 });
                             //move_avoid_hostile(this, closest_target.pos, 2, false);
                         }
                     }
@@ -83,7 +83,7 @@ Creep.prototype.roleRepairer = function roleRepairer() {
     }
     else {
         if (this.memory.targetRoom != undefined) {
-            this.moveTo(new RoomPosition(25, 25, this.memory.targetRoom), { reusePath: 17 });
+            this.travelTo(new RoomPosition(25, 25, this.memory.targetRoom), { reusePath: 17 });
         }
 
     }

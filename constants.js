@@ -10,7 +10,7 @@ for (spawnName in Game.spawns) {
 const USERNAME = global.heap.userName
 const SIGN_TEXT='What are you ? To define is to limit'
 //CPU/Benchmarking 
-const AVG_STEP=15000
+const AVG_STEP=5000
 
 //Creep Roles
 const ROLE_HARVESTER = 'harvester'
@@ -27,7 +27,7 @@ const ROLE_RAMPART_REPAIRER='rampart_repairer'
 
 //Creep constants
 const CREEP_MAX_BODYPARTS = 50; // maximum creep body length - couldn't find in API
-const HAULER_REQ_CARRY_PARTS=4;
+const HAULER_REQ_CARRY_PARTS=6;
 
 //Creeps tasks
 const TASK_UPGRADE = 'upgrade'

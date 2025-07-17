@@ -25,7 +25,7 @@ Creep.prototype.taskFillTowers = function taskFillTowers() {
     if (this.memory.targetTower != undefined) {
         if (this.transfer(Game.getObjectById(this.memory.targetTower), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
 
-            this.moveTo(Game.getObjectById(this.memory.targetTower), { reusePath: 11 })
+            this.travelTo(Game.getObjectById(this.memory.targetTower), { reusePath: 11 })
         }
     }
 
@@ -64,7 +64,7 @@ Creep.prototype.taskRepairRamparts = function taskRepairRamparts() {
 
         if (Game.getObjectById(this.memory.minRampartId) != null) {
             if (this.repair(Game.getObjectById(this.memory.minRampartId)) == ERR_NOT_IN_RANGE) {
-                this.moveTo(Game.getObjectById(this.memory.minRampartId), { reusePath: 11 })
+                this.travelTo(Game.getObjectById(this.memory.minRampartId), { reusePath: 11 })
             }
         }
 
@@ -138,7 +138,7 @@ Creep.prototype.taskCollect = function taskCollect(localHeap) {// go to deposits
                 if (this.room.controller == undefined) { this.suicide() }
                 var auxDeposits = []
                 for (d of deposits) {
-                    if (Game.getObjectById(d) != null) {
+                    if (Game.getObjectById(d) != null && Game.getObjectById(d).store[RESOURCE_ENERGY]>=this.store.getCapacity(RESOURCE_ENERGY)) {
                         auxDeposits.push(Game.getObjectById(d))
                     }
                 }
@@ -159,7 +159,7 @@ Creep.prototype.taskCollect = function taskCollect(localHeap) {// go to deposits
 
             || (Game.rooms[this.memory.homeRoom].memory.energyBalance != undefined && Game.rooms[this.memory.homeRoom].memory.energyBalance > C.ENERGY_BALANCER_UPGRADER_START)) {
             if (this.withdraw(Game.getObjectById(this.memory.deposit), RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                this.moveTo(Game.getObjectById(this.memory.deposit), { reusePath: 17, maxRooms: 1 });
+                this.travelTo(Game.getObjectById(this.memory.deposit), { reusePath: 17, maxRooms: 1 });
                 //move_avoid_hostile(creep,Game.getObjectById(this.memory.deposit).pos,1);
 
             }
@@ -184,7 +184,7 @@ Creep.prototype.taskCollect = function taskCollect(localHeap) {// go to deposits
         if (droppedEnergy.length > 0) {
             if (this.pickup(closestDroppedEnergy) == ERR_NOT_IN_RANGE) {
                 // Move to it
-                this.moveTo(closestDroppedEnergy, { reusePath: 17, maxRooms: 1 });
+                this.travelTo(closestDroppedEnergy, { reusePath: 17, maxRooms: 1 });
                 //move_avoid_hostile(creep,closestDroppedEnergy.pos);
             }
             else if (this.pickup(closestDroppedEnergy) == OK) {
@@ -217,12 +217,12 @@ Creep.prototype.taskUpgrade = function taskUpgrade(localHeap) {
         return -1;
     }
     if (!this.pos.isNearTo(this.room.controller)) {
-        this.moveTo(this.room.controller, { maxStuck: 10 })
+        this.travelTo(this.room.controller, { maxStuck: 10 })
     }
     var upgradeResult = this.upgradeController(this.room.controller);
-    //this.moveTo(this.room.controller, { reusePath: 17,maxRooms:1 });
+    //this.travelTo(this.room.controller, { reusePath: 17,maxRooms:1 });
     if (upgradeResult == ERR_NOT_IN_RANGE || upgradeResult == -9) {
-        this.moveTo(this.room.controller, { reusePath: 17, maxRooms: 1 });
+        this.travelTo(this.room.controller, { reusePath: 17, maxRooms: 1 });
     }
 
     //Sharing energy
@@ -299,18 +299,18 @@ Creep.prototype.taskBuild = function taskBuild(localHeap) {
 
         if (toFocus != null) {
             if (this.build(toFocus) == ERR_NOT_IN_RANGE) {
-                this.moveTo(toFocus, { range: 1, maxRooms: 1 })
+                this.travelTo(toFocus, { range: 1, maxRooms: 1 })
             }
-            this.moveTo(toFocus, { range: 1, maxRooms: 1 })
+            this.travelTo(toFocus, { range: 1, maxRooms: 1 })
         }
         else if (sites.length > 0) {
 
             var closest = this.pos.findClosestByRange(sites)
             if (closest != null) {
                 if (this.build(closest) == ERR_NOT_IN_RANGE) {
-                    this.moveTo(closest, { range: 2, maxRooms: 1 })
+                    this.travelTo(closest, { range: 2, maxRooms: 1 })
                 }
-                this.moveTo(closest, { range: 2, maxRooms: 1 })
+                this.travelTo(closest, { range: 2, maxRooms: 1 })
             }
         }
 

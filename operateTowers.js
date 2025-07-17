@@ -19,16 +19,17 @@ Room.prototype.operateTowers = function operateTowers() {
             }
         }
     }
-    
-    if (global.heap.rooms[this.name].hostiles != undefined && global.heap.rooms[this.name].hostiles.length > 0) 
-    {
 
-        for (t of global.heap.rooms[this.name].myTowersId) {
-            if (Game.getObjectById(t) != null) {
-                Game.getObjectById(t).attack(Game.getObjectById(global.heap.rooms[this.name].hostiles[0]))
+    if (global.heap.rooms[this.name].hostiles != undefined && global.heap.rooms[this.name].hostiles.length > 0) {
+        if (global.heap.rooms[this.name].myTowersId != undefined) {
+            for (t of global.heap.rooms[this.name].myTowersId) {
+                if (Game.getObjectById(t) != null) {
+                    Game.getObjectById(t).attack(Game.getObjectById(global.heap.rooms[this.name].hostiles[0]))
+                }
             }
         }
 
+
     }
-        
+
 }
