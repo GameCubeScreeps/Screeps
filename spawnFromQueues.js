@@ -145,6 +145,16 @@ Room.prototype.spawnFromQueues = function spawnFromQueues() {
                     //console.log("worker spawning result: ",result)
                     break;
                 }
+            case C.ROLE_RESOURCE_MANAGER:
+                {
+                    var result = spawn.spawnCreep(carrierBody(energyCap), C.ROLE_RESOURCE_MANAGER + '_' + this.name + Game.time, { memory: { role: C.ROLE_RESOURCE_MANAGER, homeRoom: this.name } })
+                    if (result == OK) {
+                        global.heap.rooms[this.name].civilianQueue.shift()
+
+                    }
+                    //console.log("worker spawning result: ",result)
+                    break;
+                }
 
         }
     }
