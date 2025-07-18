@@ -203,6 +203,10 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     }
 
 
+    if(this.room.storage!=undefined && global.heap.rooms[this.name].resourceManagerId==undefined)
+    {
+        global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_RESOURCE_MANAGER))
+    }
 
     /*
     //logging queues
