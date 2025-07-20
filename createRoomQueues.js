@@ -192,7 +192,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     }
 
     //Rampart Repairers - civilian queue
-    //asdasd
+    //asdasdasdasd
     if (global.heap.rooms[this.name].requiredRampartsRepairersPower > global.heap.rooms[this.name].rampartRepairersPower) {
         if (global.heap.rooms[this.name].state.includes(C.STATE_UNDER_ATTACK)) {//Add to defensive queue
             global.heap.rooms[this.name].defensiveQueue.push(new generalRoomRequest(this.name, C.ROLE_RAMPART_REPAIRER))
