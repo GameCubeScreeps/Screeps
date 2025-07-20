@@ -192,6 +192,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     }
 
     //Rampart Repairers - civilian queue
+    //asdasdasdasd
     if (global.heap.rooms[this.name].requiredRampartsRepairersPower > global.heap.rooms[this.name].rampartRepairersPower) {
         if (global.heap.rooms[this.name].state.includes(C.STATE_UNDER_ATTACK)) {//Add to defensive queue
             global.heap.rooms[this.name].defensiveQueue.push(new generalRoomRequest(this.name, C.ROLE_RAMPART_REPAIRER))
@@ -203,6 +204,10 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     }
 
 
+    if(this.storage!=undefined && global.heap.rooms[this.name].resourceManagerId==undefined)
+    {
+        global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_RESOURCE_MANAGER))
+    }
 
     /*
     //logging queues

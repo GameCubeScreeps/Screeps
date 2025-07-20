@@ -14,8 +14,9 @@ const roleRampartRepairer=require('roleRampartRepairer')
 
 Room.prototype.creepsManager = function creepsManager() {
 
-    global.heap.rooms[this.name].haveScout = false
+    global.heap.rooms[this.name].haveScout = false;
     global.heap.rooms[this.name].haulersParts=0;
+    global.heap.rooms[this.name].resourceManagerId=undefined;
 
     for (var cr in Memory.creeps) {  //clearing data about dead creeps
         if (!Game.creeps[cr]) {
@@ -74,6 +75,10 @@ Room.prototype.creepsManager = function creepsManager() {
                 creep.roleRampartRepairer()
                 global.heap.rooms[this.name].rampartRepairersPower+=_.filter(creep.body, { type: WORK }).length
                 break;
+            case C.ROLE_RESOURCE_MANAGER:
+                creep.roleResourceManager()
+                global.heap.rooms[this.name].resourceManagerId=creep.id
+
         }
     }
 

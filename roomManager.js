@@ -28,6 +28,7 @@ Room.prototype.roomManager = function roomManager() {
     this.memory.repairerId = undefined
 
     if (Memory.mainRooms.includes(this.name)) {
+        //If it is one of main rooms 
 
         //spawnID
         if((this.memory.spawnId!=undefined && Game.getObjectById(this.memory.spawnId)==null)|| this.memory.spawnId==undefined)
@@ -336,6 +337,10 @@ Room.prototype.roomManager = function roomManager() {
                     break;
                 case STRUCTURE_LINK:
                     global.heap.rooms[this.name].myLinks.push(str.id);
+                    if(this.room.storage!=undefined && str.pos.x==this.room.storage.pos.x-2 && str.pos.y==this.room.storage.pos.y)
+                    {
+                        global.heap.rooms[this.name].managerLinkId=str.id
+                    }
                     break;
                 case STRUCTURE_NUKER:
                     global.heap.rooms[this.name].myNuker = str.id
