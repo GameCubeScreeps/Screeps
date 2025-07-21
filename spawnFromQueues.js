@@ -28,7 +28,23 @@ Room.prototype.spawnFromQueues = function spawnFromQueues() {
 
 
     if (global.heap.rooms[this.name].defensiveQueue.length > 0) {
+        var request = global.heap.rooms[this.name].defensiveQueue[0]
+        //console.log("trying to spawn: ", request.type)
+        var type = request.type
+        ////console.log("Type: ", type)
+        var energyCap = Game.rooms[this.name].energyAvailable
 
+        switch (type) {
+            case C.ROLE_SOLDIER:
+                {
+                    var result = spawn.spawnCreep(soldierBody(energyCap), C.ROLE_SOLDIER + '_' + this.name + Game.time, { memory: { role: C.ROLE_SOLDIER, homeRoom: this.name, targetRoom: request.roomName } })
+                    if (result == OK) {
+                        global.heap.rooms[this.name].defensiveQueue.shift()
+
+                    }
+                    break;
+                }
+        }
     }
     else if (global.heap.rooms[this.name].harvestingQueue.length > 0) {
 
@@ -155,6 +171,7 @@ Room.prototype.spawnFromQueues = function spawnFromQueues() {
                     //console.log("worker spawning result: ",result)
                     break;
                 }
+
 
         }
     }

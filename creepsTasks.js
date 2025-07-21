@@ -86,7 +86,7 @@ Creep.prototype.decreaseBalancer = function decreaseBalancer() {
 
     if (aux == 0) {
         aux = this.store.getFreeCapacity(RESOURCE_ENERGY)
-    } this.say("Dec: " + aux)
+    } 
     Game.rooms[this.memory.homeRoom].memory.energyBalance -= aux
 }
 
