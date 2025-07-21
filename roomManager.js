@@ -286,9 +286,9 @@ Room.prototype.roomManager = function roomManager() {
     if (hostiles.length > 0) {
         for (a of hostiles) {
             global.heap.rooms[this.name].hostiles.push(a)
-            global.heap.rooms[this.name].hostileHealPower += _.filter(creep.body, { type: HEAL }).length * HEAL_POWER
-            global.heap.rooms[this.name].hostileAttackPower += _.filter(creep.body, { type: ATTACK }).length * ATTACK_POWER
-            global.heap.rooms[this.name].hostileRangedAttackPower += _.filter(creep.body, { type: RANGED_ATTACK }).length * RANGED_ATTACK_POWER
+            global.heap.rooms[this.name].hostileHealPower += _.filter(a.body, { type: HEAL }).length * HEAL_POWER
+            global.heap.rooms[this.name].hostileAttackPower += _.filter(a.body, { type: ATTACK }).length * ATTACK_POWER
+            global.heap.rooms[this.name].hostileRangedAttackPower += _.filter(a.body, { type: RANGED_ATTACK }).length * RANGED_ATTACK_POWER
         }
     }
 
@@ -356,7 +356,7 @@ Room.prototype.roomManager = function roomManager() {
                     break;
                 case STRUCTURE_LINK:
                     global.heap.rooms[this.name].myLinks.push(str.id);
-                    if (this.room.storage != undefined && str.pos.x == this.room.storage.pos.x - 2 && str.pos.y == this.room.storage.pos.y) {
+                    if (this.storage != undefined && str.pos.x == this.storage.pos.x - 2 && str.pos.y == this.storage.pos.y) {
                         global.heap.rooms[this.name].managerLinkId = str.id
                     }
                     break;

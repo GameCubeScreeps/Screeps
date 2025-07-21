@@ -52,7 +52,6 @@ module.exports.loop = function () {
         Memory.mainRooms.push(roomName)
       }
 
-      //Find hostile and friendly creeps and structures
       Game.rooms[roomName].roomManager()
 
     }
