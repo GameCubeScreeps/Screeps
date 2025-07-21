@@ -10,6 +10,7 @@ const roleRepairer = require('roleRepairer')
 const roleHauler = require('roleHauler')
 const roleReserver = require('roleReserver')
 const roleRampartRepairer = require('roleRampartRepairer')
+const roleResourceManager=require('roleResourceManager')
 
 
 Room.prototype.creepsManager = function creepsManager() {

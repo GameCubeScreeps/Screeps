@@ -214,7 +214,6 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     {
         for(r of this.memory.harvestingRooms)
         {
-            console.log("r.name: ",r.name)
             if(global.heap.rooms[r.name]!=undefined && global.heap.rooms[r.name].hostiles.length>0)
             {
                 if(global.heap.rooms[r.name].myAttackPower+global.heap.rooms[r.name].myRangedAtackPower<=global.heap.rooms[r.name].hostileHealPower)
