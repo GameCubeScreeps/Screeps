@@ -210,7 +210,19 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     }
 
     //Soldiers
-    
+    if(this.memory.harvestingRooms!=undefined)
+    {
+        for(r of this.memory.harvestingRooms)
+        {
+            if(global.heap.rooms[r.name].hostiles.length>0)
+            {
+                if(global.heap.rooms[r.name].myAttackPower+global.heap.rooms[r.name].myRangedAtackPower<=global.heap.rooms[r.name].hostileHealPower)
+                {
+                    global.heap.rooms[this.name].defensiveQueue.push(new generalRoomRequest(r.name,C.ROLE_SOLDIER))
+                }
+            }
+        }
+    }
 
     /*
     //logging queues
