@@ -209,6 +209,9 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
         global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_RESOURCE_MANAGER))
     }
 
+    //Soldiers
+    
+
     /*
     //logging queues
     console.log("civilian queue")

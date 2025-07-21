@@ -19,6 +19,9 @@ Room.prototype.roomManager = function roomManager() {
 
     global.heap.rooms[this.name].state = []
     global.heap.rooms[this.name].hostiles = []
+    global.heap.rooms[this.name].hostileHealPower=0;
+    global.heap.rooms[this.name].hostileAttackPower=0;
+    global.heap.rooms[this.name].hostileRangedAttackPower=0;
     global.heap.rooms[this.name].allies = []
     global.heap.rooms[this.name].myWorkers = [];
     global.heap.rooms[this.name].damagedStructuresId = []
@@ -281,6 +284,9 @@ Room.prototype.roomManager = function roomManager() {
     if (hostiles.length > 0) {
         for (a of hostiles) {
             global.heap.rooms[this.name].hostiles.push(a.id)
+            global.heap.rooms[this.name].hostileHealPower+=_.filter(creep.body, { type: HEAL }).length*HEAL_POWER
+            global.heap.rooms[this.name].hostileAttackPower+=_.filter(creep.body, { type: ATTACK }).length*ATTACK_POWER
+            global.heap.rooms[this.name].hostileRangedAttackPower+=_.filter(creep.body, { type: RANGED_ATTACK }).length*RANGED_ATTACK_POWER
         }
     }
 
