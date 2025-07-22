@@ -30,6 +30,14 @@ class generalRoomRequest {
     }
 }
 
+class soldierRequest {
+    constructor(roomName, type, isMelee) {
+        this.roomName = roomName
+        this.type = type
+        this.isMelee = isMelee
+    }
+}
+
 
 Room.prototype.createRoomQueues = function createRoomQueues() {
 
@@ -40,16 +48,13 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
 
 
     // Scout
-    //console.log("rooms to scan: ",this.memory.roomsToScan)
     if (this.memory.roomsToScan == undefined) {
         global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_SCOUT))
-        //console.log("adding: ", C.ROLE_SCOUT)
     }
     else if (this.memory.roomsToScan != undefined) {
         if (this.memory.roomsToScan.length > 0) {
             if (global.heap.rooms[this.name].haveScout == false) {
                 global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_SCOUT))
-                //console.log("adding: ", C.ROLE_SCOUT)
             }
         }
     }
@@ -143,7 +148,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
 
     // Workers below RCL4 - wthout storage
     if (this.storage == undefined || this.controller.level < 4) {
-        if (this.memory.energyBalance > C.ENERGY_BALANCER_WORKER_SPAWN && Game.time%5==0) {
+        if (this.memory.energyBalance > C.ENERGY_BALANCER_WORKER_SPAWN && Game.time % 5 == 0) {
 
             global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_WORKER))
 
@@ -160,7 +165,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
         }
     }
 
-    
+
 
     global.heap.rooms[this.name].areHarvestingNeedsSatisfied = areHarvestersSatisfied && areCarriersSatisfied
 
@@ -169,7 +174,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     if (this.controller.level >= 3) {
         if (this.memory.harvestingRooms != undefined) {
             for (room of this.memory.harvestingRooms) {
-                if (room.reserverId == undefined && room.name!=this.name) {
+                if (room.reserverId == undefined && room.name != this.name) {
                     global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(room.name, C.ROLE_RESERVER))
                 }
             }
@@ -190,26 +195,25 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     }
 
 
-    if(this.storage!=undefined && global.heap.rooms[this.name].resourceManagerId==undefined)
-    {
+    if (this.storage != undefined && global.heap.rooms[this.name].resourceManagerId == undefined) {
         global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_RESOURCE_MANAGER))
     }
 
     //Soldiers
-    // TODO 
-    // if there are only hostile structures but no creeps - spawn melee soldier
-    if(this.memory.harvestingRooms!=undefined)
-    {
-        for(r of this.memory.harvestingRooms)
-        {
-            if(global.heap.rooms[r.name]!=undefined && (global.heap.rooms[r.name].hostiles.length>0 || global.heap.rooms[r.name].hostileStructures.length>0))
-            {
+    if (this.memory.harvestingRooms != undefined) {
+        for (r of this.memory.harvestingRooms) {
+            if (global.heap.rooms[r.name] != undefined && (global.heap.rooms[r.name].hostiles.length > 0 || global.heap.rooms[r.name].hostileStructures.length > 0)) {
 
-                if(global.heap.rooms[r.name].myAttackPower+global.heap.rooms[r.name].myRangedAttackPower<=global.heap.rooms[r.name].hostileHealPower
-                    || global.heap.rooms[r.name].myAttackPower+global.heap.rooms[r.name].myRangedAttackPower==0
-                )
-                {
-                    global.heap.rooms[this.name].defensiveQueue.push(new generalRoomRequest(r.name,C.ROLE_SOLDIER))
+                var ifNeedMelee = false;
+                if (global.heap.rooms[r.name].hostiles.length == 0 && global.heap.rooms[r.name].hostileStructures.length > 0) {
+                    ifNeedMelee = true
+                }
+                if (global.heap.rooms[r.name].myAttackPower + global.heap.rooms[r.name].myRangedAttackPower <= global.heap.rooms[r.name].hostileHealPower
+                    || global.heap.rooms[r.name].myAttackPower + global.heap.rooms[r.name].myRangedAttackPower == 0
+                ) {
+                    global.heap.rooms[this.name].defensiveQueue.push(new soldierRequest(r.name, C.ROLE_SOLDIER, ifNeedMelee))
+
+
                 }
             }
         }
@@ -219,7 +223,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
 
 
 
-    
+
     /*
 
 for (a of global.heap.rooms[this.name].defensiveQueue) {

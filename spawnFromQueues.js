@@ -37,7 +37,7 @@ Room.prototype.spawnFromQueues = function spawnFromQueues() {
         switch (type) {
             case C.ROLE_SOLDIER:
                 {
-                    var result = spawn.spawnCreep(soldierBody(energyCap), C.ROLE_SOLDIER + '_' + this.name + Game.time, { memory: { role: C.ROLE_SOLDIER, homeRoom: this.name, targetRoom: request.roomName } })
+                    var result = spawn.spawnCreep(soldierBody(energyCap,request.isMelee), C.ROLE_SOLDIER + '_' + this.name + Game.time, { memory: { role: C.ROLE_SOLDIER, homeRoom: this.name, targetRoom: request.roomName } })
                     if (result == OK) {
                         global.heap.rooms[this.name].defensiveQueue.shift()
 
