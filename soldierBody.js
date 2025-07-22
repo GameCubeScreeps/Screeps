@@ -6,7 +6,7 @@ function soldierBody(cap)// return array with max possible work parts for builde
 
         parts.push(MOVE)
         cap -= BODYPART_COST[MOVE]
-        arts.push(MOVE)
+        parts.push(MOVE)
         cap -= BODYPART_COST[MOVE]
         parts.push(RANGED_ATTACK)
         cap -= BODYPART_COST[RANGED_ATTACK]

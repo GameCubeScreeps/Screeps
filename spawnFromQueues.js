@@ -6,7 +6,7 @@ const carrierBody = require('carrierBody')
 const workerBody = require('workerBody')
 const { result } = require('lodash');
 const repairerBody = require('repairerBody');
-
+const soldierBody=require('soldierBody')
 
 
 //defining local heap

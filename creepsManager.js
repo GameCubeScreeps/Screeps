@@ -11,6 +11,7 @@ const roleHauler = require('roleHauler')
 const roleReserver = require('roleReserver')
 const roleRampartRepairer = require('roleRampartRepairer')
 const roleResourceManager=require('roleResourceManager')
+const roleSoldier=require('roleSoldier')
 
 
 Room.prototype.creepsManager = function creepsManager() {

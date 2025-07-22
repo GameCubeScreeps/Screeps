@@ -2,6 +2,14 @@
 const Movement = require('screeps-movement');
 const C=require('constants')
 
+
+
+//TODO
+// add finding (in roomManager) myDamagedCreeps (and allied damaged creeps) and healing them
+
+
+
+
 Creep.prototype.roleSoldier = function roleSoldier(ceep) {
 
     if (this.memory.isMelee == undefined) {
@@ -21,7 +29,7 @@ Creep.prototype.roleSoldier = function roleSoldier(ceep) {
 
 
 
-    if (this.room.name == this.memory.targetROom) {
+    if (this.room.name == this.memory.targetRoom) {
 
         
 
@@ -80,9 +88,10 @@ Creep.prototype.roleSoldier = function roleSoldier(ceep) {
                 this.heal(this);
             }
         }
-        if (Game.rooms[this.memory.targetROom] != undefined && Game.rooms[this.memory.targetROom].memory.damagedCreeps.length > 0) {
+        /*
+        if (Game.rooms[this.memory.targetRoom] != undefined && Game.rooms[this.memory.targetRoom].memory.damagedCreeps.length > 0) {
             var damaged = [];
-            for (cr of Game.rooms[this.memory.targetROom].memory.damagedCreeps) {
+            for (cr of Game.rooms[this.memory.targetRoom].memory.damagedCreeps) {
                 damaged.push(Game.getObjectById(cr))
             }
             var toHeal = this.pos.findClosestByRange(damaged)
@@ -99,6 +108,7 @@ Creep.prototype.roleSoldier = function roleSoldier(ceep) {
         }
         else {
         }
+            */
     }
     else {
 
@@ -106,7 +116,7 @@ Creep.prototype.roleSoldier = function roleSoldier(ceep) {
             this.rangedMassAttack()
             this.heal(this)
         }
-        this.moveTo(new RoomPosition(25, 25, this.memory.targetROom), { reusePath: 25, avoidCreeps: true, range: 22 });
+        this.moveTo(new RoomPosition(25, 25, this.memory.targetRoom), { reusePath: 25, avoidCreeps: true, range: 22 });
 
     }
 
