@@ -48,7 +48,7 @@ Creep.prototype.roleSoldier = function roleSoldier(ceep) {
         if (targetCreep) {
 
             if (this.rangedAttack(targetCreep) == ERR_NOT_IN_RANGE) {
-                this.moveTo(targetthis.pos, { maxRooms: 1, avoidSk: true, avoidCreeps: true });
+                this.moveTo(targetCreep.pos, { maxRooms: 1, avoidSk: true, avoidCreeps: true });
             }
 
             if (this.memory.isMelee == false) {
@@ -60,7 +60,7 @@ Creep.prototype.roleSoldier = function roleSoldier(ceep) {
                     this.fleeFrom({ targetCreep }, 3, { maxRooms: 1 })
                     this.say("flee")
                 }
-                else if (this.pos.isNearTo(targetthis.pos)) {
+                else if (this.pos.isNearTo(targetCreep.pos)) {
                     this.rangedMassAttack()
                 }
             }
