@@ -2,15 +2,16 @@ const C = require('constants');
 
 Creep.prototype.roleReserver = function roleReserver() {
 
-    for(r of Game.rooms[this.memory.homeRoom].memory.harvestingRooms)
-    {
-        if(r.name==this.memory.targetRoom)
-        {
-            r.reserverId=this.id
-            break;
+    if (Game.rooms[this.memory.homeRoom].memory.harvestingRooms != undefined) {
+        for (r of Game.rooms[this.memory.homeRoom].memory.harvestingRooms) {
+            if (r.name == this.memory.targetRoom) {
+                r.reserverId = this.id
+                break;
+            }
         }
     }
-    
+
+
 
     if (this.memory.targetRoom) {
         if (this.room.name == this.memory.targetRoom && this.memory.targetRoom != this.memory.homeRoom) {// if in target room - go claim 
@@ -32,7 +33,7 @@ Creep.prototype.roleReserver = function roleReserver() {
                     if (!this.pos.isNearTo(this.room.controller.pos)) {
                         this.travelTo(this.room.controller, { reusePath: 15, maxRooms: 1 })
                     }
-                    else  {
+                    else {
 
 
                         if (this.reserveController(this.room.controller) == ERR_INVALID_TARGET) {
@@ -58,7 +59,7 @@ Creep.prototype.roleReserver = function roleReserver() {
                 this.travelTo(Game.rooms[this.memory.targetRoom].controller, { reusePath: 12 });
             }
             else {
-                this.travelTo(new RoomPosition(25,25,this.memory.targetRoom), {range: 21, reusePath: 19 });
+                this.travelTo(new RoomPosition(25, 25, this.memory.targetRoom), { range: 21, reusePath: 19 });
 
             }
 

@@ -4,7 +4,7 @@ const C=require('constants')
 
 localHeap={}
 
-Creep.prototype.roleResourceManager = function roleResourceManager(creep, spawn) {//transfer energy grom containers to storage
+Creep.prototype.roleResourceManager = function roleResourceManager() {//transfer energy grom containers to storage
 
 
     //Needs:
@@ -13,14 +13,14 @@ Creep.prototype.roleResourceManager = function roleResourceManager(creep, spawn)
     var terminal = this.room.terminal;
     var storage = this.room.storage;
     localHeap.task = undefined;
-    if (this.global.heap.rooms[this.memory.homeRoom].managerLinkId != undefined) {
-        var managerLink = Game.getObjectById(this.global.heap.rooms[this.memory.homeRoom].managerLinkId);
+    if (global.heap.rooms[this.memory.homeRoom].managerLinkId != undefined) {
+        var managerLink = Game.getObjectById(global.heap.rooms[this.memory.homeRoom].managerLinkId);
         if (managerLink == null) {
             this.global.heap.rooms[this.memory.homeRoom].managerLinkId = undefined
         }
     }
-    if (storage != undefined && (creep.pos.x != storage.pos.x - 1 || creep.pos.y != storage.pos.y + 1)) {
-        this.travelTo(new RoomPosition(storage.pos.x - 1, storage.pos.y + 1, this.roomname));
+    if (storage != undefined && (this.pos.x != storage.pos.x - 1 || this.pos.y != storage.pos.y + 1)) {
+        this.travelTo(new RoomPosition(storage.pos.x - 1, storage.pos.y + 1, this.room.name));
         return;
     }
     else {
@@ -49,7 +49,6 @@ Creep.prototype.roleResourceManager = function roleResourceManager(creep, spawn)
         }
         if (managerLink != undefined) {
             if (managerLink.store[RESOURCE_ENERGY] < C.LINK_BOTTOM_ENERGY && storage != undefined) {
-                //creep.say(C.TASK_FILL_TERMINAL_ENERGY)
                 localHeap.task = C.TASK_FILL_TERMINAL_ENERGY;
 
             }
@@ -65,9 +64,7 @@ Creep.prototype.roleResourceManager = function roleResourceManager(creep, spawn)
                 }
                 if (energyAtSourceLink > 600 && canTheyTransfer == true) {
                     localHeap.task = C.TASK_TAKE_FROM_LINK
-                    //creep.say("Take from link")
                 }
-                // /creep.say(energyAtSourceLink)
             }
         }
         if (Memory.fastRCLUpgrade != undefined && Memory.fastRCLUpgrade == this.room.name && terminal.store.getFreeCapacity(RESOURCE_ENERGY) > C.TERMINAL_FASTRCL_FREE_BUFFOR
@@ -85,59 +82,59 @@ Creep.prototype.roleResourceManager = function roleResourceManager(creep, spawn)
 
 
         if (localHeap.task == C.TASK_FILL_TERMINAL_ENERGY) {
-            clearCreepStore(storage, RESOURCE_ENERGY);
+            this.clearCreepStore(storage, RESOURCE_ENERGY);
             if (storage.store[RESOURCE_ENERGY] > 0) {
-                creep.withdraw(storage, RESOURCE_ENERGY)
+                this.withdraw(storage, RESOURCE_ENERGY)
             }
             else if (terminal != undefined && terminal.store[RESOURCE_ENERGY] > 0) {
-                creep.withdraw(terminal, RESOURCE_ENERGY)
+                this.withdraw(terminal, RESOURCE_ENERGY)
             }
 
-            creep.transfer(managerLink, RESOURCE_ENERGY)
-            //creep.say(managerLink.pos.x)
+            this.transfer(managerLink, RESOURCE_ENERGY)
+            //this.say(managerLink.pos.x)
         }
         else if (localHeap.task == C.TASK_FILL_TERMINAL_ENERGY) {
-            clearCreepStore(storage, RESOURCE_ENERGY);
-            creep.withdraw(storage, RESOURCE_ENERGY);
-            creep.transfer(terminal, RESOURCE_ENERGY);
+            this.clearCreepStore(storage, RESOURCE_ENERGY);
+            this.withdraw(storage, RESOURCE_ENERGY);
+            this.transfer(terminal, RESOURCE_ENERGY);
         }
         else if (localHeap.task == C.TASK_FILL_TERMINAL_ENERGY) {
-            clearCreepStore(storage, RESOURCE_ENERGY);
-            if (creep.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
-                creep.transfer(storage, RESOURCE_ENERGY);
+            this.clearCreepStore(storage, RESOURCE_ENERGY);
+            if (this.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+                this.transfer(storage, RESOURCE_ENERGY);
             }
             else {
-                creep.withdraw(terminal, RESOURCE_ENERGY);
+                this.withdraw(terminal, RESOURCE_ENERGY);
             }
 
 
         }
         else if (localHeap.task == C.TASK_TAKE_FROM_LINK) {
-            clearCreepStore(storage, RESOURCE_ENERGY);
-            creep.withdraw(managerLink, RESOURCE_ENERGY)
-            creep.transfer(storage, RESOURCE_ENERGY)
+            this.clearCreepStore(storage, RESOURCE_ENERGY);
+            this.withdraw(managerLink, RESOURCE_ENERGY)
+            this.transfer(storage, RESOURCE_ENERGY)
         }
         else if (localHeap.task == C.XTASK_XGH2O_TRANSFER) {
             
             if (Memory.fastRCLUpgrade == this.room.name) {
                 if(terminal.store[RESOURCE_CATALYZED_GHODIUM_ACID]==0){localHeap.task=undefined;}
-                clearCreepStore(storage, RESOURCE_CATALYZED_GHODIUM_ACID);
-                if (creep.store.getUsedCapacity(RESOURCE_CATALYZED_GHODIUM_ACID) > 0) {
-                    creep.transfer(storage, RESOURCE_CATALYZED_GHODIUM_ACID);
+                this.clearCreepStore(storage, RESOURCE_CATALYZED_GHODIUM_ACID);
+                if (this.store.getUsedCapacity(RESOURCE_CATALYZED_GHODIUM_ACID) > 0) {
+                    this.transfer(storage, RESOURCE_CATALYZED_GHODIUM_ACID);
                 }
                 else {
-                    creep.withdraw(terminal, RESOURCE_CATALYZED_GHODIUM_ACID);
+                    this.withdraw(terminal, RESOURCE_CATALYZED_GHODIUM_ACID);
                 }
             }
             else {
                 if(storage.store[RESOURCE_CATALYZED_GHODIUM_ACID]==0){localHeap.task=undefined;}
-                clearCreepStore(storage, RESOURCE_CATALYZED_GHODIUM_ACID);
-                if (creep.store.getUsedCapacity(RESOURCE_CATALYZED_GHODIUM_ACID) > 0) {
+                this.clearCreepStore(storage, RESOURCE_CATALYZED_GHODIUM_ACID);
+                if (this.store.getUsedCapacity(RESOURCE_CATALYZED_GHODIUM_ACID) > 0) {
 
-                    creep.withdraw(storage, RESOURCE_CATALYZED_GHODIUM_ACID);
+                    this.withdraw(storage, RESOURCE_CATALYZED_GHODIUM_ACID);
                 }
                 else {
-                    creep.transfer(terminal, RESOURCE_CATALYZED_GHODIUM_ACID);
+                    this.transfer(terminal, RESOURCE_CATALYZED_GHODIUM_ACID);
                 }
             }
 
@@ -150,19 +147,19 @@ Creep.prototype.roleResourceManager = function roleResourceManager(creep, spawn)
                 if (res == RESOURCE_ENERGY || (res.startsWith("X") && !(res.endsWith("X"))) && Memory.fastRCLUpgrade == undefined) {
                     continue
                 }
-                if (creep.store.getFreeCapacity(res) == creep.store.getCapacity() && creep.withdraw(storage, res) == OK) {
-                    //creep.say("withdrawa; ", res)
+                if (this.store.getFreeCapacity(res) == this.store.getCapacity() && this.withdraw(storage, res) == OK) {
+                    //this.say("withdrawa; ", res)
                     return;
                 }
             }
 
             //transfering to terminal
-            for (let res in creep.store) {
-                if (res != RESOURCE_ENERGY && creep.transfer(terminal, res) == OK) {
+            for (let res in this.store) {
+                if (res != RESOURCE_ENERGY && this.transfer(terminal, res) == OK) {
                     return
                 }
-                else if (res == RESOURCE_ENERGY && creep.transfer(storage, res) == OK) {
-                    //creep.say("transfer energy")
+                else if (res == RESOURCE_ENERGY && this.transfer(storage, res) == OK) {
+                    //this.say("transfer energy")
                     return;
                 }
             }
@@ -175,7 +172,7 @@ Creep.prototype.roleResourceManager = function roleResourceManager(creep, spawn)
 };
 
 Creep.prototype.clearCreepStore = function clearCreepStore(storage, res) {
-    //creep.say("clearing")
+    //this.say("clearing")
     for (r in this.store) {
         if (r != res && this.transfer(storage, r) == OK) {
             return;

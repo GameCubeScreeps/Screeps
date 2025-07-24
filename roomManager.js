@@ -1,7 +1,7 @@
 // Every constant definied in separate file
 const C = require('constants');
 const buildRoom = require('buildRoom');
-const operateTowers=require('operateTowers')
+const operateTowers = require('operateTowers')
 
 
 class Variation {
@@ -19,8 +19,15 @@ Room.prototype.roomManager = function roomManager() {
 
     global.heap.rooms[this.name].state = []
     global.heap.rooms[this.name].hostiles = []
+    global.heap.rooms[this.name].hostileHealPower = 0;
+    global.heap.rooms[this.name].hostileAttackPower = 0;
+    global.heap.rooms[this.name].hostileRangedAttackPower = 0;
+    global.heap.rooms[this.name].hostileStructures = []
     global.heap.rooms[this.name].allies = []
     global.heap.rooms[this.name].myWorkers = [];
+    global.heap.rooms[this.name].myHealPower = 0;
+    global.heap.rooms[this.name].myAttackPower = 0;
+    global.heap.rooms[this.name].myRangedAttackPower = 0;
     global.heap.rooms[this.name].damagedStructuresId = []
     global.heap.rooms[this.name].containersId = []
     global.heap.rooms[this.name].construction = []
@@ -31,12 +38,10 @@ Room.prototype.roomManager = function roomManager() {
         //If it is one of main rooms 
 
         //spawnID
-        if((this.memory.spawnId!=undefined && Game.getObjectById(this.memory.spawnId)==null)|| this.memory.spawnId==undefined)
-        {
-            var sp=this.find(FIND_MY_SPAWNS)
-            if(sp.length>0)
-            {
-                this.memory.spawnId=sp[0].id
+        if ((this.memory.spawnId != undefined && Game.getObjectById(this.memory.spawnId) == null) || this.memory.spawnId == undefined) {
+            var sp = this.find(FIND_MY_SPAWNS)
+            if (sp.length > 0) {
+                this.memory.spawnId = sp[0].id
             }
         }
 
@@ -280,9 +285,23 @@ Room.prototype.roomManager = function roomManager() {
 
     if (hostiles.length > 0) {
         for (a of hostiles) {
-            global.heap.rooms[this.name].hostiles.push(a.id)
+            global.heap.rooms[this.name].hostiles.push(a)
+            global.heap.rooms[this.name].hostileHealPower += _.filter(a.body, { type: HEAL }).length * HEAL_POWER
+            global.heap.rooms[this.name].hostileAttackPower += _.filter(a.body, { type: ATTACK }).length * ATTACK_POWER
+            global.heap.rooms[this.name].hostileRangedAttackPower += _.filter(a.body, { type: RANGED_ATTACK }).length * RANGED_ATTACK_POWER
         }
     }
+
+    //Finding hostileStructures
+    global.heap.rooms[this.name].hostileStructures = this.find(FIND_HOSTILE_STRUCTURES, {
+        filter: function (structure) {
+            //return structure.my==false && 
+            return structure.structureType != STRUCTURE_CONTROLLER
+                && structure.structureType != STRUCTURE_CONTAINER
+                && structure.structureType != STRUCTURE_ROAD
+                && !Memory.allies.includes(structure.owner.name)
+        }
+    });
 
     //Finding allied Creeps
     var allies = this.find(FIND_HOSTILE_CREEPS, {
@@ -337,9 +356,8 @@ Room.prototype.roomManager = function roomManager() {
                     break;
                 case STRUCTURE_LINK:
                     global.heap.rooms[this.name].myLinks.push(str.id);
-                    if(this.room.storage!=undefined && str.pos.x==this.room.storage.pos.x-2 && str.pos.y==this.room.storage.pos.y)
-                    {
-                        global.heap.rooms[this.name].managerLinkId=str.id
+                    if (this.storage != undefined && str.pos.x == this.storage.pos.x - 2 && str.pos.y == this.storage.pos.y) {
+                        global.heap.rooms[this.name].managerLinkId = str.id
                     }
                     break;
                 case STRUCTURE_NUKER:
