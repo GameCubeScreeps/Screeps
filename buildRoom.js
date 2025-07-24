@@ -831,6 +831,11 @@ Room.prototype.buildFromLists = function buildFromLists() {
                     this.memory.finalBuildingList[i].structureType, this.name + "_3");
 
             }
+            else if (this.memory.finalBuildingList[i].structureType == STRUCTURE_SPAWN && this.memory.finalBuildingList[i].minRCL == 1) {
+                Game.rooms[this.memory.finalBuildingList[i].roomName].createConstructionSite(this.memory.finalBuildingList[i].x, this.memory.finalBuildingList[i].y,
+                    this.memory.finalBuildingList[i].structureType, this.name + "_1");
+
+            }
             else if (this.memory.finalBuildingList[i].structureType == STRUCTURE_RAMPART && this.memory.finalBuildingList[i].minRCL <= rcl) {
                 Game.rooms[this.memory.finalBuildingList[i].roomName].createConstructionSite(this.memory.finalBuildingList[i].x, this.memory.finalBuildingList[i].y, this.memory.finalBuildingList[i].structureType);
 
@@ -1286,6 +1291,7 @@ Room.prototype.planSpawnPos = function planSpawnPos(type) {
     console.log("setting spawnPos: ", minPos)
     if (minPos.x != 0 && minPos.y != 0) {
         this.memory.baseVariations[type].spawnPos = new RoomPosition(minPos.x, minPos.y - 2, this.name)
+        this.memory.buildingList.push(new buildingListElement(minPos.x,minPos.y,this.name,STRUCTURE_SPAWN,1))
 
     }
     else {
