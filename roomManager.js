@@ -49,19 +49,7 @@ Room.prototype.roomManager = function roomManager() {
             }
         }
 
-        if (this.controller.level <= 1 && this.memory.spawnId == undefined) {//Room is being colonized
-
-
-            global.heap.rooms[this.name].maxColonizers=0;
-            global.heap.rooms[this.name].colonizeSources = this.find(FIND_SOURCES)
-            for (s of global.heap.rooms[this.name].colonizeSources) {
-                s.maxHarvesters = s.pos.getOpenPositions().length;
-                global.heap.rooms[this.name].maxColonizers=s.maxHarvesters;
-                s.harvesters = [];
-            }
-            global.heap.rooms[this.name].claimer=undefined
-            global.heap.rooms[this.name].colonizers=[];
-        }
+        
 
         if (Memory.roomsToColonize.some(e => e.name==this.name) && this.controller.level > 1 && this.memory.spawnId != undefined) {
             //Room is finished being colonizer

@@ -8,15 +8,15 @@ Room.prototype.visualize = function visualizeroomManager() {
     if (Game.rooms[this.name].memory.energyBalance != undefined) {
         console.log("energy Balance: ", Game.rooms[this.name].memory.energyBalance)
         //visualize balancing
-        Game.rooms[this.name].visual.rect(Game.rooms[this.name].controller.pos.x - (C.BALANCER_HARVEST_LIMIT/500),
-            Game.rooms[this.name].controller.pos.y - 1, (C.BALANCER_HARVEST_LIMIT/500)* 2, 1, {
+        Game.rooms[this.name].visual.rect(Game.rooms[this.name].controller.pos.x - (C.BALANCER_HARVEST_LIMIT / 500),
+            Game.rooms[this.name].controller.pos.y - 1, (C.BALANCER_HARVEST_LIMIT / 500) * 2, 1, {
             fill: C.FILL_COLOR
         }
         )
         // right is a lot of energy
-        Game.rooms[this.name].visual.text('⛏️', Game.rooms[this.name].controller.pos.x + 0.5 + (C.BALANCER_HARVEST_LIMIT/500), Game.rooms[this.name].controller.pos.y - 0.3)
-        Game.rooms[this.name].visual.text('⏫', Game.rooms[this.name].controller.pos.x - 0.5 - (C.BALANCER_HARVEST_LIMIT/500), Game.rooms[this.name].controller.pos.y - 0.3)
-        Game.rooms[this.name].visual.text('🔻', Game.rooms[this.name].controller.pos.x + (Game.rooms[this.name].memory.energyBalance/500), Game.rooms[this.name].controller.pos.y - 0.3)
+        Game.rooms[this.name].visual.text('⛏️', Game.rooms[this.name].controller.pos.x + 0.5 + (C.BALANCER_HARVEST_LIMIT / 500), Game.rooms[this.name].controller.pos.y - 0.3)
+        Game.rooms[this.name].visual.text('⏫', Game.rooms[this.name].controller.pos.x - 0.5 - (C.BALANCER_HARVEST_LIMIT / 500), Game.rooms[this.name].controller.pos.y - 0.3)
+        Game.rooms[this.name].visual.text('🔻', Game.rooms[this.name].controller.pos.x + (Game.rooms[this.name].memory.energyBalance / 500), Game.rooms[this.name].controller.pos.y - 0.3)
 
 
     }
@@ -25,10 +25,9 @@ Room.prototype.visualize = function visualizeroomManager() {
     //progress/tick visualization
     if (Game.rooms[this.name].memory.progressSum != undefined && Game.rooms[this.name].memory.progressCounter != undefined) {
 
-        if(Game.time%C.AVG_STEP==0)
-        {
-            Game.rooms[this.name].memory.progressSum=0;
-            Game.rooms[this.name].memory.progressCounter=0
+        if (Game.time % C.AVG_STEP == 0) {
+            Game.rooms[this.name].memory.progressSum = 0;
+            Game.rooms[this.name].memory.progressCounter = 0
         }
         Game.rooms[this.name].visual.text('⬆️' + (Math.round((Game.rooms[this.name].memory.progressSum / Game.rooms[this.name].memory.progressCounter) * 100) / 100) + "/t",
             Game.rooms[this.name].controller.pos.x + 1.5, Game.rooms[this.name].controller.pos.y + 1, { color: C.TEXT_COLOR })
@@ -64,14 +63,15 @@ Room.prototype.visualize = function visualizeroomManager() {
     //building
     //global.heap.rooms[this.name].construction
     var color = 'red'
-    if (global.heap.rooms[this.name].construction.length > 0) {
-        var color = 'green'
+    if (global.heap.rooms[this.name].construction != undefined && global.heap.rooms[this.name].construction.length > 0) {
+        color = 'green'
+        this.visual.text('🔨', 38.5, 3.25)
+        this.visual.text(global.heap.rooms[this.name].construction.length, 39.5, 3.25)
+        this.visual.rect(38, 2.5, 1, 1, { fill: color })
+        this.visual.line(38, 2.5, 39, 2.5, { color: C.OUTLINE_COLOR })
+        this.visual.line(38, 3.5, 39, 3.5, { color: C.OUTLINE_COLOR })
+        this.visual.line(38, 2.5, 38, 3.5, { color: C.OUTLINE_COLOR })
+        this.visual.line(39, 2.5, 39, 3.5, { color: C.OUTLINE_COLOR })
     }
-    this.visual.text('🔨', 38.5, 3.25)
-    this.visual.text(global.heap.rooms[this.name].construction.length,39.5,3.25)
-    this.visual.rect(38, 2.5, 1, 1, { fill: color })
-    this.visual.line(38, 2.5, 39, 2.5, { color: C.OUTLINE_COLOR })
-    this.visual.line(38, 3.5, 39, 3.5, { color: C.OUTLINE_COLOR })
-    this.visual.line(38, 2.5, 38, 3.5, { color: C.OUTLINE_COLOR })
-    this.visual.line(39, 2.5, 39, 3.5, { color: C.OUTLINE_COLOR })
+
 }

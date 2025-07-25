@@ -323,27 +323,24 @@ Creep.prototype.taskBuild = function taskBuild(localHeap) {
 
 Creep.prototype.taskHarvest = function taskHarvest(localHeap) {
 
-    if(localHeap.targetSource!=undefined && Game.getObjectById(localHeap.targetSource)==null)
-    {
-        localHeap.targetSource=undefined;
+    if (localHeap.targetSource != undefined && Game.getObjectById(localHeap.targetSource) == null) {
+        localHeap.targetSource = undefined;
     }
 
     if (localHeap.targetSource == undefined) {
-        if (global.heap.rooms[this.name].colonizeSources != undefined) {
-            for (s of global.heap.rooms[this.name].colonizeSources) {
-                if (s.harvesters.length < s.maxHarvesters) {
-                    s.harvesters.push(this.id)
-                    localHeap.targetSource = s.id
-                    break;
-                }
+
+        for (s of global.heap.rooms[this.memory.targetRoom].colonizeSources) {
+            if (s.harvesters.length < s.maxHarvesters) {
+                s.harvesters.push(this.id)
+                localHeap.targetSource = s.id
+                break;
             }
         }
+
     }
 
-    if(localHeap.targetSource!=undefined)
-    {
-        if(Game.getObjectById(localHeap.targetSource!=null) && this.harvest(Game.getObjectById(localHeap.targetSource))==ERR_NOT_IN_RANGE)
-        {
+    if (localHeap.targetSource != undefined) {
+        if (Game.getObjectById(localHeap.targetSource) != null && this.harvest(Game.getObjectById(localHeap.targetSource)) == ERR_NOT_IN_RANGE) {
             this.travelTo(Game.getObjectById(localHeap.targetSource))
         }
     }

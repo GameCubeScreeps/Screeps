@@ -1279,7 +1279,7 @@ Room.prototype.planSpawnPos = function planSpawnPos(type) {
     var minDistanceForSpawn = 999999
     for (var i = 0; i < 50; i++) {
         for (var j = 0; j < 50; j++) {
-            if (distanceCM.get(i, j) >= 4 && floodCM.get(i, j) < minDistanceForSpawn && i > 7 && i < 43 && j > 7 && j < 43) {
+            if (distanceCM.get(i, j) >= 5 && floodCM.get(i, j) < minDistanceForSpawn && i > 7 && i < 43 && j > 7 && j < 43) {
                 minDistanceForSpawn = floodCM.get(i, j);
                 minPos.x = i;
                 minPos.y = j + 2;
@@ -1292,6 +1292,7 @@ Room.prototype.planSpawnPos = function planSpawnPos(type) {
     if (minPos.x != 0 && minPos.y != 0) {
         this.memory.baseVariations[type].spawnPos = new RoomPosition(minPos.x, minPos.y - 2, this.name)
         this.memory.buildingList.push(new buildingListElement(minPos.x,minPos.y,this.name,STRUCTURE_SPAWN,1))
+        this.memory.spawnPos=new RoomPosition(minPos.x,minPos.y,this.name)
 
     }
     else {
