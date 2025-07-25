@@ -12,7 +12,7 @@ const soldierBody=require('soldierBody')
 //defining local heap
 const localHeap = {}
 
-Room.prototype.spawnFromQueues = function spawnFromQueues() {
+Room.prototype.spawnManager = function spawnManager() {
 
 
 
@@ -169,6 +169,24 @@ Room.prototype.spawnFromQueues = function spawnFromQueues() {
 
                     }
                     //console.log("worker spawning result: ",result)
+                    break;
+                }
+            case C.ROLE_CLAIMER:
+                {
+                    var result = spawn.spawnCreep([MOVE,MOVE,CLAIM], C.ROLE_CLAIMER + '_' + this.name + Game.time, { memory: { role: C.ROLE_CLAIMER, homeRoom: this.name, targetRoom: request.roomName } })
+                    if (result == OK) {
+                        global.heap.rooms[this.name].civilianQueue.shift()
+
+                    }
+                    break;
+                }
+            case C.ROLE_COLONIZER:
+                {
+                    var result = spawn.spawnCreep([MOVE,MOVE,CLAIM], C.ROLE_COLONIZER + '_' + this.name + Game.time, { memory: { role: C.ROLE_COLONIZER, homeRoom: this.name, targetRoom: request.roomName } })
+                    if (result == OK) {
+                        global.heap.rooms[this.name].civilianQueue.shift()
+
+                    }
                     break;
                 }
 

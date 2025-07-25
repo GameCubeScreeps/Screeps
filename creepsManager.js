@@ -86,7 +86,12 @@ Room.prototype.creepsManager = function creepsManager() {
                 global.heap.rooms[creep.memory.targetRoom].myAttackPower +=_.filter(creep.body, { type: ATTACK }).length*ATTACK_POWER;
                 global.heap.rooms[creep.memory.targetRoom].myRangedAttackPower +=_.filter(creep.body, { type: RANGED_ATTACK }).length*RANGED_ATTACK_POWER;
                 break;
-
+            case C.ROLE_CLAIMER:
+                creep.roleClaimer()
+                global.heap.rooms[this.memory.targetRoom].claimer=creep.id
+            case C.ROLE_COLONIZER:
+                creep.roleColonizer()
+                global.heap.rooms[this.memory.targetRoom].colonizers.push(creep.id)
         }
     }
 

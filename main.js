@@ -11,7 +11,7 @@ const C = require('constants')
 //Profiler to check what CPU usage is
 const profiler = require('screeps-profiler');
 const createRoomQueues = require('createRoomQueues')
-const spawnFromQueues = require('spawnFromQueues')
+const spawnManager = require('spawnManager')
 const roomManager = require('roomManager')
 const creepsManager = require('creepsManager')
 const visualize = require('visualize');
@@ -102,7 +102,7 @@ module.exports.loop = function () {
 
       Game.rooms[mainRoom].createRoomQueues()
 
-      Game.rooms[mainRoom].spawnFromQueues()
+      Game.rooms[mainRoom].spawnManager()
 
       Game.rooms[mainRoom].visualize()
 
