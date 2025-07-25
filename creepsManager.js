@@ -89,7 +89,7 @@ Room.prototype.creepsManager = function creepsManager() {
             case C.ROLE_CLAIMER:
                 creep.roleClaimer() 
                 global.heap.rooms[this.memory.targetRoom].claimer=creep.id
-            case C.ROLE_COLONIZER:
+            case C.ROLE_COLONIZER: 
                 creep.roleColonizer()
                 global.heap.rooms[this.memory.targetRoom].colonizers.push(creep.id)
         }
