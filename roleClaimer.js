@@ -1,6 +1,6 @@
 const C=require('constants')
 
-this.prototype.roleClaimer = function roleClaimer() {
+Creep.prototype.roleClaimer = function roleClaimer() {
 
 
     if (this.memory.targetRoom!=undefined) {
@@ -43,7 +43,7 @@ this.prototype.roleClaimer = function roleClaimer() {
         }
         else { // not in target room - go claim
             roomsToAvoid= (Memory.manualAvoid!= undefined ? Memory.manualAvoid: []);
-            this.travelTo(this.memory.targetRoom, { avoidHostile: true, avoidCreeps: true, avoidSk: true, avoidHostileRooms: true, avoidRooms: roomsToAvoid})
+            this.travelTo(new RoomPosition(25,25,this.memory.targetRoom), { range:21, avoidHostile: true, avoidCreeps: true, avoidSk: true, avoidHostileRooms: true, avoidRooms: roomsToAvoid})
         }
     }
     else {

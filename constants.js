@@ -31,6 +31,7 @@ const ROLE_COLONIZER='colonizer'
 //Creep constants
 const CREEP_MAX_BODYPARTS = 50; // maximum creep body length - couldn't find in API
 const HAULER_REQ_CARRY_PARTS = 6;
+const DEFAULT_COLONIZERS_AMOUNT=4;
 
 //Creeps tasks
 const TASK_HARVEST='harvest'
@@ -121,6 +122,8 @@ module.exports = {
 
     CREEP_MAX_BODYPARTS,
     HAULER_REQ_CARRY_PARTS,
+    DEFAULT_COLONIZERS_AMOUNT,
+    
     TASK_HARVEST,
     TASK_UPGRADE,
     TASK_BUILD,

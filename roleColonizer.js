@@ -13,9 +13,10 @@ localheap={}
 
 Creep.prototype.roleColonizer = function roleColonizer() {
 
+    this.say("COLONZIER")
     if(this.room.name!=this.memory.targetRoom)
     {
-        this.travelTo(25,25,this.memory.targetRoom)
+         this.travelTo(new RoomPosition(25,25,this.memory.targetRoom), { range:21, avoidHostile: true, avoidCreeps: true, avoidSk: true, avoidHostileRooms: true})
     }
     else{
         this.colonizerGetTask()

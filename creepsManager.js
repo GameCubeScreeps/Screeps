@@ -12,7 +12,8 @@ const roleReserver = require('roleReserver')
 const roleRampartRepairer = require('roleRampartRepairer')
 const roleResourceManager=require('roleResourceManager')
 const roleSoldier=require('roleSoldier')
-
+const roleClaimer=require('roleClaimer')
+const roleColonizer=require('roleColonizer')
 
 Room.prototype.creepsManager = function creepsManager() {
 
@@ -88,10 +89,12 @@ Room.prototype.creepsManager = function creepsManager() {
                 break;
             case C.ROLE_CLAIMER:
                 creep.roleClaimer() 
-                global.heap.rooms[this.memory.targetRoom].claimer=creep.id
+                global.heap.rooms[creep.memory.targetRoom].claimer=creep.id
+                break;
             case C.ROLE_COLONIZER: 
                 creep.roleColonizer()
-                global.heap.rooms[this.memory.targetRoom].colonizers.push(creep.id)
+                global.heap.rooms[creep.memory.targetRoom].colonizers.push(creep.id)
+                break;
         }
     }
 

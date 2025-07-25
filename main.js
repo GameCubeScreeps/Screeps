@@ -24,11 +24,13 @@ module.exports.loop = function () {
   profiler.wrap(function () {
 
     //Manual colonizing
-    Memory.manualColonize = '??'
+    if (Memory.manualColonize == undefined) {
+      Memory.manualColonize = '??'
+    }
 
 
     //automatic colonizing
-    if (Memory.roomsToColonize == undefined) {
+    if (Memory.roomsToColonize == undefined || true) {
       Memory.roomsToColonize = []
     }
 
@@ -71,8 +73,9 @@ module.exports.loop = function () {
     }
 
 
-    if (!Memory.roomsToColonize.includes(Memory.manualColonize)) {
+    if (!Memory.roomsToColonize.some(e => e.name === Memory.manualColonize) && Memory.manualColonize != '??') {
       Memory.roomsToColonize.push({ name: Memory.manualColonize })
+      global.heap.rooms[Memory.manualColonize] = {}
 
     }
 
@@ -91,6 +94,15 @@ module.exports.loop = function () {
     }
 
     console.log(C.USERNAME)
+
+    for (colonizeRoom of Memory.roomsToColonize) {
+      console.log("Setting heap for (colonization): ", colonizeRoom.name)
+      global.heap.rooms[colonizeRoom.name] = {}
+      global.heap.rooms[colonizeRoom.name].claimer = undefined
+      global.heap.rooms[colonizeRoom.name].colonizers = []
+      global.heap.rooms[colonizeRoom.name].maxColonizers = C.DEFAULT_COLONIZERS_AMOUNT // as we get vision on that room it will be definied in roomManager
+    }
+
 
     for (mainRoom of Memory.mainRooms) {
 
@@ -121,6 +133,7 @@ module.exports.loop = function () {
       console.log("Used cpu: ", Game.cpu.getUsed() - start)
 
     }
+
 
   });
 
