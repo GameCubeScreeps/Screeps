@@ -30,7 +30,7 @@ Creep.prototype.roleColonizer = function roleColonizer() {
         }
         else if(this.memory.task==C.TASK_UPGRADE)
         {
-            this.taskUpgrade(localheap)
+            this.taskUpgrade(localheap) 
         }
 
     }

@@ -27,7 +27,7 @@ this.prototype.roleClaimer = function roleClaimer() {
 
                 }
                 if(claimeResult==OK)
-                {
+                { 
                     if(!Memory.mainRooms.includes(this.room.name))
                     {
                         Memory.mainRooms.push(this.room.name)
