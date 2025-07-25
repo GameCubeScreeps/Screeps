@@ -171,9 +171,10 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
 
     console.log(global.heap.rooms[this.name].areHarvestingNeedsSatisfied)
     //Claimer and colonizers
-    if (global.heap.rooms[this.name].areHarvestingNeedsSatisfied || true) {
+    if (global.heap.rooms[this.name].areHarvestingNeedsSatisfied ) {
         for (rc of Memory.roomsToColonize) {
-            if (rc.colonizer = this.name) {
+            if (rc.colonizer = this.name && rc.name!=this.name) {
+
                 if (global.heap.rooms[rc.name].claimer == undefined) {
                     global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(rc.name, C.ROLE_CLAIMER))
                     console.log("Adding claimer for: ", rc.name, " to civilian queue")
@@ -184,7 +185,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
                     console.log("Adding colonizer for: ", rc.name, " to civilian queue")
                     break;
                 }
-                
+
 
             }
 
@@ -248,21 +249,24 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
 
 
 
+    ifLog = false
+    if (ifLog) {
+        console.log("defensiveQueue:")
+        for (a of global.heap.rooms[this.name].defensiveQueue) {
+            console.log(a.type)
+        }
 
-    console.log("defensiveQueue:")
-    for (a of global.heap.rooms[this.name].defensiveQueue) {
-        console.log(a.type)
+        console.log("civilian queue")
+        for (a of global.heap.rooms[this.name].civilianQueue) {
+            console.log(a.type)
+        }
+
+        console.log("harvestingQueue")
+        for (a of global.heap.rooms[this.name].harvestingQueue) {
+            console.log(a.type)
+        }
     }
 
-    console.log("civilian queue")
-    for (a of global.heap.rooms[this.name].civilianQueue) {
-        console.log(a.type)
-    }
-
-    console.log("harvestingQueue")
-    for (a of global.heap.rooms[this.name].harvestingQueue) {
-        console.log(a.type)
-    }
 
 
 

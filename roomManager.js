@@ -15,7 +15,7 @@ class Variation {
 
 Room.prototype.roomManager = function roomManager() {
 
-
+    
 
     global.heap.rooms[this.name].state = []
     global.heap.rooms[this.name].hostiles = []
@@ -31,6 +31,14 @@ Room.prototype.roomManager = function roomManager() {
     global.heap.rooms[this.name].damagedStructuresId = []
     global.heap.rooms[this.name].containersId = []
     global.heap.rooms[this.name].construction = []
+
+    //debugging
+    if(this.name=='W3N7')
+    {
+        console.log('debuggin in ',this.name)
+        console.log(global.heap.rooms[this.name].construction)
+    }
+    //
 
     this.memory.repairerId = undefined
 
@@ -272,10 +280,6 @@ Room.prototype.roomManager = function roomManager() {
             }
         }
 
-
-
-
-
     }
 
 
@@ -283,11 +287,19 @@ Room.prototype.roomManager = function roomManager() {
 
     //finding construction sites
     var constr = this.find(FIND_CONSTRUCTION_SITES)
+
+
     if (constr.length > 0) {
+
+        
         global.heap.rooms[this.name].building = true
         for (c of constr) {
             global.heap.rooms[this.name].construction.push(c.id)
         }
+        //debuggin
+        console.log(this.name," constructions: ",global.heap.rooms[this.name].construction.length)
+        Game.rooms[this.name].memory.construction=constr
+        //
     }
     else {
         if (global.heap.rooms[this.name].building != undefined) {

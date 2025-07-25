@@ -35,7 +35,7 @@ module.exports.loop = function () {
     }
 
     //Setting allies
-    Memory.allies = ["JeallyRabbi", "Alphonzo", "insainmonkey", "Trepidimous"]
+    Memory.allies = ["JeallyRabbit", "Alphonzo", "insainmonkey", "Trepidimous"]
 
     //Setting enemies
     Memory.enemies = ["IronVengeance"]
@@ -85,7 +85,8 @@ module.exports.loop = function () {
           minDistance = Infinity
           for (m of Memory.mainRooms) {
             if (Game.map.getRoomLinearDistance(m, r.name) < minDistance
-          && Game.rooms[m].storage!=undefined && Game.rooms[m].storage[RESOURCE_ENERGY]>C.COLONIZE_ENERGY_LIMIT) {
+          && Game.rooms[m].storage!=undefined && Game.rooms[m].storage[RESOURCE_ENERGY]>C.COLONIZE_ENERGY_LIMIT
+        && r.name!=m) {
               minDistance = Game.map.getRoomLinearDistance(m, r.name)
               r.colonizer = m;
             }
@@ -101,18 +102,18 @@ module.exports.loop = function () {
       global.heap.rooms[colonizeRoom.name] = {}
       global.heap.rooms[colonizeRoom.name].claimer = undefined
       global.heap.rooms[colonizeRoom.name].colonizers = []
-      global.heap.rooms[colonizeRoom.name].maxColonizers = C.DEFAULT_COLONIZERS_AMOUNT // as we get vision on that room it will be definied in roomManager
+      global.heap.rooms[colonizeRoom.name].maxColonizers = C.DEFAULT_COLONIZERS_AMOUNT // as we get vision on that room it will be definied in next step
       global.heap.rooms[colonizeRoom.name]=[]
 
 
-      if (Game.rooms[colonizeRoom.name]!=undefined && Game.rooms[colonizeRoom.name].controller.level <= 1 && Game.rooms[colonizeRoom.name].memory.spawnId == undefined) {//Room is being colonized
+      if (Game.rooms[colonizeRoom.name]!=undefined && Game.rooms[colonizeRoom.name].controller.level <= 2 && Game.rooms[colonizeRoom.name].memory.spawnId == undefined) {//Room is being colonized
 
-            console.log("Setting heap for room: ",colonizeRoom," - colonization with vision")
+            console.log("Setting heap for room: ",colonizeRoom.name," - colonization with vision")
             global.heap.rooms[colonizeRoom.name].maxColonizers=0;
             global.heap.rooms[colonizeRoom.name].colonizeSources = Game.rooms[colonizeRoom.name].find(FIND_SOURCES)
             for (s of global.heap.rooms[colonizeRoom.name].colonizeSources) {
                 s.maxHarvesters = s.pos.getOpenPositions().length;
-                global.heap.rooms[colonizeRoom.name].maxColonizers=s.maxHarvesters;
+                global.heap.rooms[colonizeRoom.name].maxColonizers+=s.maxHarvesters;
                 s.harvesters = [];
             }
             global.heap.rooms[colonizeRoom.name].claimer=undefined
@@ -125,6 +126,7 @@ module.exports.loop = function () {
                 if(building.structureType==STRUCTURE_SPAWN)
                 {
                   Game.rooms[colonizeRoom.name].createConstructionSite(building.x,building.y,building.structureType,colonizeRoom.name+'_1')
+                  break;
                 }
               }
             }
