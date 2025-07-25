@@ -23,6 +23,14 @@ profiler.enable();
 module.exports.loop = function () {
   profiler.wrap(function () {
 
+    //Manual colonizing
+    Memory.manualColonize = '??'
+
+
+    //automatic colonizing
+    if (Memory.roomsToColonize == undefined) {
+      Memory.roomsToColonize = []
+    }
 
     //Setting allies
     Memory.allies = ["JeallyRabbi", "Alphonzo", "insainmonkey", "Trepidimous"]
@@ -37,15 +45,15 @@ module.exports.loop = function () {
     }
 
     Memory.mainRooms = []
-    global.heap.isSomeRoomPlanning=false;
+    global.heap.isSomeRoomPlanning = false;
 
     for (roomName in Game.rooms) {
 
-      
+
 
       if (global.heap.rooms[roomName] == undefined) {
         global.heap.rooms[roomName] = {}
-        console.log("Setting heap for ",roomName)
+        console.log("Setting heap for ", roomName)
       }
 
       if (Game.rooms[roomName].controller != undefined && Game.rooms[roomName].controller.my) {
@@ -62,13 +70,33 @@ module.exports.loop = function () {
       break;
     }
 
+
+    if (!Memory.roomsToColonize.includes(Memory.manualColonize)) {
+      Memory.roomsToColonize.push({ name: Memory.manualColonize })
+
+    }
+
+    if (Memory.roomsToColonize.length > 0) {
+      for (r of Memory.roomsToColonize) {
+        if (r.colonizer == undefined) {
+          minDistance = Infinity
+          for (m of Memory.mainRooms) {
+            if (Game.map.getRoomLinearDistance(m, r.name) < minDistance) {
+              minDistance = Game.map.getRoomLinearDistance(m, r.name)
+              r.colonizer = m;
+            }
+          }
+        }
+      }
+    }
+
     console.log(C.USERNAME)
 
     for (mainRoom of Memory.mainRooms) {
 
       console.log("--------------- ", mainRoom, "---------------")
-      
-      var start=Game.cpu.getUsed()
+
+      var start = Game.cpu.getUsed()
 
       Game.rooms[mainRoom].creepsManager()
 
@@ -78,23 +106,23 @@ module.exports.loop = function () {
 
       Game.rooms[mainRoom].visualize()
 
-      global.heap.rooms[mainRoom].usedCpu=Game.cpu.getUsed()-start
-      if(global.heap.rooms[mainRoom].cpuSum==undefined || global.heap.rooms[mainRoom].avgCounter>C.AVG_STEP)
-      {
-        global.heap.rooms[mainRoom].cpuSum=global.heap.rooms[mainRoom].usedCpu
-        global.heap.rooms[mainRoom].avgCounter=1;
+      global.heap.rooms[mainRoom].usedCpu = Game.cpu.getUsed() - start
+      if (global.heap.rooms[mainRoom].cpuSum == undefined || global.heap.rooms[mainRoom].avgCounter > C.AVG_STEP) {
+        global.heap.rooms[mainRoom].cpuSum = global.heap.rooms[mainRoom].usedCpu
+        global.heap.rooms[mainRoom].avgCounter = 1;
       }
-      else
-      {
-        global.heap.rooms[mainRoom].cpuSum+=global.heap.rooms[mainRoom].usedCpu
+      else {
+        global.heap.rooms[mainRoom].cpuSum += global.heap.rooms[mainRoom].usedCpu
         global.heap.rooms[mainRoom].avgCounter++;
-        global.heap.rooms[mainRoom].avgCpu=global.heap.rooms[mainRoom].cpuSum/global.heap.rooms[mainRoom].avgCounter
-        
+        global.heap.rooms[mainRoom].avgCpu = global.heap.rooms[mainRoom].cpuSum / global.heap.rooms[mainRoom].avgCounter
+
       }
 
-      console.log("Used cpu: ",Game.cpu.getUsed()-start)  
-      
+      console.log("Used cpu: ", Game.cpu.getUsed() - start)
+
     }
 
   });
+
+
 }

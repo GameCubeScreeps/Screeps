@@ -220,6 +220,23 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     }
 
 
+    //Claimer and colonizers
+    for (rc of Memory.roomsToColonize) {
+        if (rc.colonizer = this.name) {
+            if (global.heap.rooms[rc.name].claimer == undefined) {
+                global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(rc.name, C.ROLE_CLAIMER))
+                console.log("Adding claimer for: ", rc.name, " to civilian queue")
+            }
+            else if (global.heap.rooms[rc.name].colonizers.length < global.heap.rooms[rc.name].maxColonizers) {
+                global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(rc.name, C.ROLE_COLONIZER))
+                console.log("Adding colonizer for: ", rc.name, " to civilian queue")
+            }
+            break;
+
+        }
+
+    }
+
 
 
 

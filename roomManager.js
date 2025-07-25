@@ -38,7 +38,6 @@ Room.prototype.roomManager = function roomManager() {
         //If it is one of main rooms 
 
 
-        
 
 
 
@@ -50,15 +49,34 @@ Room.prototype.roomManager = function roomManager() {
             }
         }
 
-        if(this.controller.level<=1 && this.memory.spawnId==undefined)
-        {//Room is being colonized
-            global.heap.rooms[this.name].colonizeSources=this.find(FIND_SOURCES)
-            for(s of global.heap.rooms[this.name].colonizeSources)
-            {
-                s.maxHarvesters=s.pos.getOpenPositions().length;
-                s.harvesters=[];
+        if (this.controller.level <= 1 && this.memory.spawnId == undefined) {//Room is being colonized
+
+
+            global.heap.rooms[this.name].maxColonizers=0;
+            global.heap.rooms[this.name].colonizeSources = this.find(FIND_SOURCES)
+            for (s of global.heap.rooms[this.name].colonizeSources) {
+                s.maxHarvesters = s.pos.getOpenPositions().length;
+                global.heap.rooms[this.name].maxColonizers=s.maxHarvesters;
+                s.harvesters = [];
             }
+            global.heap.rooms[this.name].claimer=undefined
+            global.heap.rooms[this.name].colonizers=[];
         }
+
+        if (Memory.roomsToColonize.includes(this.name) && this.controller.level > 1 && this.memory.spawnId != undefined) {
+            //Room is finished being colonizer
+            if (Memory.manualColonize = this.name) {
+                Memory.manualColonize = '??'
+            }
+
+            //Remove that roomName from array
+            var index = array.indexOf(this.name);
+            if (index !== -1) {
+                Memory.manualColonize.splice(index, 1);
+            }
+            delete global.heap.rooms[this.name].claimer
+        }
+
 
         //Tracking creeps
         global.heap.rooms[this.name].fillers = 0

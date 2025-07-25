@@ -24,6 +24,8 @@ const ROLE_HAULER = 'hauler'
 const ROLE_RESERVER = 'reserver'
 const ROLE_RAMPART_REPAIRER = 'rampart_repairer'
 const ROLE_RESOURCE_MANAGER = 'resource_manager'
+const ROLE_CLAIMER='claimer'
+const ROLE_COLONIZER='colonizer'
 
 
 //Creep constants
@@ -101,6 +103,7 @@ const BUILD_TIME_STEP = 2
 module.exports = {
     TEST_CONST,
     AVG_STEP,
+    SIGN_TEXT,
     USERNAME,
     ROLE_HARVESTER,
     ROLE_CARRIER,
@@ -113,6 +116,8 @@ module.exports = {
     ROLE_RESERVER,
     ROLE_RAMPART_REPAIRER,
     ROLE_RESOURCE_MANAGER,
+    ROLE_CLAIMER,
+    ROLE_COLONIZER,
 
     CREEP_MAX_BODYPARTS,
     HAULER_REQ_CARRY_PARTS,
