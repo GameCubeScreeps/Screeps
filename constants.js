@@ -31,6 +31,7 @@ const CREEP_MAX_BODYPARTS = 50; // maximum creep body length - couldn't find in 
 const HAULER_REQ_CARRY_PARTS = 6;
 
 //Creeps tasks
+const TASK_HARVEST='harvest'
 const TASK_UPGRADE = 'upgrade'
 const TASK_BUILD = 'build'
 const TASK_COLLECT = 'collect'
@@ -115,6 +116,7 @@ module.exports = {
 
     CREEP_MAX_BODYPARTS,
     HAULER_REQ_CARRY_PARTS,
+    TASK_HARVEST,
     TASK_UPGRADE,
     TASK_BUILD,
     TASK_COLLECT,

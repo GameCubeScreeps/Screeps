@@ -37,11 +37,26 @@ Room.prototype.roomManager = function roomManager() {
     if (Memory.mainRooms.includes(this.name)) {
         //If it is one of main rooms 
 
+
+        
+
+
+
         //spawnID
         if ((this.memory.spawnId != undefined && Game.getObjectById(this.memory.spawnId) == null) || this.memory.spawnId == undefined) {
             var sp = this.find(FIND_MY_SPAWNS)
             if (sp.length > 0) {
                 this.memory.spawnId = sp[0].id
+            }
+        }
+
+        if(this.controller.level<=1 && this.memory.spawnId==undefined)
+        {//Room is being colonized
+            global.heap.rooms[this.name].colonizeSources=this.find(FIND_SOURCES)
+            for(s of global.heap.rooms[this.name].colonizeSources)
+            {
+                s.maxHarvesters=s.pos.getOpenPositions().length;
+                s.harvesters=[];
             }
         }
 
