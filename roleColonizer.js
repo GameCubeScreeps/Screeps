@@ -20,10 +20,6 @@ Creep.prototype.roleColonizer = function roleColonizer() {
     else{
         this.colonizerGetTask()
         this.say(this.memory.task)
-        console.log("COLONIZER DEBUGGING")
-        console.log("global.heap.rooms[",this.memory.targetRoom,"]:",global.heap.rooms[this.memory.targetRoom]==undefined)
-        console.log("global.heap.rooms[",this.memory.targetRoom,"].construction:",global.heap.rooms['W3N7'].construction)
-        global.heap.rooms[this.memory.targetRoom].test="test"
         if(this.memory.task==C.TASK_HARVEST)
         {
             this.taskHarvest(localheap)

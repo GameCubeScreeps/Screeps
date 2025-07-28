@@ -23,16 +23,12 @@ profiler.enable();
 module.exports.loop = function () {
   profiler.wrap(function () {
 
-    //Manual colonizing
-    if (Memory.manualColonize == undefined) {
-      Memory.manualColonize = '??'
-    }
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 
 
-    //automatic colonizing
-    if (Memory.roomsToColonize == undefined || true) {
-      Memory.roomsToColonize = []
-    }
+
+    
 
     //Setting allies
     Memory.allies = ["JeallyRabbit", "Alphonzo", "insainmonkey", "Trepidimous"]
@@ -46,8 +42,62 @@ module.exports.loop = function () {
       console.log("setting global heap")
     }
 
+    
+
+    //automatic colonizing
+    if (Memory.roomsToColonize == undefined || true) {
+      Memory.roomsToColonize = []
+    }
+
+    //Manual colonizing
+    if (Memory.manualColonize == undefined) {
+      Memory.manualColonize = '??'
+    }
+
+    if (!Memory.roomsToColonize.some(e => e.name === Memory.manualColonize) && Memory.manualColonize != '??') {
+      Memory.roomsToColonize.push({ name: Memory.manualColonize })
+      global.heap.rooms[Memory.manualColonize] = {}
+
+    }
+
+
+    console.log("Memory.roomsToColonize: ", Memory.roomsToColonize)
+    for (colonizeRoom of Memory.roomsToColonize) {
+      if (global.heap.rooms[colonizeRoom.name] == undefined) {
+        global.heap.rooms[colonizeRoom.name] = {}
+      }
+
+      global.heap.rooms[colonizeRoom.name].claimer = undefined
+      global.heap.rooms[colonizeRoom.name].colonizers = []
+      global.heap.rooms[colonizeRoom.name].maxColonizers = C.DEFAULT_COLONIZERS_AMOUNT // as we get vision on that room it will be definied in next step
+
+
+      if (Game.rooms[colonizeRoom.name] != undefined && Game.rooms[colonizeRoom.name].controller.level <= 2 && Game.rooms[colonizeRoom.name].memory.spawnId == undefined) {//Room is being colonized
+
+        global.heap.rooms[colonizeRoom.name].maxColonizers = 0;
+        global.heap.rooms[colonizeRoom.name].colonizeSources = Game.rooms[colonizeRoom.name].find(FIND_SOURCES)
+        for (s of global.heap.rooms[colonizeRoom.name].colonizeSources) {
+          s.maxHarvesters = s.pos.getOpenPositions().length;
+          global.heap.rooms[colonizeRoom.name].maxColonizers += s.maxHarvesters;
+          s.harvesters = [];
+        }
+
+        if (Game.rooms[colonizeRoom.name].memory.buildingList != undefined && Game.rooms[colonizeRoom.name].memory.buildingList.length > 0) {
+          for (building of Game.rooms[colonizeRoom.name].memory.buildingList) {
+            if (building.structureType == STRUCTURE_SPAWN) {
+              Game.rooms[colonizeRoom.name].createConstructionSite(building.x, building.y, building.structureType, colonizeRoom.name + '_1')
+              break;
+            }
+          }
+        }
+      }
+
+    }
+
+
     Memory.mainRooms = []
     global.heap.isSomeRoomPlanning = false;
+
 
     for (roomName in Game.rooms) {
 
@@ -66,27 +116,24 @@ module.exports.loop = function () {
 
     }
 
-    //Getting current userName - dump first iteration over spawns//
+    //Getting current userName - dumb first iteration over spawns//
     for (spawnName in Game.spawns) {
       global.heap.userName = Game.spawns[spawnName].owner.username
       break;
     }
 
 
-    if (!Memory.roomsToColonize.some(e => e.name === Memory.manualColonize) && Memory.manualColonize != '??') {
-      Memory.roomsToColonize.push({ name: Memory.manualColonize })
-      global.heap.rooms[Memory.manualColonize] = {}
 
-    }
 
+    //chosing colonizer
     if (Memory.roomsToColonize.length > 0) {
       for (r of Memory.roomsToColonize) {
         if (r.colonizer == undefined) {
           minDistance = Infinity
           for (m of Memory.mainRooms) {
             if (Game.map.getRoomLinearDistance(m, r.name) < minDistance
-          && Game.rooms[m].storage!=undefined && Game.rooms[m].storage[RESOURCE_ENERGY]>C.COLONIZE_ENERGY_LIMIT
-        && r.name!=m) {
+              && Game.rooms[m].storage != undefined && Game.rooms[m].storage[RESOURCE_ENERGY] > C.COLONIZE_ENERGY_LIMIT
+              && r.name != m) {
               minDistance = Game.map.getRoomLinearDistance(m, r.name)
               r.colonizer = m;
             }
@@ -97,42 +144,7 @@ module.exports.loop = function () {
 
     console.log(C.USERNAME)
 
-    for (colonizeRoom of Memory.roomsToColonize) {
-      console.log("Setting heap for (colonization): ", colonizeRoom.name)
-      global.heap.rooms[colonizeRoom.name] = {}
-      global.heap.rooms[colonizeRoom.name].claimer = undefined
-      global.heap.rooms[colonizeRoom.name].colonizers = []
-      global.heap.rooms[colonizeRoom.name].maxColonizers = C.DEFAULT_COLONIZERS_AMOUNT // as we get vision on that room it will be definied in next step
-      global.heap.rooms[colonizeRoom.name]=[]
 
-
-      if (Game.rooms[colonizeRoom.name]!=undefined && Game.rooms[colonizeRoom.name].controller.level <= 2 && Game.rooms[colonizeRoom.name].memory.spawnId == undefined) {//Room is being colonized
-
-            console.log("Setting heap for room: ",colonizeRoom.name," - colonization with vision")
-            global.heap.rooms[colonizeRoom.name].maxColonizers=0;
-            global.heap.rooms[colonizeRoom.name].colonizeSources = Game.rooms[colonizeRoom.name].find(FIND_SOURCES)
-            for (s of global.heap.rooms[colonizeRoom.name].colonizeSources) {
-                s.maxHarvesters = s.pos.getOpenPositions().length;
-                global.heap.rooms[colonizeRoom.name].maxColonizers+=s.maxHarvesters;
-                s.harvesters = [];
-            }
-            global.heap.rooms[colonizeRoom.name].claimer=undefined
-            global.heap.rooms[colonizeRoom.name].colonizers=[];
-
-            if(Game.rooms[colonizeRoom.name].memory.buildingList!=undefined && Game.rooms[colonizeRoom.name].memory.buildingList.length>0)
-            {
-              for(building of Game.rooms[colonizeRoom.name].memory.buildingList)
-              {
-                if(building.structureType==STRUCTURE_SPAWN)
-                {
-                  Game.rooms[colonizeRoom.name].createConstructionSite(building.x,building.y,building.structureType,colonizeRoom.name+'_1')
-                  break;
-                }
-              }
-            }
-        }
-
-    }
 
 
     for (mainRoom of Memory.mainRooms) {
