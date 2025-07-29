@@ -30,7 +30,7 @@ Room.prototype.creepsManager = function creepsManager() {
     for (cr in Game.creeps) {
 
         var creep = Game.creeps[cr];
-        if (creep == undefined || creep.memory == undefined) {
+        if (creep == undefined || creep.memory == undefined || creep.memory=={}) {
             creep.suicide()
             continue
         }

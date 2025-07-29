@@ -2,7 +2,8 @@
 var heap = {}
 global.heap = heap;
 
-
+//clear all Memory
+//RawMemory.set("{}")
 // Every constant definied in separate file
 const C = require('constants')
 
@@ -23,12 +24,7 @@ profiler.enable();
 module.exports.loop = function () {
   profiler.wrap(function () {
 
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
 
-
-
-    
 
     //Setting allies
     Memory.allies = ["JeallyRabbit", "Alphonzo", "insainmonkey", "Trepidimous"]
@@ -61,7 +57,6 @@ module.exports.loop = function () {
     }
 
 
-    console.log("Memory.roomsToColonize: ", Memory.roomsToColonize)
     for (colonizeRoom of Memory.roomsToColonize) {
       if (global.heap.rooms[colonizeRoom.name] == undefined) {
         global.heap.rooms[colonizeRoom.name] = {}
@@ -95,6 +90,7 @@ module.exports.loop = function () {
     }
 
 
+
     Memory.mainRooms = []
     global.heap.isSomeRoomPlanning = false;
 
@@ -102,6 +98,7 @@ module.exports.loop = function () {
     for (roomName in Game.rooms) {
 
 
+      
 
       if (global.heap.rooms[roomName] == undefined) {
         global.heap.rooms[roomName] = {}
@@ -113,6 +110,8 @@ module.exports.loop = function () {
       }
 
       Game.rooms[roomName].roomManager()
+
+      
 
     }
 
@@ -174,6 +173,17 @@ module.exports.loop = function () {
       }
 
       console.log("Used cpu: ", Game.cpu.getUsed() - start)
+
+      //clearing memory of dead room
+      if(Game.rooms[mainRoom].memory!=undefined && Game.rooms[mainRoom].memory.spawnId!=undefined && Game.rooms[mainRoom].controller.my==false)
+      {
+        //delete Game.rooms[mainRoom].memory
+        //Game.rooms[mainRoom].memory=undefined
+        //console.log("Deleting room memory of: ",mainRoom)
+        //continue
+      }
+
+
 
     }
 
