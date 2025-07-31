@@ -329,13 +329,16 @@ Creep.prototype.taskHarvest = function taskHarvest(localHeap) {
 
     if (localHeap.targetSource == undefined) {
 
-        for (s of global.heap.rooms[this.memory.targetRoom].colonizeSources) {
-            if (s.harvesters.length < s.maxHarvesters) {
-                s.harvesters.push(this.id)
-                localHeap.targetSource = s.id
-                break;
+        if (global.heap.rooms[this.memory.targetRoom].colonizeSources != undefined) {
+            for (s of global.heap.rooms[this.memory.targetRoom].colonizeSources) {
+                if (s.harvesters.length < s.maxHarvesters) {
+                    s.harvesters.push(this.id)
+                    localHeap.targetSource = s.id
+                    break;
+                }
             }
         }
+
 
     }
 

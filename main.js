@@ -67,7 +67,7 @@ module.exports.loop = function () {
       global.heap.rooms[colonizeRoom.name].maxColonizers = C.DEFAULT_COLONIZERS_AMOUNT // as we get vision on that room it will be definied in next step
 
 
-      if (Game.rooms[colonizeRoom.name] != undefined && Game.rooms[colonizeRoom.name].controller.level <= 2 && Game.rooms[colonizeRoom.name].memory.spawnId == undefined) {//Room is being colonized
+      if (Game.rooms[colonizeRoom.name] != undefined && Game.rooms[colonizeRoom.name].controller.level <= 3 && Game.rooms[colonizeRoom.name].memory.spawnId == undefined) {//Room is being colonized
 
         global.heap.rooms[colonizeRoom.name].maxColonizers = 0;
         global.heap.rooms[colonizeRoom.name].colonizeSources = Game.rooms[colonizeRoom.name].find(FIND_SOURCES)

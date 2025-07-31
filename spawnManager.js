@@ -182,7 +182,7 @@ Room.prototype.spawnManager = function spawnManager() {
                 }
             case C.ROLE_COLONIZER:
                 {
-                    var result = spawn.spawnCreep(workerBody(energyCap), C.ROLE_COLONIZER + '_' + this.name + Game.time, { memory: { role: C.ROLE_COLONIZER, homeRoom: this.name, targetRoom: request.roomName } })
+                    var result = spawn.spawnCreep(workerBody(energyCap,[MOVE,CARRY,WORK,MOVE]), C.ROLE_COLONIZER + '_' + this.name + Game.time, { memory: { role: C.ROLE_COLONIZER, homeRoom: this.name, targetRoom: request.roomName } })
                     if (result == OK) {
                         global.heap.rooms[this.name].civilianQueue.shift()
 
