@@ -92,6 +92,9 @@ Room.prototype.visualize = function visualizeroomManager() {
     }
 
     //Creeps data
+
+
+    //harvesting data
     var blockPos = new RoomPosition(3, 1, this.name)
     var blockPosWidth = 8
     var blockPosHeight = 1
