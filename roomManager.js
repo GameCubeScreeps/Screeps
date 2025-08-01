@@ -182,11 +182,9 @@ Room.prototype.roomManager = function roomManager() {
 
         if (global.heap.isSomeRoomPlanning == false) {
             //this.visualizeBase() // debugging
-            console.log("room: ",this.name," enters planning")
              // assuring that only one room in a tick would go into room building
             if (this.memory.finishedPlanning != true) {
                 global.heap.isSomeRoomPlanning = true;
-                console.log("Entering roomPlaning")
 
                 if (this.memory.baseVariations == undefined) {
                     this.memory.baseVariations = {}

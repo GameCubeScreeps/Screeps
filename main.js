@@ -15,16 +15,16 @@ const createRoomQueues = require('createRoomQueues')
 const spawnManager = require('spawnManager')
 const roomManager = require('roomManager')
 const creepsManager = require('creepsManager')
+const linkManager = require('linkManager')
 const visualize = require('visualize');
-const { USERNAME } = require('./constants');
 
 
-// This line monkey patches the global prototypes.
+// this line monkey patches the global prototypes.
 profiler.enable();
 module.exports.loop = function () {
   profiler.wrap(function () {
 
-
+    var totalStart=Game.cpu.getUsed()
 
     //Setting allies
     Memory.allies = ["JeallyRabbit", "Alphonzo", "insainmonkey", "Trepidimous"]
@@ -38,7 +38,7 @@ module.exports.loop = function () {
       console.log("setting global heap")
     }
 
-    
+
 
     //automatic colonizing
     if (Memory.roomsToColonize == undefined || true) {
@@ -98,7 +98,7 @@ module.exports.loop = function () {
     for (roomName in Game.rooms) {
 
 
-      
+
 
       if (global.heap.rooms[roomName] == undefined) {
         global.heap.rooms[roomName] = {}
@@ -111,7 +111,7 @@ module.exports.loop = function () {
 
       Game.rooms[roomName].roomManager()
 
-      
+
 
     }
 
@@ -158,6 +158,8 @@ module.exports.loop = function () {
 
       Game.rooms[mainRoom].spawnManager()
 
+      Game.rooms[mainRoom].linkManager()
+
       Game.rooms[mainRoom].visualize()
 
       global.heap.rooms[mainRoom].usedCpu = Game.cpu.getUsed() - start
@@ -172,18 +174,32 @@ module.exports.loop = function () {
 
       }
 
+
       console.log("Used cpu: ", Game.cpu.getUsed() - start)
 
+
       //clearing memory of dead room
-      if(Game.rooms[mainRoom].memory!=undefined && Game.rooms[mainRoom].memory.spawnId!=undefined && Game.rooms[mainRoom].controller.my==false)
-      {
+      if (Game.rooms[mainRoom].memory != undefined && Game.rooms[mainRoom].memory.spawnId != undefined && Game.rooms[mainRoom].controller.my == false) {
         //delete Game.rooms[mainRoom].memory
         //Game.rooms[mainRoom].memory=undefined
         //console.log("Deleting room memory of: ",mainRoom)
         //continue
       }
+    }
 
 
+    var totalUsedCpu= Math.round(Game.cpu.getUsed() - totalStart)
+    for (mainRoom of Memory.mainRooms) {
+      //total used cpu
+      var blockPos = new RoomPosition(38, 0, mainRoom)
+      var blockPosWidth = 6
+      var blockPosHeight = 1
+      Game.rooms[mainRoom].visual.rect(blockPos.x, blockPos.y, blockPosWidth, blockPosHeight, { fill: C.FILL_COLOR })
+      Game.rooms[mainRoom].visual.line(blockPos.x, blockPos.y, blockPos.x + blockPosWidth, blockPos.y, { color: C.OUTLINE_COLOR })
+      Game.rooms[mainRoom].visual.line(blockPos.x, blockPos.y, blockPos.x, blockPos.y + blockPosHeight, { color: C.OUTLINE_COLOR })
+      Game.rooms[mainRoom].visual.line(blockPos.x, blockPos.y + blockPosHeight, blockPos.x + blockPosWidth, blockPos.y + blockPosHeight, { color: C.OUTLINE_COLOR })
+      Game.rooms[mainRoom].visual.line(blockPos.x + blockPosWidth, blockPos.y, blockPos.x + blockPosWidth, blockPos.y + blockPosHeight, { color: C.OUTLINE_COLOR })
+      Game.rooms[mainRoom].visual.text("Cpu: " + totalUsedCpu + "\\" + Game.cpu.limit, blockPos.x + blockPosWidth / 2, blockPos.y + 0.75)
 
     }
 

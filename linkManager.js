@@ -1,4 +1,4 @@
-Room.prototype.links = function links(spawn) {
+Room.prototype.linkManager = function linkManager() {
 
     // /** @param {Game} game **/
     //tick: function (spawn) {
@@ -6,31 +6,32 @@ Room.prototype.links = function links(spawn) {
     if (this.storage == undefined) {
         return;
     }
-
+    var roomName=this.name
     // FIND managerLink
-    if (global.heap.rooms[this.name].managerLinkId != undefined && Game.getObjectById(global.heap.rooms[this.name].managerLinkId) == null) {
-        global.heap.rooms[this.name].managerLinkId == undefined;
+    if (this.memory.managerLinkId != undefined && Game.getObjectById(this.memory.managerLinkId) == null) {
+        this.memory.managerLinkId == undefined;
     }
-    if (global.heap.rooms[this.name].managerLinkId == undefined && this.memory.managerLinkPos != undefined) {
-        var managerLink = spawn.room.find(FIND_STRUCTURES, {
+    if (this.memory.managerLinkId == undefined && this.memory.managerLinkPos != undefined) {
+        
+        var managerLink = this.find(FIND_STRUCTURES, {
             filter: function (str) {
-                return str.structureType == STRUCTURE_LINK && str.pos.x == this.memory.managerLinkPos.x && str.pos.y == this.memory.managerLinkPos.y;
+                return str.structureType == STRUCTURE_LINK && str.pos.x == Game.rooms[roomName].memory.managerLinkPos.x && str.pos.y == Game.rooms[roomName].memory.managerLinkPos.y;
             }
         });
         if (managerLink != undefined && managerLink.length > 0) {
-            global.heap.rooms[this.name].managerLinkId = managerLink[0].id;
+            this.memory.managerLinkId = managerLink[0].id;
         }
     }
-    //console.log(global.heap.rooms[this.name].managerLinkId)
+    //console.log(this.memory.managerLinkId)
 
     // FIND FILLER LINK
     if (this.memory.fillerLinkId != undefined && Game.getObjectById(this.memory.fillerLinkId) == null) {
         this.memory.fillerLinkId == undefined;
     }
     if (this.memory.fillerLinkId == undefined && this.memory.fillerLinkPos != undefined) {
-        var managerLink = spawn.room.find(FIND_STRUCTURES, {
+        var managerLink = this.find(FIND_STRUCTURES, {
             filter: function (str) {
-                return str.structureType == STRUCTURE_LINK && str.pos.x == this.memory.fillerLinkPos.x && str.pos.y == this.memory.fillerLinkPos.y;
+                return str.structureType == STRUCTURE_LINK && str.pos.x == Game.rooms[roomName].memory.fillerLinkPos.x && str.pos.y == Game.rooms[roomName].memory.fillerLinkPos.y;
             }
         });
         if (managerLink != undefined && managerLink.length > 0) {
@@ -59,9 +60,9 @@ Room.prototype.links = function links(spawn) {
     if (this.memory.sourcesLinkPos == undefined) {
         this.memory.sourcesLinkPos = [];
         if (this.memory.sourcesLinksPos != undefined && this.memory.sourcesLinksPos.length > 0) {
-            var src1Link = spawn.room.find(FIND_STRUCTURES, {
+            var src1Link = this.find(FIND_STRUCTURES, {
                 filter: function (str) {
-                    return str.structureType == STRUCTURE_LINK && str.pos.x == this.memory.sourcesLinksPos[0].x && str.pos.y == this.memory.sourcesLinksPos[0].y;
+                    return str.structureType == STRUCTURE_LINK && str.pos.x == Game.rooms[roomName].memory.sourcesLinksPos[0].x && str.pos.y == Game.rooms[roomName].memory.sourcesLinksPos[0].y;
                 }
             });
             if (src1Link != undefined && src1Link.length > 0) {
@@ -70,9 +71,9 @@ Room.prototype.links = function links(spawn) {
         }
 
         if (this.memory.sourcesLinksPos != undefined && this.memory.sourcesLinksPos.length > 1) {
-            var src2Link = spawn.room.find(FIND_STRUCTURES, {
+            var src2Link = this.find(FIND_STRUCTURES, {
                 filter: function (str) {
-                    return str.structureType == STRUCTURE_LINK && str.pos.x == this.memory.sourcesLinksPos[1].x && str.pos.y == this.memory.sourcesLinksPos[1].y;
+                    return str.structureType == STRUCTURE_LINK && str.pos.x == Game.rooms[roomName].memory.sourcesLinksPos[1].x && str.pos.y == Game.rooms[roomName].memory.sourcesLinksPos[1].y;
                 }
             });
             if (src2Link != undefined && src2Link.length > 0) {
@@ -87,9 +88,9 @@ Room.prototype.links = function links(spawn) {
         this.memory.controllerLinkId == undefined;
     }
     if (this.memory.controllerLinkId == undefined && this.memory.controllerLinikPos != undefined) {
-        var controllerLink = spawn.room.find(FIND_STRUCTURES, {
+        var controllerLink = this.find(FIND_STRUCTURES, {
             filter: function (str) {
-                return str.structureType == STRUCTURE_LINK && str.pos.x == this.memory.controllerLinikPos.x && str.pos.y == this.memory.controllerLinikPos.y;
+                return str.structureType == STRUCTURE_LINK && str.pos.x == Game.rooms[roomName].memory.controllerLinikPos.x && str.pos.y == Game.rooms[roomName].memory.controllerLinikPos.y;
             }
         });
         if (controllerLink != undefined && controllerLink.length > 0) {
@@ -99,7 +100,7 @@ Room.prototype.links = function links(spawn) {
 
 
 
-    var managerLink = Game.getObjectById(global.heap.rooms[this.name].managerLinkId)
+    var managerLink = Game.getObjectById(this.memory.managerLinkId)
     var fillerLink = Game.getObjectById(this.memory.fillerLinkId)
 
     var controllerLink = Game.getObjectById(this.memory.controllerLinkId)
@@ -155,11 +156,11 @@ Room.prototype.links = function links(spawn) {
                 }
                 if (transfered == true) {
                     //addEnergyIncome(creep,spawn,amount)
-                    if (spawn.room.memory.delivered_energy == undefined) {
-                        spawn.room.memory.delivered_energy = src_link.store[RESOURCE_ENERGY]*0.97
+                    if (this.memory.delivered_energy == undefined) {
+                        this.memory.delivered_energy = src_link.store[RESOURCE_ENERGY]*0.97
                     }
                     else {
-                        spawn.room.memory.delivered_energy += src_link.store[RESOURCE_ENERGY]*0.97
+                        this.memory.delivered_energy += src_link.store[RESOURCE_ENERGY]*0.97
                     }
                 }
             }
