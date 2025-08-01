@@ -15,7 +15,7 @@ class Variation {
 
 Room.prototype.roomManager = function roomManager() {
 
-
+    
 
     global.heap.rooms[this.name].state = []
     global.heap.rooms[this.name].hostiles = []
@@ -32,10 +32,16 @@ Room.prototype.roomManager = function roomManager() {
     global.heap.rooms[this.name].containersId = []
     global.heap.rooms[this.name].construction = []
 
+    
+
     this.memory.repairerId = undefined
 
     if (Memory.mainRooms.includes(this.name)) {
         //If it is one of main rooms 
+
+
+
+
 
         //spawnID
         if ((this.memory.spawnId != undefined && Game.getObjectById(this.memory.spawnId) == null) || this.memory.spawnId == undefined) {
@@ -44,6 +50,23 @@ Room.prototype.roomManager = function roomManager() {
                 this.memory.spawnId = sp[0].id
             }
         }
+
+        
+
+        if (Memory.roomsToColonize.some(e => e.name==this.name) && this.controller.level > 1 && this.memory.spawnId != undefined) {
+            //Room is finished being colonizer
+            if (Memory.manualColonize = this.name) {
+                Memory.manualColonize = '??'
+            }
+
+            //Remove that roomName from array
+            var index = array.indexOf(this.name);
+            if (index !== -1) {
+                Memory.manualColonize.splice(index, 1);
+            }
+            delete global.heap.rooms[this.name].claimer
+        }
+
 
         //Tracking creeps
         global.heap.rooms[this.name].fillers = 0
@@ -159,10 +182,10 @@ Room.prototype.roomManager = function roomManager() {
 
         if (global.heap.isSomeRoomPlanning == false) {
             //this.visualizeBase() // debugging
-
-            global.heap.isSomeRoomPlanning = true; // assuring that only one room in a tick would go into room building
+            console.log("room: ",this.name," enters planning")
+             // assuring that only one room in a tick would go into room building
             if (this.memory.finishedPlanning != true) {
-
+                global.heap.isSomeRoomPlanning = true;
                 console.log("Entering roomPlaning")
 
                 if (this.memory.baseVariations == undefined) {
@@ -251,10 +274,6 @@ Room.prototype.roomManager = function roomManager() {
             }
         }
 
-
-
-
-
     }
 
 
@@ -262,7 +281,11 @@ Room.prototype.roomManager = function roomManager() {
 
     //finding construction sites
     var constr = this.find(FIND_CONSTRUCTION_SITES)
+
+
     if (constr.length > 0) {
+
+        
         global.heap.rooms[this.name].building = true
         for (c of constr) {
             global.heap.rooms[this.name].construction.push(c.id)
@@ -273,6 +296,8 @@ Room.prototype.roomManager = function roomManager() {
             delete global.heap.rooms[this.name].building
         }
     }
+
+    
 
 
     //Finding hostile Creeps
@@ -334,7 +359,7 @@ Room.prototype.roomManager = function roomManager() {
             */
 
 
-        if (str.my) {
+        if (str.my && Memory.mainRooms.includes(this.name)) {
             this.memory.myStructures.push(str.id)
 
             switch (type) {

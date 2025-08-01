@@ -1,10 +1,22 @@
-function workerBody(cap)// return array with max possible work parts for builder
+function workerBody(cap,bodyScheme=[MOVE,CARRY,WORK,WORK])// return array with max possible work parts for builder
 {
+
+    var segmentCost=0;
+    for(part of bodyScheme)
+    {
+        segmentCost+=BODYPART_COST[part]
+    }
     var parts=[];
 
-    while(cap>BODYPART_COST[MOVE]+BODYPART_COST[CARRY]+BODYPART_COST[WORK])
+    while(cap>segmentCost)
     {
+        for(part of bodyScheme)
+        {
+            parts.push(part)
+        }
+        cap-=segmentCost
 
+        /*
         parts.push(MOVE)
         cap-=BODYPART_COST[MOVE]
         parts.push(CARRY)
@@ -18,6 +30,7 @@ function workerBody(cap)// return array with max possible work parts for builder
             counter++
         }
         cap-=counter*BODYPART_COST[WORK]
+        */
 
 
     }

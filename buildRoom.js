@@ -32,17 +32,20 @@ function isPosFree(x, y, roomName) {
 
 Room.prototype.planRoadToTarget = function planRoadToTarget(roomCM, target, rcl, myRange = 1, start = this.memory.spawnPos) {
 
-    for (let i = 0; i < 50; i++) {
-        for (let j = 0; j < 50; j++) {
-            if (this.memory.roomPlan[i][j] != 0 && this.memory.roomPlan[i][j] != STRUCTURE_ROAD && this.memory.roomPlan[i][j] != STRUCTURE_RAMPART) {
-                roomCM.set(i, j, 255);
-            }
-            else if (this.memory.roomPlan[i][j] != 0 && this.memory.roomPlan[i][j] == STRUCTURE_ROAD
-                && roomCM.get(i, j) != 255) {
-                //roomCM.set(i, j, 1);
+    if (this.memory.roomPlan != undefined) {
+        for (let i = 0; i < 50; i++) {
+            for (let j = 0; j < 50; j++) {
+                if (this.memory.roomPlan[i][j] != 0 && this.memory.roomPlan[i][j] != STRUCTURE_ROAD && this.memory.roomPlan[i][j] != STRUCTURE_RAMPART) {
+                    roomCM.set(i, j, 255);
+                }
+                else if (this.memory.roomPlan[i][j] != 0 && this.memory.roomPlan[i][j] == STRUCTURE_ROAD
+                    && roomCM.get(i, j) != 255) {
+                    roomCM.set(i, j, 1);
+                }
             }
         }
     }
+
     destination = { pos: target, range: myRange };
 
     var startPosition = new RoomPosition(start.x, start.y, start.roomName)
@@ -116,7 +119,7 @@ Room.prototype.planRoadToTarget = function planRoadToTarget(roomCM, target, rcl,
 
     ////////////////////////////////////
 
-    if (ret.incomplete != true || true) {
+    if (ret.incomplete != true) {
 
         for (let i = 0; i < ret.path.length; i++) {
 
@@ -250,7 +253,7 @@ Room.prototype.planRampartsEntrances = function planRampartsEntrances(roomCM, gr
         ////////////////////////////////////
         if (ret.incomplete != true || true) {
 
-            
+
             for (let i = 0; i < ret.path.length; i++) {
 
                 //ret.path[i].x
@@ -973,7 +976,7 @@ Room.prototype.planBorders = function planBorders(rcl, type, roomCM) {
 
     console.log("RampartsGroups: ", rampartsGroups[0][0].x)
     this.planRampartsEntrances(roomCM, rampartsGroups, rcl)
- 
+
 
     // Update roomPlan and buildingList with rampart positions
     rampartsAmount = 0;
@@ -1279,7 +1282,7 @@ Room.prototype.planSpawnPos = function planSpawnPos(type) {
     var minDistanceForSpawn = 999999
     for (var i = 0; i < 50; i++) {
         for (var j = 0; j < 50; j++) {
-            if (distanceCM.get(i, j) >= 4 && floodCM.get(i, j) < minDistanceForSpawn && i > 7 && i < 43 && j > 7 && j < 43) {
+            if (distanceCM.get(i, j) >= 5 && floodCM.get(i, j) < minDistanceForSpawn && i > 7 && i < 43 && j > 7 && j < 43) {
                 minDistanceForSpawn = floodCM.get(i, j);
                 minPos.x = i;
                 minPos.y = j + 2;
@@ -1291,7 +1294,8 @@ Room.prototype.planSpawnPos = function planSpawnPos(type) {
     console.log("setting spawnPos: ", minPos)
     if (minPos.x != 0 && minPos.y != 0) {
         this.memory.baseVariations[type].spawnPos = new RoomPosition(minPos.x, minPos.y - 2, this.name)
-        this.memory.buildingList.push(new buildingListElement(minPos.x,minPos.y,this.name,STRUCTURE_SPAWN,1))
+        this.memory.buildingList.push(new buildingListElement(minPos.x, minPos.y, this.name, STRUCTURE_SPAWN, 1))
+        this.memory.spawnPos = new RoomPosition(minPos.x, minPos.y, this.name)
 
     }
     else {
@@ -1433,6 +1437,8 @@ Room.prototype.buildRoom = function buildRoom(type = C.CURRENT_SPAWNPOS) {
         //and plan roads here
         // If finished scanning
         if (this.memory.roomsToScan != undefined && this.memory.roomsToScan.length == 0) {
+
+            this.memory.roadBuildingList = []
             var spawnPos = this.memory.baseVariations[type].spawnPos
 
             this.planRoadToTarget(roomCM1, this.controller.pos, 2, 1, spawnPos)

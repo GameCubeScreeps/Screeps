@@ -12,7 +12,8 @@ const roleReserver = require('roleReserver')
 const roleRampartRepairer = require('roleRampartRepairer')
 const roleResourceManager=require('roleResourceManager')
 const roleSoldier=require('roleSoldier')
-
+const roleClaimer=require('roleClaimer')
+const roleColonizer=require('roleColonizer')
 
 Room.prototype.creepsManager = function creepsManager() {
 
@@ -29,7 +30,7 @@ Room.prototype.creepsManager = function creepsManager() {
     for (cr in Game.creeps) {
 
         var creep = Game.creeps[cr];
-        if (creep == undefined || creep.memory == undefined) {
+        if (creep == undefined || creep.memory == undefined || creep.memory=={}) {
             creep.suicide()
             continue
         }
@@ -86,7 +87,14 @@ Room.prototype.creepsManager = function creepsManager() {
                 global.heap.rooms[creep.memory.targetRoom].myAttackPower +=_.filter(creep.body, { type: ATTACK }).length*ATTACK_POWER;
                 global.heap.rooms[creep.memory.targetRoom].myRangedAttackPower +=_.filter(creep.body, { type: RANGED_ATTACK }).length*RANGED_ATTACK_POWER;
                 break;
-
+            case C.ROLE_CLAIMER:
+                creep.roleClaimer() 
+                global.heap.rooms[creep.memory.targetRoom].claimer=creep.id
+                break;
+            case C.ROLE_COLONIZER: 
+                creep.roleColonizer()
+                global.heap.rooms[creep.memory.targetRoom].colonizers.push(creep.id)
+                break;
         }
     }
 

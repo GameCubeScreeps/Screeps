@@ -24,13 +24,17 @@ const ROLE_HAULER = 'hauler'
 const ROLE_RESERVER = 'reserver'
 const ROLE_RAMPART_REPAIRER = 'rampart_repairer'
 const ROLE_RESOURCE_MANAGER = 'resource_manager'
+const ROLE_CLAIMER='claimer'
+const ROLE_COLONIZER='colonizer'
 
 
 //Creep constants
 const CREEP_MAX_BODYPARTS = 50; // maximum creep body length - couldn't find in API
 const HAULER_REQ_CARRY_PARTS = 6;
+const DEFAULT_COLONIZERS_AMOUNT=4;
 
 //Creeps tasks
+const TASK_HARVEST='harvest'
 const TASK_UPGRADE = 'upgrade'
 const TASK_BUILD = 'build'
 const TASK_COLLECT = 'collect'
@@ -71,6 +75,7 @@ const TERMINAL_FASTRCL_FREE_BUFFOR = 1000
 const STORAGE_TO_TERMINAL_ENERGY = 40000
 const STORAGE_FASTRCL_BOTTOM_ENERGY = 5000
 const LINK_BOTTOM_ENERGY = LINK_CAPACITY * (7 / 8)
+const COLONIZE_ENERGY_LIMIT=40000
 
 // Room Visualization
 const OUTLINE_COLOR = 'black'
@@ -100,6 +105,7 @@ const BUILD_TIME_STEP = 2
 module.exports = {
     TEST_CONST,
     AVG_STEP,
+    SIGN_TEXT,
     USERNAME,
     ROLE_HARVESTER,
     ROLE_CARRIER,
@@ -112,9 +118,14 @@ module.exports = {
     ROLE_RESERVER,
     ROLE_RAMPART_REPAIRER,
     ROLE_RESOURCE_MANAGER,
+    ROLE_CLAIMER,
+    ROLE_COLONIZER,
 
     CREEP_MAX_BODYPARTS,
     HAULER_REQ_CARRY_PARTS,
+    DEFAULT_COLONIZERS_AMOUNT,
+
+    TASK_HARVEST,
     TASK_UPGRADE,
     TASK_BUILD,
     TASK_COLLECT,
@@ -154,6 +165,7 @@ module.exports = {
     STORAGE_TO_TERMINAL_ENERGY,
     STORAGE_FASTRCL_BOTTOM_ENERGY,
     LINK_BOTTOM_ENERGY,
+    COLONIZE_ENERGY_LIMIT,
 
     OUTLINE_COLOR,
     TEXT_COLOR,

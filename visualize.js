@@ -8,15 +8,15 @@ Room.prototype.visualize = function visualizeroomManager() {
     if (Game.rooms[this.name].memory.energyBalance != undefined) {
         console.log("energy Balance: ", Game.rooms[this.name].memory.energyBalance)
         //visualize balancing
-        Game.rooms[this.name].visual.rect(Game.rooms[this.name].controller.pos.x - (C.BALANCER_HARVEST_LIMIT/500),
-            Game.rooms[this.name].controller.pos.y - 1, (C.BALANCER_HARVEST_LIMIT/500)* 2, 1, {
+        Game.rooms[this.name].visual.rect(Game.rooms[this.name].controller.pos.x - (C.BALANCER_HARVEST_LIMIT / 500),
+            Game.rooms[this.name].controller.pos.y - 1, (C.BALANCER_HARVEST_LIMIT / 500) * 2, 1, {
             fill: C.FILL_COLOR
         }
         )
         // right is a lot of energy
-        Game.rooms[this.name].visual.text('⛏️', Game.rooms[this.name].controller.pos.x + 0.5 + (C.BALANCER_HARVEST_LIMIT/500), Game.rooms[this.name].controller.pos.y - 0.3)
-        Game.rooms[this.name].visual.text('⏫', Game.rooms[this.name].controller.pos.x - 0.5 - (C.BALANCER_HARVEST_LIMIT/500), Game.rooms[this.name].controller.pos.y - 0.3)
-        Game.rooms[this.name].visual.text('🔻', Game.rooms[this.name].controller.pos.x + (Game.rooms[this.name].memory.energyBalance/500), Game.rooms[this.name].controller.pos.y - 0.3)
+        Game.rooms[this.name].visual.text('⛏️', Game.rooms[this.name].controller.pos.x + 0.5 + (C.BALANCER_HARVEST_LIMIT / 500), Game.rooms[this.name].controller.pos.y - 0.3)
+        Game.rooms[this.name].visual.text('⏫', Game.rooms[this.name].controller.pos.x - 0.5 - (C.BALANCER_HARVEST_LIMIT / 500), Game.rooms[this.name].controller.pos.y - 0.3)
+        Game.rooms[this.name].visual.text('🔻', Game.rooms[this.name].controller.pos.x + (Game.rooms[this.name].memory.energyBalance / 500), Game.rooms[this.name].controller.pos.y - 0.3)
 
 
     }
@@ -25,10 +25,9 @@ Room.prototype.visualize = function visualizeroomManager() {
     //progress/tick visualization
     if (Game.rooms[this.name].memory.progressSum != undefined && Game.rooms[this.name].memory.progressCounter != undefined) {
 
-        if(Game.time%C.AVG_STEP==0)
-        {
-            Game.rooms[this.name].memory.progressSum=0;
-            Game.rooms[this.name].memory.progressCounter=0
+        if (Game.time % C.AVG_STEP == 0) {
+            Game.rooms[this.name].memory.progressSum = 0;
+            Game.rooms[this.name].memory.progressCounter = 0
         }
         Game.rooms[this.name].visual.text('⬆️' + (Math.round((Game.rooms[this.name].memory.progressSum / Game.rooms[this.name].memory.progressCounter) * 100) / 100) + "/t",
             Game.rooms[this.name].controller.pos.x + 1.5, Game.rooms[this.name].controller.pos.y + 1, { color: C.TEXT_COLOR })
@@ -61,17 +60,69 @@ Room.prototype.visualize = function visualizeroomManager() {
         Game.rooms[mainRoom].visual.text("usedCpu: " + tempUsed, 41, 2)
     }
 
+    //Player Name
+    this.visual.text(C.USERNAME, 25, 1)
+    this.visual.rect(22, 0, 6, 1.25, { fill: C.FILL_COLOR })
+    this.visual.line(22, 0, 28, 0, { color: C.OUTLINE_COLOR })
+    this.visual.line(22, 0, 22, 1.25, { color: C.OUTLINE_COLOR })
+    this.visual.line(22, 1.25, 28, 1.25, { color: C.OUTLINE_COLOR })
+    this.visual.line(28, 0, 28, 1.25, { color: C.OUTLINE_COLOR })
+
+    //GCL Data
+    var progress = (Math.round((Game.gcl.progress / Game.gcl.progressTotal) * 100))
+    this.visual.text("GCL: " + Game.gcl.level + " " + progress + "%", 25, 2)
+    this.visual.rect(22, 1, 6, 1.25, { fill: C.FILL_COLOR })
+    this.visual.line(22, 1.25, 28, 1.25, { color: C.OUTLINE_COLOR })
+    this.visual.line(22, 1, 22, 2.25, { color: C.OUTLINE_COLOR })
+    this.visual.line(22, 2.25, 28, 2.25, { color: C.OUTLINE_COLOR })
+    this.visual.line(28, 1, 28, 2.25, { color: C.OUTLINE_COLOR })
+
     //building
     //global.heap.rooms[this.name].construction
     var color = 'red'
-    if (global.heap.rooms[this.name].construction.length > 0) {
-        var color = 'green'
+    if (global.heap.rooms[this.name].construction != undefined && global.heap.rooms[this.name].construction.length > 0) {
+        color = 'green'
+        this.visual.text('🔨', 38.5, 3.25)
+        this.visual.text(global.heap.rooms[this.name].construction.length, 39.5, 3.25)
+        this.visual.rect(38, 2.5, 1, 1, { fill: color })
+        this.visual.line(38, 2.5, 39, 2.5, { color: C.OUTLINE_COLOR })
+        this.visual.line(38, 3.5, 39, 3.5, { color: C.OUTLINE_COLOR })
+        this.visual.line(38, 2.5, 38, 3.5, { color: C.OUTLINE_COLOR })
+        this.visual.line(39, 2.5, 39, 3.5, { color: C.OUTLINE_COLOR })
     }
-    this.visual.text('🔨', 38.5, 3.25)
-    this.visual.text(global.heap.rooms[this.name].construction.length,39.5,3.25)
-    this.visual.rect(38, 2.5, 1, 1, { fill: color })
-    this.visual.line(38, 2.5, 39, 2.5, { color: C.OUTLINE_COLOR })
-    this.visual.line(38, 3.5, 39, 3.5, { color: C.OUTLINE_COLOR })
-    this.visual.line(38, 2.5, 38, 3.5, { color: C.OUTLINE_COLOR })
-    this.visual.line(39, 2.5, 39, 3.5, { color: C.OUTLINE_COLOR })
+
+    //Creeps data
+
+
+    //harvesting data
+    var blockPos = new RoomPosition(3, 1, this.name)
+    var blockPosWidth = 8
+    var blockPosHeight = 1
+    
+    this.visual.rect(blockPos.x, 0, blockPosWidth, blockPosHeight, { fill: C.FILL_COLOR })
+    this.visual.line(blockPos.x, 0, blockPos.x + blockPosWidth, 0, { color: C.OUTLINE_COLOR })
+    this.visual.line(blockPos.x, 0, blockPos.x, blockPosHeight, { color: C.OUTLINE_COLOR })
+    this.visual.line(blockPos.x, blockPosHeight, blockPos.x + blockPosWidth, blockPosHeight, { color: C.OUTLINE_COLOR })
+    this.visual.line(blockPos.x + blockPosWidth, 0, blockPos.x + blockPosWidth, blockPosHeight, { color: C.OUTLINE_COLOR })
+    this.visual.text("Harvesting data", blockPos.x + blockPosWidth / 2, blockPos.y)
+    
+    if (this.memory.harvestingSources != undefined) {
+        for (src of this.memory.harvestingSources) {
+
+
+            this.visual.rect(blockPos.x, blockPos.y, blockPosWidth, blockPosHeight, { fill: C.FILL_COLOR })
+            //this.visual.line(blockPos.x, blockPos.y, blockPos.x + blockPosWidth, blockPos.y, { color: C.OUTLINE_COLOR })//top
+            this.visual.line(blockPos.x, blockPos.y, blockPos.x, blockPos.y + blockPosHeight, { color: C.OUTLINE_COLOR })//left
+            this.visual.line(blockPos.x, blockPos.y + blockPosHeight, blockPos.x + blockPosWidth, blockPos.y + blockPosHeight, { color: C.OUTLINE_COLOR })//bottom
+            this.visual.line(blockPos.x + blockPosWidth, blockPos.y, blockPos.x + blockPosWidth, blockPos.y + blockPosHeight, { color: C.OUTLINE_COLOR })//right
+
+
+            blockPos.y += blockPosHeight
+            this.visual.text(src.roomName + " (" + src.pos.x + " " + src.pos.y + ") -> " + ((src.harvestingPower / (SOURCE_ENERGY_CAPACITY / ENERGY_REGEN_TIME)) * Math.min(1, src.carryPower / src.harvestingPower) * 100) + "%",
+                blockPos.x + blockPosWidth / 2, blockPos.y)
+            
+            
+        }
+    }
+
 }
