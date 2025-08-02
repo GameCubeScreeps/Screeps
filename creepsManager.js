@@ -36,7 +36,11 @@ Room.prototype.creepsManager = function creepsManager() {
 
         var creep = Game.creeps[cr];
 
-        global.heap.rooms[creep.memory.homeRoom].creepsBodyParts += creep.body.length
+        if(global.heap.rooms[creep.memory.homeRoom]!=undefined)
+        {
+            global.heap.rooms[creep.memory.homeRoom].creepsBodyParts += creep.body.length
+        }
+        
 
 
 

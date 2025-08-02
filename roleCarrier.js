@@ -369,6 +369,7 @@ Creep.prototype.roleCarrier = function roleCarrier() {
 
 
                             this.fleeFrom([Game.getObjectById(this.memory.homeContainer)], 3)
+                            this.increaseBalancer()
                             this.memory.homeContainer = undefined
                             break;
                         }
