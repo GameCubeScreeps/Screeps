@@ -46,7 +46,7 @@ Room.prototype.visualize = function visualizeroomManager() {
 
 
         var ttu = (Game.rooms[this.name].controller.progressTotal - Game.rooms[this.name].controller.progress) / (Math.round((Game.rooms[this.name].memory.progressSum / Game.rooms[this.name].memory.progressCounter) * 100) / 100)
-        var blockPos = new RoomPosition(this.controller.pos.x, this.controller.pos.y - 1, this.name)
+        var blockPos = new RoomPosition(this.controller.pos.x-4, this.controller.pos.y, this.name)
         var blockPosWidth = 4
         var blockPosHeight = 1
         this.visual.rect(blockPos.x, blockPos.y, blockPosWidth, blockPosHeight, { fill: C.FILL_COLOR })

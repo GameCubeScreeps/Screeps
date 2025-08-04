@@ -24,7 +24,7 @@ profiler.enable();
 module.exports.loop = function () {
   profiler.wrap(function () {
 
-    var totalStart=Game.cpu.getUsed()
+    var totalStart = Game.cpu.getUsed()
 
     //Setting allies
     Memory.allies = ["JeallyRabbit", "Alphonzo", "insainmonkey", "Trepidimous"]
@@ -67,7 +67,7 @@ module.exports.loop = function () {
       global.heap.rooms[colonizeRoom.name].maxColonizers = C.DEFAULT_COLONIZERS_AMOUNT // as we get vision on that room it will be definied in next step
 
 
-      if (Game.rooms[colonizeRoom.name] != undefined && Game.rooms[colonizeRoom.name].controller.level <= 3 && Game.rooms[colonizeRoom.name].memory.spawnId == undefined) {//Room is being colonized
+      if (Game.rooms[colonizeRoom.name] != undefined) {//Room is being colonized
 
         global.heap.rooms[colonizeRoom.name].maxColonizers = 0;
         global.heap.rooms[colonizeRoom.name].colonizeSources = Game.rooms[colonizeRoom.name].find(FIND_SOURCES)
@@ -78,9 +78,21 @@ module.exports.loop = function () {
         }
 
         if (Game.rooms[colonizeRoom.name].memory.buildingList != undefined && Game.rooms[colonizeRoom.name].memory.buildingList.length > 0) {
+          console.log("Entering building spawn at: ", colonizeRoom.name)
+          console.log("Construction sites: ", Object.keys(Game.constructionSites).length)
           for (building of Game.rooms[colonizeRoom.name].memory.buildingList) {
             if (building.structureType == STRUCTURE_SPAWN) {
-              Game.rooms[colonizeRoom.name].createConstructionSite(building.x, building.y, building.structureType, colonizeRoom.name + '_1')
+
+              if (Game.rooms[colonizeRoom.name].createConstructionSite(building.x, building.y, building.structureType, colonizeRoom.name + '_1') == ERR_FULL) {//reached limit of 100 construction sites
+                for (c in Game.constructionSites) {
+                  console.log(c)
+                  if (Game.getObjectById(c).structureType == STRUCTURE_EXTENSION || Game.getObjectById(c).structureType == STRUCTURE_ROAD) { // remove any road or extension construction site
+                    Game.getObjectById(c).remove()
+                    break;
+                  }
+
+                }
+              }
               break;
             }
           }
@@ -130,18 +142,14 @@ module.exports.loop = function () {
         if (r.colonizer == undefined) {
           minDistance = Infinity
           for (m of Memory.mainRooms) {
-
-            console.log(m," <- ",Game.map.getRoomLinearDistance(m, r.name)," ->",r.name )
-
             if (Game.map.getRoomLinearDistance(m, r.name) < minDistance
-              && Game.rooms[m].storage != undefined && Game.rooms[m].storage[RESOURCE_ENERGY] > C.COLONIZE_ENERGY_LIMIT
+              && Game.rooms[m].storage != undefined && Game.rooms[m].storage.store[RESOURCE_ENERGY] > C.COLONIZE_ENERGY_LIMIT
               && r.name != m) {
-                
+
               minDistance = Game.map.getRoomLinearDistance(m, r.name)
               r.colonizer = m;
             }
           }
-          console.log("room: ",r.name," is colonized by: ",r.colonizer)
         }
       }
     }
@@ -183,17 +191,11 @@ module.exports.loop = function () {
       console.log("Used cpu: ", Game.cpu.getUsed() - start)
 
 
-      //clearing memory of dead room
-      if (Game.rooms[mainRoom].memory != undefined && Game.rooms[mainRoom].memory.spawnId != undefined && Game.rooms[mainRoom].controller.my == false) {
-        //delete Game.rooms[mainRoom].memory
-        //Game.rooms[mainRoom].memory=undefined
-        //console.log("Deleting room memory of: ",mainRoom)
-        //continue
-      }
+
     }
 
 
-    var totalUsedCpu= Math.round(Game.cpu.getUsed() - totalStart)
+    var totalUsedCpu = Math.round(Game.cpu.getUsed() - totalStart)
     for (mainRoom of Memory.mainRooms) {
       //total used cpu
       var blockPos = new RoomPosition(38, 0, mainRoom)
@@ -206,6 +208,33 @@ module.exports.loop = function () {
       Game.rooms[mainRoom].visual.line(blockPos.x + blockPosWidth, blockPos.y, blockPos.x + blockPosWidth, blockPos.y + blockPosHeight, { color: C.OUTLINE_COLOR })
       Game.rooms[mainRoom].visual.text("Cpu: " + totalUsedCpu + "\\" + Game.cpu.limit, blockPos.x + blockPosWidth / 2, blockPos.y + 0.75)
 
+    }
+
+    //Clearing Memory of a dead room
+    var toDelete = undefined
+    for (mainRoom of Memory.mainRooms) {
+
+      if (!Game.rooms[mainRoom].controller.my) {
+        toDelete = mainRoom
+        break;
+      }
+    }
+    if (toDelete != undefined) {
+      //deleting construction sites
+      for (c in Game.constructionSites) {
+        console.log(c)
+        if (Game.getObjectById(c).room.name==toDelete || Game.rooms[toDelete].memory.harvestingRooms.find((r) => r.name == toDelete)) { // remove any road or extension construction site
+          Game.getObjectById(c).remove()
+        }
+
+      }
+
+      Memory.rooms[toDelete] = {}
+      global.heap.rooms[toDelete] = {}
+      var index = Memory.mainRoom.find((r) => r == toDelete);
+      if (index != undefined) {
+        Memory.roomsToColonize.splice(index, 1);
+      }
     }
 
 

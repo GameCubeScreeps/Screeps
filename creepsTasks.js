@@ -269,7 +269,7 @@ Creep.prototype.taskBuild = function taskBuild(localHeap) {
         if (this.memory.role == C.ROLE_REPAIRER) { // repairer should go to closest one 
             aux = []
             for (c of global.heap.rooms[this.room.name].construction) {
-                if (Game.getObjectById(c) != null) {
+                if (Game.getObjectById(c) != null && Game.getObjectById(c).pos!==this.pos) {
                     aux.push(Game.getObjectById(c))
                 }
             }
@@ -277,7 +277,7 @@ Creep.prototype.taskBuild = function taskBuild(localHeap) {
         }
         else { // workers should prioritize by type
             for (c of global.heap.rooms[this.room.name].construction) {
-                if (Game.getObjectById(c) != null) {
+                if (Game.getObjectById(c) != null && Game.getObjectById(c).pos!==this.pos) {
                     sites.push(Game.getObjectById(c))
                     var type = Game.getObjectById(c).structureType
                     if (type === STRUCTURE_SPAWN) {
@@ -300,6 +300,9 @@ Creep.prototype.taskBuild = function taskBuild(localHeap) {
         if (toFocus != null) {
             if (this.build(toFocus) == ERR_NOT_IN_RANGE) {
                 this.travelTo(toFocus, { range: 1, maxRooms: 1 })
+            }
+            else if (this.build(toFocus) == ERR_INVALID_TARGET) {
+                return;
             }
             this.travelTo(toFocus, { range: 1, maxRooms: 1 })
         }

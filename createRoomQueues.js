@@ -176,7 +176,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     //Claimer and colonizers
     if (global.heap.rooms[this.name].areHarvestingNeedsSatisfied ) {
         for (rc of Memory.roomsToColonize) {
-            if (rc.colonizer = this.name && rc.name!=this.name) {
+            if (rc.colonizer == this.name && rc.name!=this.name) {
 
                 if (global.heap.rooms[rc.name].claimer == undefined) {
                     global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(rc.name, C.ROLE_CLAIMER))
