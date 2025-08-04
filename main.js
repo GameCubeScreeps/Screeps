@@ -41,7 +41,7 @@ module.exports.loop = function () {
 
 
     //automatic colonizing
-    if (Memory.roomsToColonize == undefined || true) {
+    if (Memory.roomsToColonize == undefined) {
       Memory.roomsToColonize = []
     }
 
@@ -130,13 +130,18 @@ module.exports.loop = function () {
         if (r.colonizer == undefined) {
           minDistance = Infinity
           for (m of Memory.mainRooms) {
+
+            console.log(m," <- ",Game.map.getRoomLinearDistance(m, r.name)," ->",r.name )
+
             if (Game.map.getRoomLinearDistance(m, r.name) < minDistance
               && Game.rooms[m].storage != undefined && Game.rooms[m].storage[RESOURCE_ENERGY] > C.COLONIZE_ENERGY_LIMIT
               && r.name != m) {
+                
               minDistance = Game.map.getRoomLinearDistance(m, r.name)
               r.colonizer = m;
             }
           }
+          console.log("room: ",r.name," is colonized by: ",r.colonizer)
         }
       }
     }

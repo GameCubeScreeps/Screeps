@@ -61,7 +61,6 @@ Room.prototype.creepsManager = function creepsManager() {
             case C.ROLE_SCOUT:
                 creep.roleScout()
                 global.heap.rooms[creep.memory.homeRoom].civilianParts += creep.body.length
-                console.log("scout pos: ", creep.pos)
                 global.heap.rooms[creep.memory.homeRoom].haveScout = true
                 continue;
             case C.ROLE_HARVESTER:
@@ -120,10 +119,13 @@ Room.prototype.creepsManager = function creepsManager() {
             case C.ROLE_COLONIZER:
                 creep.roleColonizer()
                 global.heap.rooms[creep.memory.homeRoom].civilianParts += creep.body.length
-                global.heap.rooms[creep.memory.targetRoom].colonizers.push(creep.id)
+                if(global.heap.rooms[creep.memory.targetRoom].colonizers!=undefined)
+                {//As room will have spawn built it will no longer have "colonizers" property but 
+                    global.heap.rooms[creep.memory.targetRoom].colonizers.push(creep.id)
+                }
+                
                 break;
         }
     }
 
-    //console.log(this.name, " have scout: ", global.heap.rooms[this.name].haveScout)
 }

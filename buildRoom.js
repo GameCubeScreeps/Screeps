@@ -1389,6 +1389,8 @@ Room.prototype.buildRoom = function buildRoom(type = C.CURRENT_SPAWNPOS) {
         if (Game.shard.name != 'shard3') {
             this.planControllerRamparts();
             var rampartsAmount = this.planBorders(4, type, roomCM)
+            this.memory.baseVariations[type].rampartsAmount = rampartsAmount;
+
         }
         else {
             var rampartsAmount = 1;

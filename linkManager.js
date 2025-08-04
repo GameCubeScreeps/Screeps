@@ -22,7 +22,6 @@ Room.prototype.linkManager = function linkManager() {
             this.memory.managerLinkId = managerLink[0].id;
         }
     }
-    //console.log(this.memory.managerLinkId)
 
     // FIND FILLER LINK
     if (this.memory.fillerLinkId != undefined && Game.getObjectById(this.memory.fillerLinkId) == null) {
@@ -114,20 +113,16 @@ Room.prototype.linkManager = function linkManager() {
 
     // Driver for manager link
     if (managerLink != undefined && managerLink != null && managerLink.cooldown == 0) {
-        //console.log("manager Link")
         if (managerLink != null && managerLink.cooldown == 0 && managerLink.store[RESOURCE_ENERGY] >= 700) {
-            //console.log("controller link: ",controllerLink.id)
             var transfered = false
             //transfer to filler link
             if (fillerLink != null && fillerLink.store.getFreeCapacity([RESOURCE_ENERGY]) > 150) {
-                //console.log("transfering to filler")
                 if (managerLink.transferEnergy(fillerLink) == 0) {
                     transfered = true;
                 }
 
             }
             if (controllerLink != null && controllerLink.store.getFreeCapacity([RESOURCE_ENERGY]) > 150 && transfered == false) {
-                //console.log("transfering to controller")
                 managerLink.transferEnergy(controllerLink)
             }
         }

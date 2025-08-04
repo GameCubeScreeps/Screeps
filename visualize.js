@@ -188,6 +188,8 @@ Room.prototype.visualize = function visualizeroomManager() {
         }
     }
     blockPos.y += blockPosHeight
+
+    //Used Body Parts
     var blockPosWidth = 8
     var blockPosHeight = 1
     this.visual.rect(blockPos.x, blockPos.y, blockPosWidth, blockPosHeight, { fill: C.FILL_COLOR })
@@ -196,16 +198,24 @@ Room.prototype.visualize = function visualizeroomManager() {
     this.visual.line(blockPos.x, blockPos.y + blockPosHeight, blockPos.x + blockPosWidth, blockPos.y + blockPosHeight, { color: C.OUTLINE_COLOR })
     this.visual.line(blockPos.x + blockPosWidth, blockPos.y, blockPos.x + blockPosWidth, blockPos.y + blockPosHeight, { color: C.OUTLINE_COLOR })
 
-    var maxBodyParts=(CONTROLLER_STRUCTURES[STRUCTURE_SPAWN[4]])//*(CREEP_LIFE_TIME/CREEP_SPAWN_TIME))
-    console.log(CONTROLLER_STRUCTURES[STRUCTURE_SPAWN])
-    for(x in CONTROLLER_STRUCTURES[STRUCTURE_SPAWN])
-    {
-        console.log(x)
-    }
+    var maxBodyParts=(CONTROLLER_STRUCTURES[STRUCTURE_SPAWN][this.controller.level])*(CREEP_LIFE_TIME/CREEP_SPAWN_TIME)
     this.visual.text("UsedBodyParts: "+ global.heap.rooms[this.name].creepsBodyParts+"\\"+maxBodyParts, blockPos.x + blockPosWidth / 2, blockPos.y + 0.75)
+     blockPos.y += blockPosHeight
 
     //Creeps data
-    //global.heap.rooms[this.name].creepsBodyParts
+
+    //Workers
+    var blockPosWidth = 8
+    var blockPosHeight = 1
+    this.visual.rect(blockPos.x, blockPos.y, blockPosWidth, blockPosHeight, { fill: C.FILL_COLOR })
+    this.visual.line(blockPos.x, blockPos.y, blockPos.x + blockPosWidth, blockPos.y, { color: C.OUTLINE_COLOR })
+    this.visual.line(blockPos.x, blockPos.y, blockPos.x, blockPos.y + blockPosHeight, { color: C.OUTLINE_COLOR })
+    this.visual.line(blockPos.x, blockPos.y + blockPosHeight, blockPos.x + blockPosWidth, blockPos.y + blockPosHeight, { color: C.OUTLINE_COLOR })
+    this.visual.line(blockPos.x + blockPosWidth, blockPos.y, blockPos.x + blockPosWidth, blockPos.y + blockPosHeight, { color: C.OUTLINE_COLOR })
+
+    var maxBodyParts=(CONTROLLER_STRUCTURES[STRUCTURE_SPAWN][this.controller.level])*(CREEP_LIFE_TIME/CREEP_SPAWN_TIME)
+    this.visual.text("Workers Parts: "+ global.heap.rooms[this.name].workersParts, blockPos.x + blockPosWidth / 2, blockPos.y + 0.75)
+
 
 
 }

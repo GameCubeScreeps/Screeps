@@ -22,16 +22,13 @@ Room.prototype.spawnManager = function spawnManager() {
     }
 
     if (spawn == undefined) {
-        //console.log("Spawn for: ", this.name, " is undefined")
         return -1;
     }
 
 
     if (global.heap.rooms[this.name].defensiveQueue.length > 0) {
         var request = global.heap.rooms[this.name].defensiveQueue[0]
-        //console.log("trying to spawn: ", request.type)
         var type = request.type
-        ////console.log("Type: ", type)
         var energyCap = Game.rooms[this.name].energyAvailable
 
         switch (type) {
@@ -48,19 +45,13 @@ Room.prototype.spawnManager = function spawnManager() {
     }
     else if (global.heap.rooms[this.name].harvestingQueue.length > 0) {
 
-        //console.log("Spawning from harvesting queue")
         var request = global.heap.rooms[this.name].harvestingQueue[0]
-        //console.log("trying to spawn: ", request.type)
         var type = request.type
-        ////console.log("Type: ", type)
         var energyCap = Game.rooms[this.name].energyAvailable
 
         switch (type) {
             case C.ROLE_HARVESTER:
                 {
-                    ////console.log("Spawning harvester: ")
-                    ////console.log("Energy Cap: ", energyCap)
-                    ////console.log("harvesterBody(energyCap): ", harvesterBody(energyCap))
                     var result = spawn.spawnCreep(harvesterBody(energyCap), C.ROLE_HARVESTER + '_' + this.name + Game.time, { memory: { role: C.ROLE_HARVESTER, homeRoom: this.name, targetRoom: request.sourceRoom, sourceId: request.sourceId } })
                     if (result == OK) {
                         global.heap.rooms[this.name].harvestingQueue.shift()
@@ -96,12 +87,10 @@ Room.prototype.spawnManager = function spawnManager() {
             case C.ROLE_HAULER:
                 {
                     var result = spawn.spawnCreep(carrierBody(energyCap), C.ROLE_HAULER + '_' + this.name + Game.time, { memory: { role: C.ROLE_HAULER, homeRoom: this.name } })
-                    console.log("trying to spawn hauler")
                     if (result == OK) {
                         global.heap.rooms[this.name].civilianQueue.shift()
 
                     }
-                    //console.log("Hauler spawning result: ",result)
                     break;
                 }
         }
@@ -123,12 +112,16 @@ Room.prototype.spawnManager = function spawnManager() {
                 }
             case C.ROLE_WORKER:
                 {
-                    var result = spawn.spawnCreep(workerBody(energyCap), C.ROLE_WORKER + '_' + this.name + Game.time, { memory: { role: C.ROLE_WORKER, homeRoom: this.name } })
+                    console.log("trying spawn worker")
+                    var body=[]
+                    if( this.energyAvailable<=SPAWN_ENERGY_CAPACITY){body=[WORK,CARRY,MOVE]}
+                    else{body=workerBody(energyCap)}
+                    console.log(body)
+                    var result = spawn.spawnCreep(body, C.ROLE_WORKER + '_' + this.name + Game.time, { memory: { role: C.ROLE_WORKER, homeRoom: this.name } })
                     if (result == OK) {
                         global.heap.rooms[this.name].civilianQueue.shift()
 
                     }
-                    //console.log("worker spawning result: ",result)
                     break;
                 }
             case C.ROLE_REPAIRER:
@@ -138,7 +131,6 @@ Room.prototype.spawnManager = function spawnManager() {
                         global.heap.rooms[this.name].civilianQueue.shift()
 
                     }
-                    //console.log("Repairer spawning result: ",result)
                     break;
                 }
             case C.ROLE_RESERVER:
@@ -148,7 +140,6 @@ Room.prototype.spawnManager = function spawnManager() {
                         global.heap.rooms[this.name].civilianQueue.shift()
 
                     }
-                    //console.log("Reserver spawning result: ",result)
                     break;
                 }
             case C.ROLE_RAMPART_REPAIRER:
@@ -158,7 +149,6 @@ Room.prototype.spawnManager = function spawnManager() {
                         global.heap.rooms[this.name].civilianQueue.shift()
 
                     }
-                    //console.log("worker spawning result: ",result)
                     break;
                 }
             case C.ROLE_RESOURCE_MANAGER:
@@ -168,7 +158,6 @@ Room.prototype.spawnManager = function spawnManager() {
                         global.heap.rooms[this.name].civilianQueue.shift()
 
                     }
-                    //console.log("worker spawning result: ",result)
                     break;
                 }
             case C.ROLE_CLAIMER:

@@ -23,7 +23,6 @@ Creep.prototype.roleHarvester = function roleHarvester() {
     }
 
     for (src of Game.rooms[this.memory.homeRoom].memory.harvestingSources) {
-        //console.log(src.id)
         if (src.id == this.memory.sourceId) {
 
             src.harvestingPower+= (_.filter(this.body, { type: WORK }).length * HARVEST_POWER);

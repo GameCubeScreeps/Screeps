@@ -35,7 +35,6 @@ Creep.prototype.roleCarrier = function roleCarrier() {
 
 
         for (src of Game.rooms[this.memory.homeRoom].memory.harvestingSources) {
-            //console.log(src.id)
             if (src.id == this.memory.sourceId) {
 
                 src.carryPower += this.store.getCapacity() / (src.distance * 2);

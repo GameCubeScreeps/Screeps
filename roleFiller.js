@@ -3,8 +3,6 @@
 Creep.prototype.roleFiller = function (spawn) {
 
     var spawnPos=Game.rooms[this.memory.homeRoom].memory.spawnPos
-    //console.log("spawnPos: ",spawnPos)
-    //console.log("Game.rooms[this.memory.homeRoom].memory.spawnPos: ",Game.rooms[this.memory.homeRoom].memory.spawnPos)
     if(spawnPos==undefined)
     {
         return -1;

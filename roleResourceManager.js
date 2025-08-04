@@ -141,8 +141,6 @@ Creep.prototype.roleResourceManager = function roleResourceManager() {//transfer
         }
         else if (storage != undefined) {
             //return;
-            //withdrawing all resources (except T3) from storage
-            console.log("no task")
             for (let res in storage.store) {
                 if (res == RESOURCE_ENERGY || (res.startsWith("X") && !(res.endsWith("X"))) && Memory.fastRCLUpgrade == undefined) {
                     continue

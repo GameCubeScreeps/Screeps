@@ -60,9 +60,9 @@ Room.prototype.roomManager = function roomManager() {
             }
 
             //Remove that roomName from array
-            var index = array.indexOf(this.name);
-            if (index !== -1) {
-                Memory.manualColonize.splice(index, 1);
+            var index = Memory.roomsToColonize.find((r)=> r.name==this.name);
+            if (index != undefined) {
+                Memory.roomsToColonize.splice(index, 1);
             }
             delete global.heap.rooms[this.name].claimer
         }

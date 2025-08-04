@@ -153,7 +153,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
             global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_WORKER))
 
         }
-        else if(global.heap.rooms[creep.memory.homeRoom].workersParts==0 && this.controller.level==1 && areHarvestersSatisfied && areCarriersSatisfied)
+        else if(global.heap.rooms[this.name].workersParts==0 && this.energyAvailable<=SPAWN_ENERGY_CAPACITY && areHarvestersSatisfied && areCarriersSatisfied)
         {//this moght be not fully correct but it should assure that on rcl 1 we start spawning workers
             global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_WORKER))
         }

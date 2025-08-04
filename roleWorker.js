@@ -68,7 +68,6 @@ Creep.prototype.roleWorker = function roleWorker() {
             }
         }
 
-        //console.log( this.room.controller.ticksToDowngrade ,"> ",(CONTROLLER_DOWNGRADE[this.room.controller.level]*C.CONTROLLER_DOWNGRADE_BOTTOM_LIMIT))
 
 
 
