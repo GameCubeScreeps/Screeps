@@ -315,7 +315,7 @@ Creep.prototype.roleScout = function roleScout(homeSpawn) {
 
                 var alreadyUsed = false;
                 for (otherRoom of Memory.mainRooms) {
-                    if (Game.rooms[otherRoom].memory.harvestingRooms.some(obj => obj.name === this.room.name)) {
+                    if (Game.rooms[otherRoom].memory.harvestingRooms!=undefined && Game.rooms[otherRoom].memory.harvestingRooms.some(obj => obj.name === this.room.name)) {
                         alreadyUsed = true
                     }
                 }

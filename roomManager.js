@@ -223,7 +223,14 @@ Room.prototype.roomManager = function roomManager() {
                         this.memory.baseVariations[C.CURRENT_SPAWNPOS] = {}
                         this.memory.baseVariations[C.CURRENT_SPAWNPOS].variationFinished = false;
                         this.memory.baseVariations[C.CURRENT_SPAWNPOS].rampartsAmount = 0;
-                        this.memory.baseVariations[C.CURRENT_SPAWNPOS].spawnPos = undefined
+                        var spawn=this.find(FIND_MY_SPAWNS,{filter:
+                            function (sp)
+                            {
+                                return sp.name!=undefined && sp.name.endsWith('1')
+                            }
+                        })
+                        //this.memory.baseVariations[C.CURRENT_SPAWNPOS].spawnPos = spawn[0].pos
+                        //this.memory.spawnPos=spawn[0].pos
                         //this.memory.baseVariations.push(new Variation(C.CURRENT_SPAWNPOS,false,undefined,0))
                     }
 
