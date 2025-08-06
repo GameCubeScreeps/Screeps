@@ -18,3 +18,4 @@ function minerBody(cap)
     }
     return parts;
 }
+module.exports = minerBody
