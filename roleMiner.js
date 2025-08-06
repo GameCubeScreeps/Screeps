@@ -19,4 +19,3 @@ Creep.prototype.roleMiner()
         }
     }
 }
-module.exports = roleMiner;

@@ -12,8 +12,9 @@ function minerBody(cap)
         parts.push(WORK)
         parts.push(WORK)
         parts.push(WORK)
-
         parts.push(MOVE)
+
+        cap-=segmentCost
 
     }
     return parts;

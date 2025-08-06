@@ -14,6 +14,8 @@ const roleResourceManager = require('roleResourceManager')
 const roleSoldier = require('roleSoldier')
 const roleClaimer = require('roleClaimer')
 const roleColonizer = require('roleColonizer')
+const roleMiner=require('roleMiner')
+const roleMineralCarrier=require('roleMineralCarrier')
 
 Room.prototype.creepsManager = function creepsManager() {
 
