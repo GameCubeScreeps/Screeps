@@ -26,7 +26,8 @@ const ROLE_RAMPART_REPAIRER = 'rampart_repairer'
 const ROLE_RESOURCE_MANAGER = 'resource_manager'
 const ROLE_CLAIMER='claimer'
 const ROLE_COLONIZER='colonizer'
-
+const ROLE_MINER='miner'
+const ROLE_MINERAL_CARRIER='mineral_carrier'
 
 //Creep constants
 const CREEP_MAX_BODYPARTS = 50; // maximum creep body length - couldn't find in API
@@ -120,6 +121,8 @@ module.exports = {
     ROLE_RESOURCE_MANAGER,
     ROLE_CLAIMER,
     ROLE_COLONIZER,
+    ROLE_MINER,
+    ROLE_MINERAL_CARRIER,
 
     CREEP_MAX_BODYPARTS,
     HAULER_REQ_CARRY_PARTS,

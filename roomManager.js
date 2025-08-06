@@ -15,7 +15,7 @@ class Variation {
 
 Room.prototype.roomManager = function roomManager() {
 
-    
+
 
     global.heap.rooms[this.name].state = []
     global.heap.rooms[this.name].hostiles = []
@@ -32,7 +32,7 @@ Room.prototype.roomManager = function roomManager() {
     global.heap.rooms[this.name].containersId = []
     global.heap.rooms[this.name].construction = []
 
-    
+
 
     this.memory.repairerId = undefined
 
@@ -51,16 +51,37 @@ Room.prototype.roomManager = function roomManager() {
             }
         }
 
-        
+        //Mineral
+        if (this.memory.mineralId == undefined) {
+            var mineral = this.find(FIND_MINERALS)
+            if (mineral.length > 0) {
+                this.memory.mineralId = mineral[0].id
+                this.memory.mineralOpenPositions = mineral[0].pos.getOpenPositions2()
+            }
+        }
 
-        if (Memory.roomsToColonize.some(e => e.name==this.name) && this.controller.level > 1 && this.memory.spawnId != undefined) {
+
+
+        //Extractor
+        var extractor = this.find(FIND_MY_STRUCTURES, {
+            filter:
+                function (str) {
+                    return str.structureType == STRUCTURE_EXTRACTOR
+                }
+        })
+        if (extractor.length > 0) {
+            this.memory.extractorId = extractor[0].id
+        }
+
+
+        if (Memory.roomsToColonize.some(e => e.name == this.name) && this.controller.level > 1 && this.memory.spawnId != undefined) {
             //Room is finished being colonizer
             if (Memory.manualColonize = this.name) {
                 Memory.manualColonize = '??'
             }
 
             //Remove that roomName from array
-            var index = Memory.roomsToColonize.find((r)=> r.name==this.name);
+            var index = Memory.roomsToColonize.find((r) => r.name == this.name);
             if (index != undefined) {
                 Memory.roomsToColonize.splice(index, 1);
             }
@@ -182,7 +203,7 @@ Room.prototype.roomManager = function roomManager() {
 
         if (global.heap.isSomeRoomPlanning == false) {
             //this.visualizeBase() // debugging
-             // assuring that only one room in a tick would go into room building
+            // assuring that only one room in a tick would go into room building
             if (this.memory.finishedPlanning != true) {
                 global.heap.isSomeRoomPlanning = true;
 
@@ -223,11 +244,11 @@ Room.prototype.roomManager = function roomManager() {
                         this.memory.baseVariations[C.CURRENT_SPAWNPOS] = {}
                         this.memory.baseVariations[C.CURRENT_SPAWNPOS].variationFinished = false;
                         this.memory.baseVariations[C.CURRENT_SPAWNPOS].rampartsAmount = 0;
-                        var spawn=this.find(FIND_MY_SPAWNS,{filter:
-                            function (sp)
-                            {
-                                return sp.name!=undefined && sp.name.endsWith('1')
-                            }
+                        var spawn = this.find(FIND_MY_SPAWNS, {
+                            filter:
+                                function (sp) {
+                                    return sp.name != undefined && sp.name.endsWith('1')
+                                }
                         })
                         //this.memory.baseVariations[C.CURRENT_SPAWNPOS].spawnPos = spawn[0].pos
                         //this.memory.spawnPos=spawn[0].pos
@@ -290,7 +311,7 @@ Room.prototype.roomManager = function roomManager() {
 
     if (constr.length > 0) {
 
-        
+
         global.heap.rooms[this.name].building = true
         for (c of constr) {
             global.heap.rooms[this.name].construction.push(c.id)
@@ -302,7 +323,7 @@ Room.prototype.roomManager = function roomManager() {
         }
     }
 
-    
+
 
 
     //Finding hostile Creeps

@@ -207,8 +207,13 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
 
     }
 
+    //Miners
+    if(global.heap.rooms[this.name].miners<this.memory.mineralOpenPositions)
+    {//Add to civilian queue
+        global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_MINER))
+    }
+
     //Rampart Repairers - civilian queue
-    //asdasdasdasdasd
     if (global.heap.rooms[this.name].requiredRampartsRepairersPower > global.heap.rooms[this.name].rampartRepairersPower) {
         if (global.heap.rooms[this.name].state.includes(C.STATE_UNDER_ATTACK)) {//Add to defensive queue
             global.heap.rooms[this.name].defensiveQueue.push(new generalRoomRequest(this.name, C.ROLE_RAMPART_REPAIRER))

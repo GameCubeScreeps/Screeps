@@ -20,6 +20,7 @@ Room.prototype.creepsManager = function creepsManager() {
     global.heap.rooms[this.name].haveScout = false;
     global.heap.rooms[this.name].haulersParts = 0;
     global.heap.rooms[this.name].resourceManagerId = undefined;
+    global.heap.rooms[this.name].mineralMiningPower=0;//how much of mineral is extracted per tick
 
     global.heap.rooms[this.name].creepsBodyParts = 0
     global.heap.rooms[this.name].harvestingParts = 0;
@@ -123,7 +124,11 @@ Room.prototype.creepsManager = function creepsManager() {
                 {//As room will have spawn built it will no longer have "colonizers" property but 
                     global.heap.rooms[creep.memory.targetRoom].colonizers.push(creep.id)
                 }
-                
+                break;
+            case C.ROLE_MINER:
+                creep.roleMiner()
+                global.heap.rooms[this.name].mineralMiningPower+=_.filter(creep.body, { type: WORK }).length * HARVEST_MINERAL_POWER
+                global.heap.rooms[this.name].miners++;
                 break;
         }
     }
