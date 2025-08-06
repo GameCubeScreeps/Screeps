@@ -202,9 +202,12 @@ Room.prototype.roomManager = function roomManager() {
         ////// START OF BUILDING ROOM MESS
 
         if (global.heap.isSomeRoomPlanning == false) {
+
+           // console.log("Room: ", this.name, " entered building/planning base")
             //this.visualizeBase() // debugging
             // assuring that only one room in a tick would go into room building
             if (this.memory.finishedPlanning != true) {
+                //console.log("Room: ", this.name, " is planning layout")
                 global.heap.isSomeRoomPlanning = true;
 
                 if (this.memory.baseVariations == undefined) {
@@ -244,15 +247,6 @@ Room.prototype.roomManager = function roomManager() {
                         this.memory.baseVariations[C.CURRENT_SPAWNPOS] = {}
                         this.memory.baseVariations[C.CURRENT_SPAWNPOS].variationFinished = false;
                         this.memory.baseVariations[C.CURRENT_SPAWNPOS].rampartsAmount = 0;
-                        var spawn = this.find(FIND_MY_SPAWNS, {
-                            filter:
-                                function (sp) {
-                                    return sp.name != undefined && sp.name.endsWith('1')
-                                }
-                        })
-                        //this.memory.baseVariations[C.CURRENT_SPAWNPOS].spawnPos = spawn[0].pos
-                        //this.memory.spawnPos=spawn[0].pos
-                        //this.memory.baseVariations.push(new Variation(C.CURRENT_SPAWNPOS,false,undefined,0))
                     }
 
 
@@ -270,6 +264,7 @@ Room.prototype.roomManager = function roomManager() {
 
                         if (this.memory.baseVariations[key].variationFinished == false) {
                             this.visual.text(key, 25, 3)
+
                             this.buildRoom(key)
                             break;
                         }
@@ -293,11 +288,12 @@ Room.prototype.roomManager = function roomManager() {
                     this.memory.finishedPlanning = undefined
                 }
                 if (Game.time % 5 == 0) {
+                   //console.log("room: ",this.name," is building from list")
                     this.buildRoom(this.memory.variationToBuild)
                     //global.heap.isSomeRoomPlanning = true
                 }
-
             }
+            
         }
 
     }

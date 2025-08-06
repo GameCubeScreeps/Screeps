@@ -117,7 +117,6 @@ Room.prototype.spawnManager = function spawnManager() {
                     var body=[]
                     if( this.energyAvailable<=SPAWN_ENERGY_CAPACITY){body=[WORK,CARRY,MOVE]}
                     else{body=workerBody(energyCap)}
-                    console.log(body)
                     var result = spawn.spawnCreep(body, C.ROLE_WORKER + '_' + this.name + Game.time, { memory: { role: C.ROLE_WORKER, homeRoom: this.name } })
                     if (result == OK) {
                         global.heap.rooms[this.name].civilianQueue.shift()

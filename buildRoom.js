@@ -1312,8 +1312,8 @@ Room.prototype.planExtractor=function planExtractor(){
     {
         rcl=0;
         while(CONTROLLER_STRUCTURES[STRUCTURE_EXTRACTOR]==0){rcl++}// find on which RCL we can use EXTRACTOR
-        this.memory.roomPlan[mineral[0].pos.x][mineral[0].pos.x] = STRUCTURE_EXTRACTOR;
-        this.memory.buildingList.push(new buildingListElement(mineral[0].pos.x,mineral[0].pos.y, this.name, STRUCSTRUCTURE_EXTRACTORTURE_ROAD, rcl));
+        this.memory.roomPlan[mineral[0].pos.x][mineral[0].pos.y] = STRUCTURE_EXTRACTOR;
+        this.memory.buildingList.push(new buildingListElement(mineral[0].pos.x,mineral[0].pos.y, this.name, STRUCTURE_EXTRACTOR, rcl));
     }
 }
 
@@ -1466,7 +1466,7 @@ Room.prototype.buildRoom = function buildRoom(type = C.CURRENT_SPAWNPOS) {
             var mineral=this.find(FIND_MINERALS)
             if(mineral.length>0)
             {
-                this.memory.mineralDistance=this.planRoadToTarget(mineral[0]);
+                this.memory.mineralDistance=this.planRoadToTarget(roomCM1,mineral[0].pos,6,1,spawnPos);
             }
             if (this.planSourcesContainers() != -1) {
                 this.memory.plannedRoads = true

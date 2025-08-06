@@ -79,7 +79,7 @@ module.exports.loop = function () {
 
         if (Game.rooms[colonizeRoom.name].memory.buildingList != undefined && Game.rooms[colonizeRoom.name].memory.buildingList.length > 0) {
           console.log("Entering building spawn at: ", colonizeRoom.name)
-          console.log("Construction sites: ", Object.keys(Game.constructionSites).length)
+
           for (building of Game.rooms[colonizeRoom.name].memory.buildingList) {
             if (building.structureType == STRUCTURE_SPAWN) {
 
@@ -155,7 +155,7 @@ module.exports.loop = function () {
     }
 
     console.log(C.USERNAME)
-
+    console.log("Construction sites: ", Object.keys(Game.constructionSites).length)
 
 
 
@@ -166,7 +166,7 @@ module.exports.loop = function () {
       var start = Game.cpu.getUsed()
 
 
-     
+
 
       Game.rooms[mainRoom].creepsManager()
 
@@ -223,7 +223,7 @@ module.exports.loop = function () {
       }
     }
     if (toDelete != undefined) {
-      //deleting construction sites
+      //deleting construction sites of a dead room
       for (c in Game.constructionSites) {
         console.log(c)
         if (Game.getObjectById(c).room.name == toDelete || Game.rooms[toDelete].memory.harvestingRooms.find((r) => r.name == toDelete)) { // remove any road or extension construction site
@@ -237,6 +237,33 @@ module.exports.loop = function () {
       var index = Memory.mainRoom.find((r) => r == toDelete);
       if (index != undefined) {
         Memory.roomsToColonize.splice(index, 1);
+      }
+    }
+
+
+    //remocing dead construction sites
+    if (Game.time % 1234 == 0) {
+      for (c in Game.constructionSites) {
+        //console.log(c)
+        var inAnyHarvestingRoom = false
+        for (m of Memory.mainRooms) {
+          if (Game.getObjectById(c).room!=undefined && Game.getObjectById(c).room.name == m) {
+            inAnyHarvestingRoom = true
+            break
+          }
+          else {
+            for (h of Memory.rooms[m].harvestingRooms) {
+              if (Game.getObjectById(c).room!=undefined && h.name == Game.getObjectById(c).room.name) {
+                inAnyHarvestingRoom = true
+                break
+              }
+            }
+          }
+        }
+        if (inAnyHarvestingRoom == false) {
+          Game.getObjectById(c).remove()
+        }
+
       }
     }
 
