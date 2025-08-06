@@ -20,7 +20,11 @@ Room.prototype.creepsManager = function creepsManager() {
     global.heap.rooms[this.name].haveScout = false;
     global.heap.rooms[this.name].haulersParts = 0;
     global.heap.rooms[this.name].resourceManagerId = undefined;
-    global.heap.rooms[this.name].mineralMiningPower=0;//how much of mineral is extracted per tick
+    global.heap.rooms[this.name].mineralMiningPower = 0;//how much of mineral is extracted per tick
+    if (global.heap.rooms[this.name].miners == undefined) {
+        global.heap.rooms[this.name].miners = []
+    }
+
 
     global.heap.rooms[this.name].creepsBodyParts = 0
     global.heap.rooms[this.name].harvestingParts = 0;
@@ -37,11 +41,10 @@ Room.prototype.creepsManager = function creepsManager() {
 
         var creep = Game.creeps[cr];
 
-        if(global.heap.rooms[creep.memory.homeRoom]!=undefined)
-        {
+        if (global.heap.rooms[creep.memory.homeRoom] != undefined) {
             global.heap.rooms[creep.memory.homeRoom].creepsBodyParts += creep.body.length
         }
-        
+
 
 
 
@@ -120,17 +123,35 @@ Room.prototype.creepsManager = function creepsManager() {
             case C.ROLE_COLONIZER:
                 creep.roleColonizer()
                 global.heap.rooms[creep.memory.homeRoom].civilianParts += creep.body.length
-                if(global.heap.rooms[creep.memory.targetRoom].colonizers!=undefined)
-                {//As room will have spawn built it will no longer have "colonizers" property but 
+                if (global.heap.rooms[creep.memory.targetRoom].colonizers != undefined) {//As room will have spawn built it will no longer have "colonizers" property but 
                     global.heap.rooms[creep.memory.targetRoom].colonizers.push(creep.id)
                 }
                 break;
             case C.ROLE_MINER:
                 creep.roleMiner()
-                global.heap.rooms[this.name].mineralMiningPower+=_.filter(creep.body, { type: WORK }).length * HARVEST_MINERAL_POWER
-                global.heap.rooms[this.name].miners++;
+                global.heap.rooms[this.name].mineralMiningPower += (_.filter(creep.body, { type: WORK }).length * HARVEST_MINERAL_POWER) / EXTRACTOR_COOLDOWN
+                if (!global.heap.rooms[this.name].miners.includes(creep.id)) {
+                    global.heap.rooms[this.name].miners.push(creep.id);
+                }
                 break;
+            case C.ROLE_MINERAL_CARRIER:
+                creep.roleMineralCarrier()
+                global.heap.rooms[this.name].mineralCarryPower+=creep.store.getCapacity() / (this.memory.mineralDistance * 2);
         }
     }
+
+
+    //Removing dead miners from array
+    if (global.heap.rooms[this.name].miners.length > 0) {
+        for (id of global.heap.rooms[this.name].miners) {
+            if (Game.getObjectById(id) == null) {
+                const index = array.indexOf(id);
+                if (index > -1) { // only splice array when item is found
+                    array.splice(index, 1); // 2nd parameter means remove one item only
+                }
+            }
+        }
+    }
+
 
 }

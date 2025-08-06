@@ -357,3 +357,68 @@ Creep.prototype.taskHarvest = function taskHarvest(localHeap) {
     }
 
 }
+
+Creep.prototype.taskCollectMineral = function taskCollectMineral() {
+
+    //var miners=[];
+    var mostFullId=undefined;
+    var mostFullAmount=Infinity;
+
+    for(id of global.heap.rooms[this.memory.homeRoom].miners)
+    {
+        if(Game.getObjectById(id)!=null && Game.getObjectById(id).store.getFreeCapacity(RESOURCE_ENERGY)<mostFullAmount)
+        {
+            mostFullId=id
+            mostFullAmount=Game.getObjectById(id).store.getFreeCapacity(RESOURCE_ENERGY)
+            //miners.push(id)
+        }
+    }
+
+    if(mostFullId!=undefined)
+    {
+        if(this.pos.isNearTo(Game.getObjectById(mostFullId)))
+        {
+            for(res of Game.getObjectById(id).store)
+        {
+            if(this.withdraw(mostFullId,res)==OK)
+            {
+                break;
+            }
+        }
+        }
+        else{
+            this.travelTo(Game.getObjectById(mostFullId))
+        }
+        
+        
+    }
+
+}
+
+Creep.prototype.taskStoreMineral = function taskStoreMineral() {
+
+    var storage=this.room.storage
+
+    if(this.room.terminal!=undefined)
+    {
+        storage=this.room.terminal
+    }
+
+    if(this.pos.isNearTo(storage))
+    {
+        for(res in this.store)
+        {
+            if(this.transfer(storage,res)==OK)
+            {
+                break;
+            }
+        }
+    }
+    else{
+        this.travelTo(storage)
+    }
+
+}
+
+
+

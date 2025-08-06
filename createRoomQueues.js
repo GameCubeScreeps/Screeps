@@ -208,9 +208,17 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     }
 
     //Miners
-    if(global.heap.rooms[this.name].miners<this.memory.mineralOpenPositions)
+    if(Game.getObjectById(this.memory.mineralId)!=null && Game.getObjectById(this.memory.mineralId).mineralAmount>0 && global.heap.rooms[this.name].miners.length<this.memory.mineralOpenPositions)
     {//Add to civilian queue
         global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_MINER))
+    }
+
+    //Mineral Carriers
+    {
+        if(Game.getObjectById(this.memory.mineralId)!=null && Game.getObjectById(this.memory.mineralId).mineralAmount>0 && global.heap.rooms[this.name].mineralCarryPower<this.memory.mineralMiningPower)
+    {//Add to civilian queue
+        global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_MINERAL_CARRIER))
+    }
     }
 
     //Rampart Repairers - civilian queue

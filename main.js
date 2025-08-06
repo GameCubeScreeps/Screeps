@@ -165,6 +165,9 @@ module.exports.loop = function () {
 
       var start = Game.cpu.getUsed()
 
+
+     
+
       Game.rooms[mainRoom].creepsManager()
 
       Game.rooms[mainRoom].createRoomQueues()
@@ -223,7 +226,7 @@ module.exports.loop = function () {
       //deleting construction sites
       for (c in Game.constructionSites) {
         console.log(c)
-        if (Game.getObjectById(c).room.name==toDelete || Game.rooms[toDelete].memory.harvestingRooms.find((r) => r.name == toDelete)) { // remove any road or extension construction site
+        if (Game.getObjectById(c).room.name == toDelete || Game.rooms[toDelete].memory.harvestingRooms.find((r) => r.name == toDelete)) { // remove any road or extension construction site
           Game.getObjectById(c).remove()
         }
 
