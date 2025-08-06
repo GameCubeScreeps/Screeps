@@ -269,7 +269,7 @@ Creep.prototype.taskBuild = function taskBuild(localHeap) {
         if (this.memory.role == C.ROLE_REPAIRER) { // repairer should go to closest one 
             aux = []
             for (c of global.heap.rooms[this.room.name].construction) {
-                if (Game.getObjectById(c) != null) {
+                if (Game.getObjectById(c) != null && Game.getObjectById(c).pos!==this.pos) {
                     aux.push(Game.getObjectById(c))
                 }
             }
@@ -277,29 +277,37 @@ Creep.prototype.taskBuild = function taskBuild(localHeap) {
         }
         else { // workers should prioritize by type
             for (c of global.heap.rooms[this.room.name].construction) {
-                if (Game.getObjectById(c) != null) {
+                if (Game.getObjectById(c) != null && Game.getObjectById(c).pos.x!==this.pos.x && Game.getObjectById(c).pos.y!=this.pos.y
+            && Game.getObjectById(c).pos.roomName==this.pos.roomName) {
                     sites.push(Game.getObjectById(c))
                     var type = Game.getObjectById(c).structureType
-                    if (type === STRUCTURE_SPAWN) {
+                    if (type == STRUCTURE_SPAWN) {
                         toFocus = Game.getObjectById(c)
                         break
                     }
-                    else if (toFocus == null && type === STRUCTURE_CONTAINER) {
+                    else if (toFocus == null&& type == STRUCTURE_CONTAINER) {
                         toFocus = Game.getObjectById(c)
-                        //break
+                        break
                     }
+                    /*
                     else if (toFocus == null && type === STRUCTURE_EXTENSION) {
                         toFocus = Game.getObjectById(c)
-                        //break;
+                        break;
                     }
+                        */
                 }
             }
         }
 
-
+        
         if (toFocus != null) {
+            //this.say(this.build(toFocus))
             if (this.build(toFocus) == ERR_NOT_IN_RANGE) {
                 this.travelTo(toFocus, { range: 1, maxRooms: 1 })
+            }
+            else if (this.build(toFocus) == ERR_INVALID_TARGET) {
+                this.move(Math.floor(Math.random() * (8 - 1 + 1)) + 1)
+                return;
             }
             this.travelTo(toFocus, { range: 1, maxRooms: 1 })
         }

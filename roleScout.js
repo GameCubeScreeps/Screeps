@@ -169,7 +169,6 @@ Creep.prototype.roleScout = function roleScout(homeSpawn) {
     }
     else if (Game.rooms[this.memory.homeRoom].memory.roomsToScan.length == 0) {
         Game.rooms[this.memory.homeRoom].memory.if_success_planning_base = false
-        //console.log("Setting: ", Game.rooms[this.memory.homeRoom].controller.level - 1)
         Game.rooms[this.memory.homeRoom].memory.forcedUpgrades[Game.rooms[this.memory.homeRoom].controller.level - 1] = 0
         this.suicide();
     }
@@ -301,7 +300,6 @@ Creep.prototype.roleScout = function roleScout(homeSpawn) {
                         && isRoadSafe == true
                     ) {
                         Game.rooms[this.memory.homeRoom].memory.harvestingSources.push(new_farming_source);
-                        //console.log("adding source")
                     }
 
 
@@ -317,7 +315,7 @@ Creep.prototype.roleScout = function roleScout(homeSpawn) {
 
                 var alreadyUsed = false;
                 for (otherRoom of Memory.mainRooms) {
-                    if (Game.rooms[otherRoom].memory.harvestingRooms.some(obj => obj.name === this.room.name)) {
+                    if (Game.rooms[otherRoom].memory.harvestingRooms!=undefined && Game.rooms[otherRoom].memory.harvestingRooms.some(obj => obj.name === this.room.name)) {
                         alreadyUsed = true
                     }
                 }

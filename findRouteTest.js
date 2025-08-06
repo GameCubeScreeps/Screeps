@@ -108,7 +108,6 @@ function findRoute(starting_pos, destination) {
         
     }
 
-    //console.log("Route from: ", starting_pos, " to: ", destination, " incomplete: ", ret.incomplete," length: ",ret.path.length)
 
     return ret
 }

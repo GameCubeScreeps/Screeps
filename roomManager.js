@@ -60,9 +60,9 @@ Room.prototype.roomManager = function roomManager() {
             }
 
             //Remove that roomName from array
-            var index = array.indexOf(this.name);
-            if (index !== -1) {
-                Memory.manualColonize.splice(index, 1);
+            var index = Memory.roomsToColonize.find((r)=> r.name==this.name);
+            if (index != undefined) {
+                Memory.roomsToColonize.splice(index, 1);
             }
             delete global.heap.rooms[this.name].claimer
         }
@@ -182,11 +182,9 @@ Room.prototype.roomManager = function roomManager() {
 
         if (global.heap.isSomeRoomPlanning == false) {
             //this.visualizeBase() // debugging
-            console.log("room: ",this.name," enters planning")
              // assuring that only one room in a tick would go into room building
             if (this.memory.finishedPlanning != true) {
                 global.heap.isSomeRoomPlanning = true;
-                console.log("Entering roomPlaning")
 
                 if (this.memory.baseVariations == undefined) {
                     this.memory.baseVariations = {}
@@ -225,7 +223,14 @@ Room.prototype.roomManager = function roomManager() {
                         this.memory.baseVariations[C.CURRENT_SPAWNPOS] = {}
                         this.memory.baseVariations[C.CURRENT_SPAWNPOS].variationFinished = false;
                         this.memory.baseVariations[C.CURRENT_SPAWNPOS].rampartsAmount = 0;
-                        this.memory.baseVariations[C.CURRENT_SPAWNPOS].spawnPos = undefined
+                        var spawn=this.find(FIND_MY_SPAWNS,{filter:
+                            function (sp)
+                            {
+                                return sp.name!=undefined && sp.name.endsWith('1')
+                            }
+                        })
+                        //this.memory.baseVariations[C.CURRENT_SPAWNPOS].spawnPos = spawn[0].pos
+                        //this.memory.spawnPos=spawn[0].pos
                         //this.memory.baseVariations.push(new Variation(C.CURRENT_SPAWNPOS,false,undefined,0))
                     }
 
