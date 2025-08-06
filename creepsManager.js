@@ -14,8 +14,8 @@ const roleResourceManager = require('roleResourceManager')
 const roleSoldier = require('roleSoldier')
 const roleClaimer = require('roleClaimer')
 const roleColonizer = require('roleColonizer')
-const roleMiner=require('roleMiner')
-const roleMineralCarrier=require('roleMineralCarrier')
+const roleMiner = require('roleMiner')
+const roleMineralCarrier = require('roleMineralCarrier')
 
 Room.prototype.creepsManager = function creepsManager() {
 
@@ -113,9 +113,12 @@ Room.prototype.creepsManager = function creepsManager() {
             case C.ROLE_SOLDIER:
                 creep.roleSoldier()
                 global.heap.rooms[creep.memory.homeRoom].militaryParts += creep.body.length
-                global.heap.rooms[creep.memory.targetRoom].myHealPower += _.filter(creep.body, { type: HEAL }).length * HEAL_POWER;
-                global.heap.rooms[creep.memory.targetRoom].myAttackPower += _.filter(creep.body, { type: ATTACK }).length * ATTACK_POWER;
-                global.heap.rooms[creep.memory.targetRoom].myRangedAttackPower += _.filter(creep.body, { type: RANGED_ATTACK }).length * RANGED_ATTACK_POWER;
+                if (global.heap.rooms[creep.memory.targetRoom] != undefined) {
+                    global.heap.rooms[creep.memory.targetRoom].myHealPower += _.filter(creep.body, { type: HEAL }).length * HEAL_POWER;
+                    global.heap.rooms[creep.memory.targetRoom].myAttackPower += _.filter(creep.body, { type: ATTACK }).length * ATTACK_POWER;
+                    global.heap.rooms[creep.memory.targetRoom].myRangedAttackPower += _.filter(creep.body, { type: RANGED_ATTACK }).length * RANGED_ATTACK_POWER;
+                }
+
                 break;
             case C.ROLE_CLAIMER:
                 creep.roleClaimer()
@@ -131,14 +134,14 @@ Room.prototype.creepsManager = function creepsManager() {
                 break;
             case C.ROLE_MINER:
                 creep.roleMiner()
-                global.heap.rooms[this.name].mineralMiningPower += (_.filter(creep.body, { type: WORK }).length * HARVEST_MINERAL_POWER) / EXTRACTOR_COOLDOWN
-                if (!global.heap.rooms[this.name].miners.includes(creep.id)) {
-                    global.heap.rooms[this.name].miners.push(creep.id);
+                global.heap.rooms[creep.memory.homeRoom].mineralMiningPower += (_.filter(creep.body, { type: WORK }).length * HARVEST_MINERAL_POWER) / EXTRACTOR_COOLDOWN
+                if (!global.heap.rooms[creep.memory.homeRoom].miners.includes(creep.id)) {
+                    global.heap.rooms[creep.memory.homeRoom].miners.push(creep.id);
                 }
                 break;
             case C.ROLE_MINERAL_CARRIER:
                 creep.roleMineralCarrier()
-                global.heap.rooms[this.name].mineralCarryPower+=creep.store.getCapacity() / (this.memory.mineralDistance * 2);
+                global.heap.rooms[creep.memory.homeRoom].mineralCarryPower += creep.store.getCapacity() / (this.memory.mineralDistance * 2);
         }
     }
 
