@@ -95,7 +95,6 @@ Creep.prototype.taskCollect = function taskCollect(localHeap) {// go to deposits
 
 
     if (this.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
-        //this.say("C->?")
         localHeap.task = undefined
         this.memory.task = 'undefined_debugging_collect'
         return -1;
@@ -176,7 +175,6 @@ Creep.prototype.taskCollect = function taskCollect(localHeap) {// go to deposits
         }
     }
     else { // collect dropped energy
-        //this.say("ener")
         const droppedEnergy = this.room.find(FIND_DROPPED_RESOURCES, {
             filter: resource => resource.resourceType == RESOURCE_ENERGY
         })
@@ -211,7 +209,6 @@ Creep.prototype.taskUpgrade = function taskUpgrade(localHeap) {
     }
 
     if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
-        //this.say("U->C")
         localHeap.task = undefined
         this.memory.task = 'undefined_debugging_upgrade'
         return -1;
@@ -254,11 +251,8 @@ Creep.prototype.taskUpgrade = function taskUpgrade(localHeap) {
 //TASK BUILD
 Creep.prototype.taskBuild = function taskBuild(localHeap) {
 
-    //this.say("0b")
 
     if (global.heap.rooms[this.room.name].building != true) {
-        //this.say('2b')
-        //this.say("no building")
         localHeap.task = undefined
         this.memory.task = 'undefined_debugging_build'
         return -1
@@ -299,9 +293,7 @@ Creep.prototype.taskBuild = function taskBuild(localHeap) {
             }
         }
 
-        //this.say(toFocus)
         if (toFocus != null) {
-            //this.say(this.build(toFocus))
             if (this.build(toFocus) == ERR_NOT_IN_RANGE) {
                 this.travelTo(toFocus, { range: 1, maxRooms: 1 })
             }

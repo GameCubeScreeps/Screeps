@@ -19,7 +19,6 @@ Creep.prototype.roleColonizer = function roleColonizer() {
     }
     else{
         this.colonizerGetTask()
-        this.say(this.memory.task)
         if(this.memory.task==C.TASK_HARVEST)
         {
             this.taskHarvest(localheap)
@@ -46,7 +45,7 @@ Creep.prototype.colonizerGetTask=function colonizerGetTask() {
     if (this.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
         if (global.heap.rooms[this.memory.targetRoom].construction != undefined && global.heap.rooms[this.memory.targetRoom].construction.length > 0) {
             this.memory.task = C.TASK_BUILD;
-            this.say("BUILD")
+            //this.say("BUILD")
         }
         else {
             this.memory.task = C.TASK_UPGRADE;
