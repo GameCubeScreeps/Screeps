@@ -189,6 +189,8 @@ Room.prototype.visualize = function visualizeroomManager() {
     }
     blockPos.y += blockPosHeight
 
+    
+
     //Used Body Parts
     var blockPosWidth = 8
     var blockPosHeight = 1

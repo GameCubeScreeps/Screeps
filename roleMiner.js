@@ -17,5 +17,17 @@ Creep.prototype.roleMiner= function roleMiner()
         else{
             this.travelTo(extractor)
         }
+
+        //add passing mineral to carrier here
+        if(this.store.getFreeCapacity(RESOURCE_ENERGY)<=(_.filter(this.body, { type: WORK }).length * HARVEST_MINERAL_POWER) || this.ticksToLive<50)
+        {
+            for(carrier of global.heap.rooms[this.room.name].mineralCarriers)
+            {
+                if(this.transfer(carrier,Game.getObjectById(Game.rooms[this.memory.homeRoom].memory.mineralId).mineralType)==OK)
+                {
+                    break;
+                }
+            }
+        }
     }
 }

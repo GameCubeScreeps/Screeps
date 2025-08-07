@@ -269,7 +269,7 @@ Creep.prototype.taskBuild = function taskBuild(localHeap) {
         if (this.memory.role == C.ROLE_REPAIRER) { // repairer should go to closest one 
             aux = []
             for (c of global.heap.rooms[this.room.name].construction) {
-                if (Game.getObjectById(c) != null && Game.getObjectById(c).pos!==this.pos) {
+                if (Game.getObjectById(c) != null && Game.getObjectById(c).pos !== this.pos) {
                     aux.push(Game.getObjectById(c))
                 }
             }
@@ -277,15 +277,15 @@ Creep.prototype.taskBuild = function taskBuild(localHeap) {
         }
         else { // workers should prioritize by type
             for (c of global.heap.rooms[this.room.name].construction) {
-                if (Game.getObjectById(c) != null && Game.getObjectById(c).pos.x!==this.pos.x && Game.getObjectById(c).pos.y!=this.pos.y
-            && Game.getObjectById(c).pos.roomName==this.pos.roomName) {
+                if (Game.getObjectById(c) != null && Game.getObjectById(c).pos.x !== this.pos.x && Game.getObjectById(c).pos.y != this.pos.y
+                    && Game.getObjectById(c).pos.roomName == this.pos.roomName) {
                     sites.push(Game.getObjectById(c))
                     var type = Game.getObjectById(c).structureType
                     if (type == STRUCTURE_SPAWN) {
                         toFocus = Game.getObjectById(c)
                         break
                     }
-                    else if (toFocus == null&& type == STRUCTURE_CONTAINER) {
+                    else if (toFocus == null && type == STRUCTURE_CONTAINER) {
                         toFocus = Game.getObjectById(c)
                         break
                     }
@@ -299,7 +299,7 @@ Creep.prototype.taskBuild = function taskBuild(localHeap) {
             }
         }
 
-        
+
         if (toFocus != null) {
             //this.say(this.build(toFocus))
             if (this.build(toFocus) == ERR_NOT_IN_RANGE) {
@@ -361,60 +361,44 @@ Creep.prototype.taskHarvest = function taskHarvest(localHeap) {
 Creep.prototype.taskCollectMineral = function taskCollectMineral() {
 
     //var miners=[];
-    var mostFullId=undefined;
-    var mostFullAmount=Infinity;
+    var mostFullId = undefined;
+    var mostFullAmount = Infinity;
 
-    for(id of global.heap.rooms[this.memory.homeRoom].miners)
-    {
-        if(Game.getObjectById(id)!=null && Game.getObjectById(id).store.getFreeCapacity(RESOURCE_ENERGY)<mostFullAmount)
-        {
-            mostFullId=id
-            mostFullAmount=Game.getObjectById(id).store.getFreeCapacity(RESOURCE_ENERGY)
+    for (id of global.heap.rooms[this.memory.homeRoom].miners) {
+        if (Game.getObjectById(id) != null && Game.getObjectById(id).store.getFreeCapacity(RESOURCE_ENERGY) < mostFullAmount) {
+            mostFullId = id
+            mostFullAmount = Game.getObjectById(id).store.getFreeCapacity(RESOURCE_ENERGY)
             //miners.push(id)
         }
     }
-
-    if(mostFullId!=undefined)
-    {
-        if(this.pos.isNearTo(Game.getObjectById(mostFullId)))
-        {
-            for(res of Game.getObjectById(id).store)
-        {
-            if(this.withdraw(mostFullId,res)==OK)
-            {
-                break;
-            }
-        }
-        }
-        else{
+    console.log("mostFullID: ",mostFullId)
+    if (mostFullId != undefined) {
+        if (!this.pos.isNearTo(Game.getObjectById(mostFullId))) {
+           
             this.travelTo(Game.getObjectById(mostFullId))
         }
-        
-        
+
+
     }
 
 }
 
 Creep.prototype.taskStoreMineral = function taskStoreMineral() {
 
-    var storage=this.room.storage
+    var storage = this.room.storage
 
-    if(this.room.terminal!=undefined)
-    {
-        storage=this.room.terminal
+    if (this.room.terminal != undefined) {
+        storage = this.room.terminal
     }
 
-    if(this.pos.isNearTo(storage))
-    {
-        for(res in this.store)
-        {
-            if(this.transfer(storage,res)==OK)
-            {
+    if (this.pos.isNearTo(storage)) {
+        for (res in this.store) {
+            if (this.transfer(storage, res) == OK) {
                 break;
             }
         }
     }
-    else{
+    else {
         this.travelTo(storage)
     }
 

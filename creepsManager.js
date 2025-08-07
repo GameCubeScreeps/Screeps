@@ -26,6 +26,12 @@ Room.prototype.creepsManager = function creepsManager() {
     if (global.heap.rooms[this.name].miners == undefined) {
         global.heap.rooms[this.name].miners = []
     }
+    if(global.heap.rooms[this.name].mineralCarriers==undefined)
+    {
+        global.heap.rooms[this.name].mineralCarriers=[]
+    }
+
+    global.heap.rooms[this.name].mineralCarryPower=0
 
 
     global.heap.rooms[this.name].creepsBodyParts = 0
@@ -68,34 +74,34 @@ Room.prototype.creepsManager = function creepsManager() {
                 creep.roleScout()
                 global.heap.rooms[creep.memory.homeRoom].civilianParts += creep.body.length
                 global.heap.rooms[creep.memory.homeRoom].haveScout = true
-                continue;
+                break;
             case C.ROLE_HARVESTER:
                 global.heap.rooms[creep.memory.homeRoom].harvestingParts += creep.body.length
                 creep.roleHarvester()
-                continue;
+                break;
             case C.ROLE_CARRIER:
                 creep.roleCarrier()
                 global.heap.rooms[creep.memory.homeRoom].harvestingParts += creep.body.length
-                continue
+                break
             case C.ROLE_WORKER:
                 creep.roleWorker()
                 global.heap.rooms[creep.memory.homeRoom].civilianParts += creep.body.length
                 global.heap.rooms[creep.memory.homeRoom].workersParts += _.filter(creep.body, { type: WORK }).length
-                continue
+                break
             case C.ROLE_FILLER:
                 creep.roleFiller()
                 global.heap.rooms[creep.memory.homeRoom].civilianParts += creep.body.length
                 global.heap.rooms[creep.memory.homeRoom].fillers++;
-                continue
+                break
             case C.ROLE_REPAIRER:
                 creep.roleRepairer()
                 global.heap.rooms[creep.memory.homeRoom].civilianParts += creep.body.length
-                continue
+                break
             case C.ROLE_HAULER:
                 global.heap.rooms[creep.memory.homeRoom].haulersParts += _.filter(creep.body, { type: CARRY }).length
                 global.heap.rooms[creep.memory.homeRoom].civilianParts += creep.body.length
                 creep.roleHauler()
-                continue
+                break
             case C.ROLE_RESERVER:
                 creep.roleReserver()
                 global.heap.rooms[creep.memory.homeRoom].harvestingParts += creep.body.length
@@ -141,22 +147,39 @@ Room.prototype.creepsManager = function creepsManager() {
                 break;
             case C.ROLE_MINERAL_CARRIER:
                 creep.roleMineralCarrier()
+                global.heap.rooms[this.name].mineralCarriers.push(creep)
                 global.heap.rooms[creep.memory.homeRoom].mineralCarryPower += creep.store.getCapacity() / (this.memory.mineralDistance * 2);
+                break;
         }
     }
 
+    
 
     //Removing dead miners from array
     if (global.heap.rooms[this.name].miners.length > 0) {
         for (id of global.heap.rooms[this.name].miners) {
             if (Game.getObjectById(id) == null) {
-                const index = array.indexOf(id);
+                const index = global.heap.rooms[this.name].miners.indexOf(id);
                 if (index > -1) { // only splice array when item is found
-                    array.splice(index, 1); // 2nd parameter means remove one item only
+                    global.heap.rooms[this.name].miners.splice(index, 1); // 2nd parameter means remove one item only
                 }
             }
         }
     }
+
+    //removin dead mineralCarriers
+    if(global.heap.rooms[this.name].mineralCarriers.length>0)
+    {
+        for (mineralCarrier of global.heap.rooms[this.name].mineralCarriers) {
+            if (Game.getObjectById(mineralCarrier.id) == null) {
+                const index = global.heap.rooms[this.name].mineralCarriers.indexOf(mineralCarrier);
+                if (index > -1) { // only splice array when item is found
+                    global.heap.rooms[this.name].mineralCarriers.splice(index, 1); // 2nd parameter means remove one item only
+                }
+            }
+        }
+    }
+
 
 
 }
