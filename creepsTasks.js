@@ -277,7 +277,7 @@ Creep.prototype.taskBuild = function taskBuild(localHeap) {
         }
         else { // workers should prioritize by type
             for (c of global.heap.rooms[this.room.name].construction) {
-                if (Game.getObjectById(c) != null && Game.getObjectById(c).pos.x !== this.pos.x && Game.getObjectById(c).pos.y != this.pos.y
+                if (Game.getObjectById(c) != null && (Game.getObjectById(c).pos.x !== this.pos.x || Game.getObjectById(c).pos.y != this.pos.y)
                     && Game.getObjectById(c).pos.roomName == this.pos.roomName) {
                     sites.push(Game.getObjectById(c))
                     var type = Game.getObjectById(c).structureType
@@ -299,7 +299,7 @@ Creep.prototype.taskBuild = function taskBuild(localHeap) {
             }
         }
 
-
+        //this.say(toFocus)
         if (toFocus != null) {
             //this.say(this.build(toFocus))
             if (this.build(toFocus) == ERR_NOT_IN_RANGE) {
