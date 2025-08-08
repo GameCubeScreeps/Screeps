@@ -24,8 +24,7 @@ Creep.prototype.roleHauler = function roleHauler(spawn) {//transfer energy grom 
     if (this.room.memory.myExtensions != undefined) {
         for (let id of Game.rooms[this.memory.homeRoom].memory.myExtensions) {
             if (Game.getObjectById(id) == null) {
-                this.memory.extensionsId = undefined;
-                break;
+                continue
             }
             else if(Game.getObjectById(id).store.getFreeCapacity(RESOURCE_ENERGY)>0){
                 this.memory.extensionsFull=false;
@@ -263,6 +262,7 @@ Creep.prototype.roleHauler = function roleHauler(spawn) {//transfer energy grom 
     if (this.memory.task == C.TASK_FILL_EXTENSIONS) {
         if(this.memory.extensionsFull==true)
         {
+            this.memory.extensionsFull=undefined
             this.memory.task=undefined
             return;
         }

@@ -268,7 +268,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
 
 
 
-    ifLog = false
+    ifLog = true
     if (ifLog) {
         console.log("defensiveQueue:")
         for (a of global.heap.rooms[this.name].defensiveQueue) {

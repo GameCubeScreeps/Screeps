@@ -344,7 +344,7 @@ Creep.prototype.taskHarvest = function taskHarvest(localHeap) {
 
     if (localHeap.targetSource != undefined) {
         if (Game.getObjectById(localHeap.targetSource) != null && this.harvest(Game.getObjectById(localHeap.targetSource)) == ERR_NOT_IN_RANGE) {
-            this.travelTo(Game.getObjectById(localHeap.targetSource))
+            this.travelTo(Game.getObjectById(localHeap.targetSource),{ignoreCreeps: false, maxRooms: 1})
         }
     }
 
