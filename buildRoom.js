@@ -1481,7 +1481,15 @@ Room.prototype.buildRoom = function buildRoom(type = C.CURRENT_SPAWNPOS) {
         return
     }
     else if (stage == 2) {
-        //build from lists and visualize roomPlan
+
+        if(this.memory.fillerLinkPos!=undefined && (this.memory.fillerLinkPos.x!=this.memory.spawnPos.x || this.memory.fillerLinkPos.y!=this.memory.spawnPos.y-2))
+        {
+            this.memory.baseVariations=undefined
+            this.memory.finishedPlanning=undefined
+            //mixed spawnPos of variations, in theory this should enforce next planning to be spawnPos
+        }
+        else{
+            //build from lists and visualize roomPlan
         if (Game.time % 123 == 0) {
             this.buildFromLists()
             if (this.memory.roomCM != undefined) {
@@ -1494,6 +1502,8 @@ Room.prototype.buildRoom = function buildRoom(type = C.CURRENT_SPAWNPOS) {
                 delete this.memory.buildingList
             }
         }
+        }
+        
 
 
         return
