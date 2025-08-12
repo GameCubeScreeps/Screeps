@@ -1486,6 +1486,7 @@ Room.prototype.buildRoom = function buildRoom(type = C.CURRENT_SPAWNPOS) {
         {
             this.memory.baseVariations=undefined
             this.memory.finishedPlanning=undefined
+            console.log("ERROR ON PLANNING BASE")
             //mixed spawnPos of variations, in theory this should enforce next planning to be spawnPos
         }
         else{
