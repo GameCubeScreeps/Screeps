@@ -207,7 +207,7 @@ Room.prototype.roomManager = function roomManager() {
             //this.visualizeBase() // debugging
             // assuring that only one room in a tick would go into room building
             if (this.memory.finishedPlanning != true) {
-                //console.log("Room: ", this.name, " is planning layout")
+                 console.log("Room: ", this.name, " is planning layout")
                 global.heap.isSomeRoomPlanning = true;
 
                 if (this.memory.baseVariations == undefined) {
@@ -242,7 +242,7 @@ Room.prototype.roomManager = function roomManager() {
                     this.memory.baseVariations[C.SRC_1_2_CONTROLLER].spawnPos = undefined
 
                     //if there is spawn in room use only one variation
-                    if (this.find(FIND_MY_SPAWNS).length > 0) {
+                    if (this.memory.spawnId!=undefined && Game.getObjectById(this.memory.spawnId)!=null) {
                         this.memory.baseVariations = {}
                         this.memory.baseVariations[C.CURRENT_SPAWNPOS] = {}
                         this.memory.baseVariations[C.CURRENT_SPAWNPOS].variationFinished = false;
@@ -260,10 +260,21 @@ Room.prototype.roomManager = function roomManager() {
 
                     // loop through room variations
                     var finishedCounter = 0;
+
+                    //redundant
+                    if (this.memory.spawnId!=undefined && Game.getObjectById(this.memory.spawnId)!=null) {
+                        console.log("Found spawn")
+                        this.memory.baseVariations = {}
+                        this.memory.baseVariations[C.CURRENT_SPAWNPOS] = {}
+                        this.memory.baseVariations[C.CURRENT_SPAWNPOS].variationFinished = false;
+                        this.memory.baseVariations[C.CURRENT_SPAWNPOS].rampartsAmount = 0;
+                    }
+                    //////////////
+
                     for (key in this.memory.baseVariations) {
 
                         if (this.memory.baseVariations[key].variationFinished == false) {
-                            this.visual.text(key, 25, 3)
+                            this.visual.text(key, 25, 4)
 
                             this.buildRoom(key)
                             break;

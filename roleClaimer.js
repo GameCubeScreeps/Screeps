@@ -15,18 +15,19 @@ Creep.prototype.roleClaimer = function roleClaimer() {
 
             if (colonizers.length > 0) {
 
-                claimeResult=this.claimController(this.room.controller)
-                if (claimeResult == ERR_NOT_IN_RANGE) {
+                claimResult=this.claimController(this.room.controller)
+                this.say(claimResult)
+                if (claimResult == ERR_NOT_IN_RANGE) {
                     this.travelTo(this.room.controller, { reusePath: 15, avoidSk: true, maxRooms: 1 });
                 }
-                if (claimeResult == ERR_INVALID_TARGET &&
+                if (claimResult == ERR_INVALID_TARGET &&
                     (this.room.controller.owner != undefined && this.room.controller.owner.username != C.USERNAME )
                 && !Memory.allies.includes(this.room.controller.owner.username)) {
 
                     this.attackController(this.room.controller);
 
                 }
-                if(claimeResult==OK)
+                if(claimResult==OK)
                 { 
                     if(!Memory.mainRooms.includes(this.room.name))
                     {

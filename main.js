@@ -77,6 +77,7 @@ module.exports.loop = function () {
           s.harvesters = [];
         }
 
+        /*
         if (Game.rooms[colonizeRoom.name].memory.buildingList != undefined && Game.rooms[colonizeRoom.name].memory.buildingList.length > 0) {
           console.log("Entering building spawn at: ", colonizeRoom.name)
 
@@ -97,6 +98,7 @@ module.exports.loop = function () {
             }
           }
         }
+          */
       }
 
     }

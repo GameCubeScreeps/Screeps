@@ -4,7 +4,6 @@ Room.prototype.linkManager = function linkManager() {
     //tick: function (spawn) {
 
     if (this.storage == undefined) {
-        console.log("no storage in linksManger")
         return;
     }
     var roomName=this.name
@@ -83,22 +82,17 @@ Room.prototype.linkManager = function linkManager() {
     }
 
     // FIND CONTROLLER LINK
-    console.log("Link Manager 1")
     if (this.memory.controllerLinkId != undefined && Game.getObjectById(this.memory.controllerLinkId) == null) {
         this.memory.controllerLinkId == undefined;
-        console.log("Link Manager 2")
     }
     if (this.memory.controllerLinkId == undefined && this.memory.controllerLinkPos != undefined) {
-        console.log("Link Manager 3")
         var roomName=this.name
         var controllerLink = this.find(FIND_STRUCTURES, {
             filter: function (str) {
                 return str.structureType == STRUCTURE_LINK && str.pos.x == Game.rooms[roomName].memory.controllerLinkPos.x && str.pos.y == Game.rooms[roomName].memory.controllerLinkPos.y;
             }
         });
-        console.log("controllerLink: ",controllerLink)
         if (controllerLink != undefined && controllerLink.length > 0) {
-            console.log("Link Manager 4")
             this.memory.controllerLinkId = controllerLink[0].id;
         }
     }
@@ -109,7 +103,6 @@ Room.prototype.linkManager = function linkManager() {
     var fillerLink = Game.getObjectById(this.memory.fillerLinkId)
 
     var controllerLink = Game.getObjectById(this.memory.controllerLinkId)
-    console.log("Link Manager 5: ",this.memory.controllerLinkId )
     var sourcesLinks = []
     for (let link_id of this.memory.sourcesLinkPos) {
         var link = Game.getObjectById(link_id)
