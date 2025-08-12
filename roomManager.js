@@ -261,15 +261,7 @@ Room.prototype.roomManager = function roomManager() {
                     // loop through room variations
                     var finishedCounter = 0;
 
-                    //redundant
-                    if (this.memory.spawnId!=undefined && Game.getObjectById(this.memory.spawnId)!=null) {
-                        console.log("Found spawn")
-                        this.memory.baseVariations = {}
-                        this.memory.baseVariations[C.CURRENT_SPAWNPOS] = {}
-                        this.memory.baseVariations[C.CURRENT_SPAWNPOS].variationFinished = false;
-                        this.memory.baseVariations[C.CURRENT_SPAWNPOS].rampartsAmount = 0;
-                    }
-                    //////////////
+                   
 
                     for (key in this.memory.baseVariations) {
 
@@ -307,6 +299,19 @@ Room.prototype.roomManager = function roomManager() {
             
         }
 
+    }
+
+    //creating Spawn construction site
+    if(this.memory.spawnId==undefined && this.memory.finalBuildingList!=undefined && this.memory.finalBuildingList.length>0)
+    {
+        for(f of this.memory.finalBuildingList)
+        {
+            if(f.structureType==STRUCTURE_SPAWN)
+            {
+                this.createConstructionSite(f.x,f.y,f.structureType)
+                break;
+            }
+        }
     }
 
 

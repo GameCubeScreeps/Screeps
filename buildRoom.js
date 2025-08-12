@@ -638,7 +638,7 @@ Room.prototype.planLabsStamp = function planLabsStamp(roomCM) {
     minDistanceFromStorage = Infinity;
     for (i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
-            if (distanceCM.get(i, j) >= 3 && floodCM.get(i, j) < minDistanceFromStorage
+            if (distanceCM.get(i, j) >= 4 && floodCM.get(i, j) < minDistanceFromStorage
                 && i > 6 && i < 44 && j > 6 && j < 44) {
                 minDistanceFromStorage = floodCM.get(i, j);
                 posForLabs.x = i;
