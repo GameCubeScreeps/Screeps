@@ -308,7 +308,7 @@ Room.prototype.roomManager = function roomManager() {
         {
             if(f.structureType==STRUCTURE_SPAWN)
             {
-                this.createConstructionSite(f.x,f.y,f.structureType)
+                this.createConstructionSite(f.x,f.y,f.structureType,f.roomName+"_1")
                 break;
             }
         }
@@ -537,3 +537,4 @@ Room.prototype.roomManager = function roomManager() {
 
 
 }
+

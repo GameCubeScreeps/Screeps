@@ -18,6 +18,14 @@ const creepsManager = require('creepsManager')
 const linkManager = require('linkManager')
 const visualize = require('visualize');
 
+Room.prototype.removeConstructionSites=function removeConstructionSites()
+{
+    for(constr in Game.constructionSites)
+    {
+        Game.constructionSites[constr].remove()
+    }
+}
+
 
 // this line monkey patches the global prototypes.
 profiler.enable();
