@@ -155,6 +155,8 @@ Room.prototype.planRoadToTarget = function planRoadToTarget(roomCM, target, rcl,
         }
     }
 
+    return ret.path.length
+
 }
 
 Room.prototype.planRampartsEntrances = function planRampartsEntrances(roomCM, groups, rcl, start = this.memory.spawnPos) {
@@ -636,7 +638,7 @@ Room.prototype.planLabsStamp = function planLabsStamp(roomCM) {
     minDistanceFromStorage = Infinity;
     for (i = 0; i < 50; i++) {
         for (let j = 0; j < 50; j++) {
-            if (distanceCM.get(i, j) >= 3 && floodCM.get(i, j) < minDistanceFromStorage
+            if (distanceCM.get(i, j) >= 4 && floodCM.get(i, j) < minDistanceFromStorage
                 && i > 6 && i < 44 && j > 6 && j < 44) {
                 minDistanceFromStorage = floodCM.get(i, j);
                 posForLabs.x = i;
@@ -1297,18 +1299,32 @@ Room.prototype.planSpawnPos = function planSpawnPos(type) {
 
         }
         else {
+            console.log("planSpawnPos() cant establish spawnPos")
             return -1
         }
+
     }
 
 
 }
 
+Room.prototype.planExtractor = function planExtractor() {
+    var mineral = this.find(FIND_MINERALS)
+    if (mineral.length > 0) {
+        rcl = 0;
+        while (CONTROLLER_STRUCTURES[STRUCTURE_EXTRACTOR] == 0) { rcl++ }// find on which RCL we can use EXTRACTOR
+        this.memory.roomPlan[mineral[0].pos.x][mineral[0].pos.y] = STRUCTURE_EXTRACTOR;
+        this.memory.buildingList.push(new buildingListElement(mineral[0].pos.x, mineral[0].pos.y, this.name, STRUCTURE_EXTRACTOR, rcl));
+    }
+}
 
 Room.prototype.buildRoom = function buildRoom(type = C.CURRENT_SPAWNPOS) {
 
 
-
+    if (this.memory.variationToBuild != undefined) {//This might be wrong
+        type = this.memory.variationToBuild
+        console.log("TEST")
+    }
     var stage = 0
     if (this.memory.baseVariations == undefined || this.memory.baseVariations[type] == undefined || this.memory.baseVariations[type].spawnPos == undefined) {
         this.memory.finishedPlanning = false
@@ -1334,9 +1350,11 @@ Room.prototype.buildRoom = function buildRoom(type = C.CURRENT_SPAWNPOS) {
 
     }
 
+    this.visual.text("Stage: " + stage, 25, 5)
 
     if (stage == 0) {
 
+        console.log("buildingRoom.js 1")
         // Declaring variables for use in later stages
         var cpuBefore = Game.cpu.getUsed()
         let roomCM = new PathFinder.CostMatrix;
@@ -1358,7 +1376,7 @@ Room.prototype.buildRoom = function buildRoom(type = C.CURRENT_SPAWNPOS) {
 
         this.planSpawnPos(type);
 
-
+        console.log("buildingRoom.js 2, type: ", type)
 
         var spawnPos = undefined
         if (this.memory.baseVariations[type] != undefined && this.memory.baseVariations[type].spawnPos != undefined) {
@@ -1366,7 +1384,14 @@ Room.prototype.buildRoom = function buildRoom(type = C.CURRENT_SPAWNPOS) {
 
         }
         else {
+
+            console.log(type)
+            console.log("Unable to read spawnPosition")
+            this.memory.baseVariations = undefined
+            this.memory.finishedPlanning = undefined
             return -1
+
+
 
         }
         this.planMainSpawnStamp(roomCM, spawnPos)
@@ -1374,7 +1399,7 @@ Room.prototype.buildRoom = function buildRoom(type = C.CURRENT_SPAWNPOS) {
         this.planManagerStamp(roomCM, spawnPos);
         this.planControllerContainer(roomCM)
 
-
+        console.log("buildingRoom.js 3")
         //plan_road_to_controller(spawn, roomCM);
         this.planExtensionStamp(roomCM, 4, spawnPos, type);//18 
         this.planExtensionStamp(roomCM, 5, spawnPos, type);//23
@@ -1387,9 +1412,11 @@ Room.prototype.buildRoom = function buildRoom(type = C.CURRENT_SPAWNPOS) {
         this.planExtensionStamp(roomCM, 8, spawnPos, type);//58
         this.planTowersStamp(roomCM, spawnPos);
         this.planLabsStamp(roomCM);
+        this.planExtractor(roomCM);
+
 
         this.visualizeBase()
-
+        console.log("buildingRoom.js 4")
         if (Game.shard.name != 'shard3') {
             this.planControllerRamparts();
             var rampartsAmount = this.planBorders(4, type, roomCM)
@@ -1422,6 +1449,7 @@ Room.prototype.buildRoom = function buildRoom(type = C.CURRENT_SPAWNPOS) {
         this.memory.buildingStage++;
         var cpuAfter = Game.cpu.getUsed();
         this.memory.cpuSpentForStamps = cpuAfter - cpuBefore;
+
         return;
 
     }
@@ -1449,6 +1477,10 @@ Room.prototype.buildRoom = function buildRoom(type = C.CURRENT_SPAWNPOS) {
                 this.planRoadToTarget(roomCM1, src.pos, 8, 1, spawnPos)
             }
 
+            var mineral = this.find(FIND_MINERALS)
+            if (mineral.length > 0) {
+                this.memory.mineralDistance = this.planRoadToTarget(roomCM1, mineral[0].pos, 6, 1, spawnPos);
+            }
             if (this.planSourcesContainers() != -1) {
                 this.memory.plannedRoads = true
                 this.memory.stage++;
@@ -1462,19 +1494,29 @@ Room.prototype.buildRoom = function buildRoom(type = C.CURRENT_SPAWNPOS) {
         return
     }
     else if (stage == 2) {
-        //build from lists and visualize roomPlan
-        if (Game.time % 123 == 0) {
-            this.buildFromLists()
-            if (this.memory.roomCM != undefined) {
-                delete this.memory.roomCM
-            }
-            if (this.memory.roomPlan != undefined) {
-                delete this.memory.roomPlan
-            }
-            if (this.memory.buildingList != undefined) {
-                delete this.memory.buildingList
+
+        if (this.memory.fillerLinkPos != undefined && (this.memory.fillerLinkPos.x != this.memory.spawnPos.x || this.memory.fillerLinkPos.y != this.memory.spawnPos.y - 2)) {
+            this.memory.baseVariations = undefined
+            this.memory.finishedPlanning = undefined
+            console.log("ERROR ON PLANNING BASE")
+            //mixed spawnPos of variations, in theory this should enforce next planning to be spawnPos
+        }
+        else {
+            //build from lists and visualize roomPlan
+            if (Game.time % 123 == 0) {
+                this.buildFromLists()
+                if (this.memory.roomCM != undefined) {
+                    delete this.memory.roomCM
+                }
+                if (this.memory.roomPlan != undefined) {
+                    delete this.memory.roomPlan
+                }
+                if (this.memory.buildingList != undefined) {
+                    delete this.memory.buildingList
+                }
             }
         }
+
 
 
         return

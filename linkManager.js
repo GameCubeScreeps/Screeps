@@ -82,14 +82,14 @@ Room.prototype.linkManager = function linkManager() {
     }
 
     // FIND CONTROLLER LINK
-
     if (this.memory.controllerLinkId != undefined && Game.getObjectById(this.memory.controllerLinkId) == null) {
         this.memory.controllerLinkId == undefined;
     }
-    if (this.memory.controllerLinkId == undefined && this.memory.controllerLinikPos != undefined) {
+    if (this.memory.controllerLinkId == undefined && this.memory.controllerLinkPos != undefined) {
+        var roomName=this.name
         var controllerLink = this.find(FIND_STRUCTURES, {
             filter: function (str) {
-                return str.structureType == STRUCTURE_LINK && str.pos.x == Game.rooms[roomName].memory.controllerLinikPos.x && str.pos.y == Game.rooms[roomName].memory.controllerLinikPos.y;
+                return str.structureType == STRUCTURE_LINK && str.pos.x == Game.rooms[roomName].memory.controllerLinkPos.x && str.pos.y == Game.rooms[roomName].memory.controllerLinkPos.y;
             }
         });
         if (controllerLink != undefined && controllerLink.length > 0) {

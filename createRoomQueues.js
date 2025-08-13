@@ -153,8 +153,7 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
             global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_WORKER))
 
         }
-        else if(global.heap.rooms[this.name].workersParts==0 && this.energyAvailable<=SPAWN_ENERGY_CAPACITY && areHarvestersSatisfied && areCarriersSatisfied)
-        {//this moght be not fully correct but it should assure that on rcl 1 we start spawning workers
+        else if (global.heap.rooms[this.name].workersParts == 0 && this.energyAvailable <= SPAWN_ENERGY_CAPACITY && areHarvestersSatisfied && areCarriersSatisfied) {//this moght be not fully correct but it should assure that on rcl 1 we start spawning workers
             global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_WORKER))
         }
     }
@@ -174,9 +173,9 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
     global.heap.rooms[this.name].areHarvestingNeedsSatisfied = areHarvestersSatisfied && areCarriersSatisfied
 
     //Claimer and colonizers
-    if (global.heap.rooms[this.name].areHarvestingNeedsSatisfied ) {
+    if (global.heap.rooms[this.name].areHarvestingNeedsSatisfied) {
         for (rc of Memory.roomsToColonize) {
-            if (rc.colonizer == this.name && rc.name!=this.name) {
+            if (rc.colonizer == this.name && rc.name != this.name) {
 
                 if (global.heap.rooms[rc.name].claimer == undefined) {
                     global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(rc.name, C.ROLE_CLAIMER))
@@ -207,8 +206,27 @@ Room.prototype.createRoomQueues = function createRoomQueues() {
 
     }
 
+
+    //Mineral Carriers
+    if (Game.getObjectById(this.memory.mineralId) != null && Game.getObjectById(this.memory.mineralId).mineralAmount > 0 && global.heap.rooms[this.name].mineralCarryPower < global.heap.rooms[this.name].mineralMiningPower) {//Add to civilian queue
+        //console.log("Adding mineralCarrier")
+        global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_MINERAL_CARRIER))
+    }
+    else {
+        //Miners
+
+        if (Game.getObjectById(this.memory.mineralId) != null && Game.getObjectById(this.memory.mineralId).mineralAmount > 0 && global.heap.rooms[this.name].miners.length < this.memory.mineralOpenPositions.length
+            && this.memory.extractorId != undefined) {//Add to civilian queue
+            global.heap.rooms[this.name].civilianQueue.push(new generalRoomRequest(this.name, C.ROLE_MINER))
+        }
+    }
+
+
+
+
+   // console.log("global.heap.rooms[this.name].mineralMiningPower: ", global.heap.rooms[this.name].mineralMiningPower, " / global.heap.rooms[this.name].mineralCarryPower: ", global.heap.rooms[this.name].mineralCarryPower)
+
     //Rampart Repairers - civilian queue
-    //asdasdasdasdasd
     if (global.heap.rooms[this.name].requiredRampartsRepairersPower > global.heap.rooms[this.name].rampartRepairersPower) {
         if (global.heap.rooms[this.name].state.includes(C.STATE_UNDER_ATTACK)) {//Add to defensive queue
             global.heap.rooms[this.name].defensiveQueue.push(new generalRoomRequest(this.name, C.ROLE_RAMPART_REPAIRER))

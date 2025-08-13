@@ -26,7 +26,8 @@ const ROLE_RAMPART_REPAIRER = 'rampart_repairer'
 const ROLE_RESOURCE_MANAGER = 'resource_manager'
 const ROLE_CLAIMER='claimer'
 const ROLE_COLONIZER='colonizer'
-
+const ROLE_MINER='miner'
+const ROLE_MINERAL_CARRIER='mineral_carrier'
 
 //Creep constants
 const CREEP_MAX_BODYPARTS = 50; // maximum creep body length - couldn't find in API
@@ -38,6 +39,8 @@ const TASK_HARVEST='harvest'
 const TASK_UPGRADE = 'upgrade'
 const TASK_BUILD = 'build'
 const TASK_COLLECT = 'collect'
+const TASK_COLLECT_MINERAL = 'collect_mineral'
+const TASK_STORE_MINERAL = 'store_mineral'
 const TASK_FILL_UPGRADERS_CONTAIER = 'fill_upgraders_container'
 const TASK_FILL_EXTENSIONS = 'fill_extensions'
 const TASK_FILL_SPAWN = 'fill_spawn'
@@ -120,6 +123,8 @@ module.exports = {
     ROLE_RESOURCE_MANAGER,
     ROLE_CLAIMER,
     ROLE_COLONIZER,
+    ROLE_MINER,
+    ROLE_MINERAL_CARRIER,
 
     CREEP_MAX_BODYPARTS,
     HAULER_REQ_CARRY_PARTS,
@@ -129,6 +134,8 @@ module.exports = {
     TASK_UPGRADE,
     TASK_BUILD,
     TASK_COLLECT,
+    TASK_COLLECT_MINERAL,
+    TASK_STORE_MINERAL,
     TASK_FILL_UPGRADERS_CONTAIER,
     TASK_FILL_EXTENSIONS,
     TASK_FILL_SPAWN,

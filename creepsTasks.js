@@ -95,7 +95,6 @@ Creep.prototype.taskCollect = function taskCollect(localHeap) {// go to deposits
 
 
     if (this.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
-        //this.say("C->?")
         localHeap.task = undefined
         this.memory.task = 'undefined_debugging_collect'
         return -1;
@@ -176,7 +175,6 @@ Creep.prototype.taskCollect = function taskCollect(localHeap) {// go to deposits
         }
     }
     else { // collect dropped energy
-        //this.say("ener")
         const droppedEnergy = this.room.find(FIND_DROPPED_RESOURCES, {
             filter: resource => resource.resourceType == RESOURCE_ENERGY
         })
@@ -211,7 +209,6 @@ Creep.prototype.taskUpgrade = function taskUpgrade(localHeap) {
     }
 
     if (this.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
-        //this.say("U->C")
         localHeap.task = undefined
         this.memory.task = 'undefined_debugging_upgrade'
         return -1;
@@ -254,11 +251,8 @@ Creep.prototype.taskUpgrade = function taskUpgrade(localHeap) {
 //TASK BUILD
 Creep.prototype.taskBuild = function taskBuild(localHeap) {
 
-    //this.say("0b")
 
     if (global.heap.rooms[this.room.name].building != true) {
-        //this.say('2b')
-        //this.say("no building")
         localHeap.task = undefined
         this.memory.task = 'undefined_debugging_build'
         return -1
@@ -269,7 +263,7 @@ Creep.prototype.taskBuild = function taskBuild(localHeap) {
         if (this.memory.role == C.ROLE_REPAIRER) { // repairer should go to closest one 
             aux = []
             for (c of global.heap.rooms[this.room.name].construction) {
-                if (Game.getObjectById(c) != null && Game.getObjectById(c).pos!==this.pos) {
+                if (Game.getObjectById(c) != null && Game.getObjectById(c).pos !== this.pos) {
                     aux.push(Game.getObjectById(c))
                 }
             }
@@ -277,15 +271,15 @@ Creep.prototype.taskBuild = function taskBuild(localHeap) {
         }
         else { // workers should prioritize by type
             for (c of global.heap.rooms[this.room.name].construction) {
-                if (Game.getObjectById(c) != null && Game.getObjectById(c).pos.x!==this.pos.x && Game.getObjectById(c).pos.y!=this.pos.y
-            && Game.getObjectById(c).pos.roomName==this.pos.roomName) {
+                if (Game.getObjectById(c) != null && (Game.getObjectById(c).pos.x !== this.pos.x || Game.getObjectById(c).pos.y != this.pos.y)
+                    && Game.getObjectById(c).pos.roomName == this.pos.roomName) {
                     sites.push(Game.getObjectById(c))
                     var type = Game.getObjectById(c).structureType
                     if (type == STRUCTURE_SPAWN) {
                         toFocus = Game.getObjectById(c)
                         break
                     }
-                    else if (toFocus == null&& type == STRUCTURE_CONTAINER) {
+                    else if (toFocus == null && type == STRUCTURE_CONTAINER) {
                         toFocus = Game.getObjectById(c)
                         break
                     }
@@ -299,9 +293,7 @@ Creep.prototype.taskBuild = function taskBuild(localHeap) {
             }
         }
 
-        
         if (toFocus != null) {
-            //this.say(this.build(toFocus))
             if (this.build(toFocus) == ERR_NOT_IN_RANGE) {
                 this.travelTo(toFocus, { range: 1, maxRooms: 1 })
             }
@@ -352,8 +344,57 @@ Creep.prototype.taskHarvest = function taskHarvest(localHeap) {
 
     if (localHeap.targetSource != undefined) {
         if (Game.getObjectById(localHeap.targetSource) != null && this.harvest(Game.getObjectById(localHeap.targetSource)) == ERR_NOT_IN_RANGE) {
-            this.travelTo(Game.getObjectById(localHeap.targetSource))
+            this.travelTo(Game.getObjectById(localHeap.targetSource),{ignoreCreeps: false, maxRooms: 1})
         }
     }
 
 }
+
+Creep.prototype.taskCollectMineral = function taskCollectMineral() {
+
+    //var miners=[];
+    var mostFullId = undefined;
+    var mostFullAmount = Infinity;
+
+    for (id of global.heap.rooms[this.memory.homeRoom].miners) {
+        if (Game.getObjectById(id) != null && Game.getObjectById(id).store.getFreeCapacity(RESOURCE_ENERGY) < mostFullAmount) {
+            mostFullId = id
+            mostFullAmount = Game.getObjectById(id).store.getFreeCapacity(RESOURCE_ENERGY)
+            //miners.push(id)
+        }
+    }
+    console.log("mostFullID: ",mostFullId)
+    if (mostFullId != undefined) {
+        if (!this.pos.isNearTo(Game.getObjectById(mostFullId))) {
+           
+            this.travelTo(Game.getObjectById(mostFullId))
+        }
+
+
+    }
+
+}
+
+Creep.prototype.taskStoreMineral = function taskStoreMineral() {
+
+    var storage = this.room.storage
+
+    if (this.room.terminal != undefined) {
+        storage = this.room.terminal
+    }
+
+    if (this.pos.isNearTo(storage)) {
+        for (res in this.store) {
+            if (this.transfer(storage, res) == OK) {
+                break;
+            }
+        }
+    }
+    else {
+        this.travelTo(storage)
+    }
+
+}
+
+
+

@@ -7,6 +7,7 @@ const workerBody = require('workerBody')
 const { result } = require('lodash');
 const repairerBody = require('repairerBody');
 const soldierBody=require('soldierBody')
+const minerBody=require('minerBody')
 
 
 //defining local heap
@@ -116,7 +117,6 @@ Room.prototype.spawnManager = function spawnManager() {
                     var body=[]
                     if( this.energyAvailable<=SPAWN_ENERGY_CAPACITY){body=[WORK,CARRY,MOVE]}
                     else{body=workerBody(energyCap)}
-                    console.log(body)
                     var result = spawn.spawnCreep(body, C.ROLE_WORKER + '_' + this.name + Game.time, { memory: { role: C.ROLE_WORKER, homeRoom: this.name } })
                     if (result == OK) {
                         global.heap.rooms[this.name].civilianQueue.shift()
@@ -172,6 +172,24 @@ Room.prototype.spawnManager = function spawnManager() {
             case C.ROLE_COLONIZER:
                 {
                     var result = spawn.spawnCreep(workerBody(energyCap,[MOVE,CARRY,WORK,MOVE]), C.ROLE_COLONIZER + '_' + this.name + Game.time, { memory: { role: C.ROLE_COLONIZER, homeRoom: this.name, targetRoom: request.roomName } })
+                    if (result == OK) {
+                        global.heap.rooms[this.name].civilianQueue.shift()
+
+                    }
+                    break;
+                }
+            case C.ROLE_MINER:
+                {
+                    var result = spawn.spawnCreep(minerBody(energyCap), C.ROLE_MINER + '_' + this.name + Game.time, { memory: { role: C.ROLE_MINER, homeRoom: this.name } })
+                    if (result == OK) {
+                        global.heap.rooms[this.name].civilianQueue.shift()
+
+                    }
+                    break;
+                }
+            case C.ROLE_MINERAL_CARRIER:
+                {
+                    var result = spawn.spawnCreep(carrierBody(energyCap), C.ROLE_MINERAL_CARRIER + '_' + this.name + Game.time, { memory: { role: C.ROLE_MINERAL_CARRIER, homeRoom: this.name } })
                     if (result == OK) {
                         global.heap.rooms[this.name].civilianQueue.shift()
 
